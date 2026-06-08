@@ -1,14 +1,18 @@
 # ResoLogix
 
 ## Intro
-ResoLogix is a platform for creating and managing Petroleum Reserves, typically for the Exploration. It is used to manage the lifecycle of a petroleum reserve from discovery to production.
+  ResoLogix is a full-range Reserve Evaluation and Analytics Platform for Petroleum Reserves, designed to be used by the Exploration and Production (E&P) companies in the Oil and Gas industry. It is used to manage the lifecycle of petroleum reserves from discovery to production.
 
 ## Features
 - Create and manage petroleum reserves
 - Manage the lifecycle of a petroleum reserve from discovery to production
-- Assess the risks associated with a petroleum reserve
+- Assess the risks associated with petroleum reserves
 - Visualize and draft reports of petroleum reserves
-- 
+- Estimate reserves using Monte Carlo Simulation and Decline Curve Analysis (DCA)
+- Create and manage simple reserve models
+- Estimate the economics of petroleum reserves using Discounted Cash Flow (DCF) analysis
+- Track and monitor petroleum reserves
+- Manage the lifecycle of petroleum reserves (Pre-Drilling and Post-Drilling)
 
 ## Getting Started
 
