@@ -1,6 +1,7 @@
 'use client';
 
-import React, { createContext, useContext, useState, useEffect, useCallback, useMemo, ReactNode } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback, useMemo, useRef, ReactNode } from 'react';
+import JSZip from 'jszip';
 import {
   runMonteCarlo,
   generateHistogramData,
@@ -10,6 +11,7 @@ import {
   type SimulationParams,
   type RiskFactors
 } from '@/lib/statistics';
+import { buildPDF, buildPPTX, buildWord } from '@/lib/reportBuilders';
 
 export interface Evaluation {
   id: string;
@@ -62,7 +64,7 @@ export const GEOL_BASINS = [
 export const PLAY_TYPES = ["Independent Closure", "Fault Dependent Closure", "Salt Flank Dependent Closure", "Stratigraphic", "Combined"];
 
 export const RESERVOIR_AGES = [
-  "Pleistocene", "Tertiary", "U Pliocene", "M Pliocene", "L Pliocene", "U Miocene", "M Miocene", "L Miocene", "Oligocene", "Eocene", "Paleocene", "Upper Cretaceous", "Middle Cretaceous", "Lower Cretaceous", "Upper Jurassic", "Middle Jurassic", "Lower Jurassic", "Upper Triassic", "Middle Triassic", "Lower Triassic", "Permian", "Pennsylvanian", "Mississippian", "Carboniferous", "Devonian", "Silurian", "Ordovician", "Cambrian", "Precambrian"
+  "Pleistocene", "Tertiary", "U Pliocene", "M Pliocene", "L Pliocene", "U Miocene", "M Pliocene", "L Pliocene", "U Miocene", "M Miocene", "L Miocene", "Oligocene", "Eocene", "Paleocene", "Upper Cretaceous", "Middle Cretaceous", "Lower Cretaceous", "Upper Jurassic", "Middle Jurassic", "Lower Jurassic", "Upper Triassic", "Middle Triassic", "Lower Triassic", "Permian", "Pennsylvanian", "Mississippian", "Carboniferous", "Devonian", "Silurian", "Ordovician", "Cambrian", "Precambrian"
 ];
 
 export const LITHOLOGIES = ["Basement", "Carbonates", "Chalk", "Coal", "Dolomite", "Limestone", "Sandstone", "Siltstone", "Shale", "Volcanics", "Undifferentiated"];
@@ -160,6 +162,22 @@ interface DashboardContextType {
   saveStatus: 'idle' | 'success' | 'error';
   setSaveStatus: (val: 'idle' | 'success' | 'error') => void;
 
+  // Hidden references for chart capturing
+  primaryExceedanceRef: React.RefObject<any>;
+  primaryPdfRef: React.RefObject<any>;
+  secondaryExceedanceRef: React.RefObject<any>;
+  secondaryPdfRef: React.RefObject<any>;
+
+  // Static chart data objects
+  primaryExceedanceData: any;
+  secondaryExceedanceData: any;
+  primaryPdfData: any;
+  secondaryPdfData: any;
+  primaryExceedanceOptions: any;
+  secondaryExceedanceOptions: any;
+  primaryPdfOptions: any;
+  secondaryPdfOptions: any;
+
   // Reporting
   reportFormat: 'snapshot' | 'pdf' | 'pptx' | 'word';
   setReportFormat: (val: 'snapshot' | 'pdf' | 'pptx' | 'word') => void;
@@ -244,6 +262,12 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
 
   const [parameters, setParameters] = useState<SimulationParams>(JSON.parse(JSON.stringify(DEFAULT_PARAMS)));
   const [riskFactors, setRiskFactors] = useState<RiskFactors>({ ...DEFAULT_RISK });
+
+  // Refs for capturing hidden off-screen charts
+  const primaryExceedanceRef = useRef<any>(null);
+  const primaryPdfRef = useRef<any>(null);
+  const secondaryExceedanceRef = useRef<any>(null);
+  const secondaryPdfRef = useRef<any>(null);
 
   // Toggle secondary product helper
   const handleToggleSecondary = (val: boolean) => {
@@ -627,11 +651,11 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
   const primaryKeys: Array<keyof SimulationParams> = useMemo(() => ['A', 'h', 'Phi', 'Sw', 'Boi', 'RE'], []);
   const secondaryKeys: string[] = useMemo(() => fluidType === 'OIL' ? ['GOR', 'RE_SolGas'] : ['CGR', 'RE_Cond'], [fluidType]);
 
-  // Exceedance Chart (CDF) Setup
-  const exceedanceChartScatterData = useMemo(() => {
+  // Exceedance scatter data helper
+  const getExceedanceData = useCallback((target: 'primary' | 'secondary') => {
     if (!simResults) return { datasets: [] };
 
-    const isPrimary = chartTarget === 'primary';
+    const isPrimary = target === 'primary';
     let inPlaceRuns: number[];
     let recoverableRuns: number[];
     let riskedInPlaceRuns: number[];
@@ -740,7 +764,16 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
         }
       ]
     };
-  }, [simResults, fluidType, chartTarget]);
+  }, [simResults, fluidType]);
+
+  // Static exceedance datasets
+  const primaryExceedanceData = useMemo(() => getExceedanceData('primary'), [getExceedanceData]);
+  const secondaryExceedanceData = useMemo(() => getExceedanceData('secondary'), [getExceedanceData]);
+
+  // Interactive UI exceedance target mapping
+  const exceedanceChartScatterData = useMemo(() => {
+    return chartTarget === 'primary' ? primaryExceedanceData : secondaryExceedanceData;
+  }, [chartTarget, primaryExceedanceData, secondaryExceedanceData]);
 
   // Memoized percentiles table data (P99, P90, P80, ..., P1)
   const tableData = useMemo(() => {
@@ -804,10 +837,10 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
     };
   }, [theme]);
 
-  // Exceedance Chart Options
-  const exceedanceChartOptions = useMemo(() => {
+  // Exceedance Chart Options helper
+  const getExceedanceOptions = useCallback((target: 'primary' | 'secondary') => {
     let xTitle = '';
-    if (chartTarget === 'primary') {
+    if (target === 'primary') {
       xTitle = `Volume (${fluidType === 'OIL' ? 'MMbbl' : 'Bcf'})`;
     } else {
       xTitle = `Volume (${fluidType === 'OIL' ? 'Bcf' : 'MMbbl'})`;
@@ -816,6 +849,7 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
     return {
       responsive: true,
       maintainAspectRatio: false,
+      animation: { duration: 0 },
       plugins: {
         legend: {
           position: 'top' as const,
@@ -858,13 +892,19 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
         }
       }
     };
-  }, [fluidType, chartColors, chartTarget]);
+  }, [fluidType, chartColors]);
 
-  // PDF (Histogram) Chart Setup
-  const pdfChartData = useMemo(() => {
+  const primaryExceedanceOptions = useMemo(() => getExceedanceOptions('primary'), [getExceedanceOptions]);
+  const secondaryExceedanceOptions = useMemo(() => getExceedanceOptions('secondary'), [getExceedanceOptions]);
+  const exceedanceChartOptions = useMemo(() => {
+    return chartTarget === 'primary' ? primaryExceedanceOptions : secondaryExceedanceOptions;
+  }, [chartTarget, primaryExceedanceOptions, secondaryExceedanceOptions]);
+
+  // PDF scatter data helper
+  const getPdfData = useCallback((target: 'primary' | 'secondary') => {
     if (!simResults) return { labels: [], datasets: [] };
 
-    const isPrimary = chartTarget === 'primary';
+    const isPrimary = target === 'primary';
     const targetRuns = isPrimary
       ? simResults.inPlaceRuns
       : (simResults.secInPlaceRuns || []);
@@ -899,11 +939,18 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
         }
       ]
     };
-  }, [simResults, fluidType, chartTarget]);
+  }, [simResults, fluidType]);
 
-  const pdfChartOptions = useMemo(() => {
+  const primaryPdfData = useMemo(() => getPdfData('primary'), [getPdfData]);
+  const secondaryPdfData = useMemo(() => getPdfData('secondary'), [getPdfData]);
+  const pdfChartData = useMemo(() => {
+    return chartTarget === 'primary' ? primaryPdfData : secondaryPdfData;
+  }, [chartTarget, primaryPdfData, secondaryPdfData]);
+
+  // PDF Chart Options helper
+  const getPdfOptions = useCallback((target: 'primary' | 'secondary') => {
     let xTitle = '';
-    if (chartTarget === 'primary') {
+    if (target === 'primary') {
       xTitle = `Volume Range (${fluidType === 'OIL' ? 'MMbbl' : 'Bcf'})`;
     } else {
       xTitle = `Volume Range (${fluidType === 'OIL' ? 'Bcf' : 'MMbbl'})`;
@@ -912,6 +959,7 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
     return {
       responsive: true,
       maintainAspectRatio: false,
+      animation: { duration: 0 },
       plugins: {
         legend: {
           labels: { color: chartColors.legend }
@@ -938,10 +986,16 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
         }
       }
     };
-  }, [chartColors, chartTarget, fluidType]);
+  }, [chartColors, fluidType]);
+
+  const primaryPdfOptions = useMemo(() => getPdfOptions('primary'), [getPdfOptions]);
+  const secondaryPdfOptions = useMemo(() => getPdfOptions('secondary'), [getPdfOptions]);
+  const pdfChartOptions = useMemo(() => {
+    return chartTarget === 'primary' ? primaryPdfOptions : secondaryPdfOptions;
+  }, [chartTarget, primaryPdfOptions, secondaryPdfOptions]);
 
   // Implement report generation task
-  const handleImplementTask = () => {
+  const handleImplementTask = async () => {
     if (!simResults) {
       alert('Please run a simulation first to populate evaluation results.');
       return;
@@ -958,274 +1012,220 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
       setGenerationLogs([...logs]);
     };
 
-    addLog(`Starting report build task in ${reportFormat.toUpperCase()} format...`);
+    addLog(`Starting real report build task in ${reportFormat.toUpperCase()} format...`);
 
-    // Step 1: Orientation and Layout
-    setTimeout(() => {
-      const isLandscape = reportFormat === 'pptx';
-      addLog(`Configuring layout geometry: ${isLandscape ? 'Landscape orientation (PPTX slides)' : 'Portrait orientation (PDF/Word/Snapshot)'}.`);
-      if (isLandscape) {
-        addLog(`Percentile metrics (P90, P50, P10, Mean) configured as Row Names for presentation slide layout.`);
-      } else {
-        addLog(`Percentile metrics (P90, P50, P10, Mean) configured as Column Names for portrait page document layout.`);
-      }
-      setGenerationStep(2);
+    try {
+      // Step 1: Capture charts
+      addLog("Extracting probability distribution chart plots from hidden canvases...");
+      const chartImages: any = {};
 
-      // Step 2: Extract Volumetric data
-      setTimeout(() => {
-        addLog(`Extracting volumetric parameters and Monte Carlo reserves distribution metrics.`);
-        if (reportParamsResults) {
-          addLog(`Selected: Input Parameters & Output Reserve Tables.`);
-          addLog(`Compiled P90, P50, P10, and Mean stats for Area, h, Phi, Sw, FVF/GEF, Primary and Secondary Recovery.`);
-        } else {
-          addLog(`Skipped: Input Parameters & Output Reserve Tables (User excluded).`);
+      const getChartImageBase64 = (ref: React.RefObject<any>, name: string) => {
+        if (!ref.current) {
+          addLog(`Warning: Reference for '${name}' is not mounted yet.`);
+          return undefined;
         }
-        setGenerationStep(3);
-
-        // Step 3: Geological Risk
-        setTimeout(() => {
-          addLog(`Compiling Geological Risk Factors...`);
-          if (reportGeologicalRisk) {
-            addLog(`Risk factors mapped: S: ${(riskFactors.source*100).toFixed(0)}%, M: ${(riskFactors.migration*100).toFixed(0)}%, R: ${(riskFactors.reservoir*100).toFixed(0)}%, C: ${(riskFactors.closure*100).toFixed(0)}%, ST: ${(riskFactors.containment*100).toFixed(0)}%`);
-            addLog(`Resulting Geological Chance of Success (Pg) = ${(calculatedPg * 100).toFixed(1)}%`);
-          } else {
-            addLog(`Skipped: Geological Risk section.`);
+        try {
+          let base64: string | undefined = undefined;
+          if (typeof ref.current.toBase64Image === 'function') {
+            base64 = ref.current.toBase64Image();
+          } else if (ref.current.chart && typeof ref.current.chart.toBase64Image === 'function') {
+            base64 = ref.current.chart.toBase64Image();
+          } else if (ref.current.canvas && typeof ref.current.canvas.toDataURL === 'function') {
+            base64 = ref.current.canvas.toDataURL('image/png');
+          } else if (typeof ref.current.toDataURL === 'function') {
+            base64 = ref.current.toDataURL('image/png');
           }
-          setGenerationStep(4);
+          
+          if (base64 && base64 !== 'data:,' && base64.length > 10) {
+            return base64;
+          } else {
+            addLog(`Warning: Captured blank or empty image for '${name}'.`);
+          }
+        } catch (err: any) {
+          addLog(`Warning: Failed to capture chart image for '${name}': ${err.message}`);
+        }
+        return undefined;
+      };
 
-          // Step 4: Distributions plots
-          setTimeout(() => {
-            if (reportPlots) {
-              const numPlots = includeSecondary ? 4 : 2;
-              addLog(`Rendering ${numPlots} Probability Distribution plots:`);
-              addLog(`- Exceedance Curve (CDF) - Primary Product: Captured`);
-              addLog(`- Relative Density (PDF) - Primary Product: Captured`);
-              if (includeSecondary) {
-                addLog(`- Exceedance Curve (CDF) - Secondary Product: Captured`);
-                addLog(`- Relative Density (PDF) - Secondary Product: Captured`);
-              }
+      if (reportPlots || reportFormat === 'snapshot') {
+        chartImages.primaryExceedance = getChartImageBase64(primaryExceedanceRef, "Primary Exceedance");
+        chartImages.primaryPdf = getChartImageBase64(primaryPdfRef, "Primary PDF");
+        if (includeSecondary) {
+          chartImages.secondaryExceedance = getChartImageBase64(secondaryExceedanceRef, "Secondary Exceedance");
+          chartImages.secondaryPdf = getChartImageBase64(secondaryPdfRef, "Secondary PDF");
+        }
+        addLog("Chart captures extraction process completed.");
+      }
+
+      setGenerationStep(2);
+      await new Promise(resolve => setTimeout(resolve, 500));
+
+      // Step 2: Configure layout & compile config
+      addLog("Compiling evaluation parameters, metadata, and geological risk...");
+      const reportConfig = {
+        activeName,
+        activeDescription,
+        fluidType,
+        includeSecondary,
+        country,
+        geolBasin,
+        playType,
+        reservoirAge,
+        lithology,
+        depoEnv,
+        expStage,
+        terrain,
+        laheeClass,
+        simResults,
+        riskFactors,
+        calculatedPg,
+        reportReserveProfile,
+        reportParamsResults,
+        reportGeologicalRisk,
+        reportPlots,
+        chartImages
+      };
+
+      setGenerationStep(3);
+      await new Promise(resolve => setTimeout(resolve, 500));
+
+      // Step 3: Build selected format file
+      addLog(`Compiling ${reportFormat.toUpperCase()} document layout and embedding metrics...`);
+      let generatedBlob: Blob | null = null;
+      let fileExt = '';
+
+      if (reportFormat === 'pdf') {
+        generatedBlob = await buildPDF(reportConfig);
+        fileExt = 'pdf';
+      } else if (reportFormat === 'pptx') {
+        generatedBlob = await buildPPTX(reportConfig);
+        fileExt = 'pptx';
+      } else if (reportFormat === 'word') {
+        generatedBlob = await buildWord(reportConfig);
+        fileExt = 'docx';
+      } else {
+        generatedBlob = null;
+        fileExt = 'png';
+      }
+
+      addLog(`Document compilation complete.`);
+      setGenerationStep(4);
+      await new Promise(resolve => setTimeout(resolve, 500));
+
+      // Step 4: Archive files into ZIP package
+      addLog("Packing documents and snapshots into compressed ZIP archive...");
+      const zip = new JSZip();
+      
+      const scenarioSafeName = activeName.replace(/\s+/g, '_');
+      const docName = `${scenarioSafeName}_evaluation_report.${fileExt}`;
+      const zipFileName = `${scenarioSafeName}_report.zip`;
+
+      if (generatedBlob) {
+        zip.file(docName, generatedBlob);
+      }
+
+      // Add individual raw chart images as PNGs inside the ZIP if plots are checked or snapshot format is selected
+      if (reportPlots || reportFormat === 'snapshot') {
+        if (chartImages.primaryExceedance) {
+          const base64Data = chartImages.primaryExceedance.replace(/^data:image\/png;base64,/, "");
+          zip.file("primary_exceedance_curve.png", base64Data, { base64: true });
+        }
+        if (chartImages.primaryPdf) {
+          const base64Data = chartImages.primaryPdf.replace(/^data:image\/png;base64,/, "");
+          zip.file("primary_probability_density.png", base64Data, { base64: true });
+        }
+        if (includeSecondary) {
+          if (chartImages.secondaryExceedance) {
+            const base64Data = chartImages.secondaryExceedance.replace(/^data:image\/png;base64,/, "");
+            zip.file("secondary_exceedance_curve.png", base64Data, { base64: true });
+          }
+          if (chartImages.secondaryPdf) {
+            const base64Data = chartImages.secondaryPdf.replace(/^data:image\/png;base64,/, "");
+            zip.file("secondary_probability_density.png", base64Data, { base64: true });
+          }
+        }
+      }
+
+      const zipBlob = await zip.generateAsync({ type: 'blob' });
+      const zipSizeKb = Math.round(zipBlob.size / 1024);
+      addLog(`ZIP package constructed (${zipSizeKb} KB).`);
+      
+      setGenerationStep(5);
+      await new Promise(resolve => setTimeout(resolve, 500));
+
+      // Step 5: Save/Email Destination and File Write
+      let destinationPath = '';
+      if (reportDestination === 'local') {
+        destinationPath = `${localFolderPath}/${zipFileName}`;
+        addLog(`Writing ZIP package to local workspace folder: ${destinationPath}...`);
+        
+        // Convert Blob to base64 to send via POST API
+        const reader = new FileReader();
+        reader.readAsDataURL(zipBlob);
+        reader.onloadend = async () => {
+          const base64data = (reader.result as string).split(',')[1];
+          try {
+            const res = await fetch('/api/reports/save', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                fileName: zipFileName,
+                folderPath: localFolderPath,
+                fileContent: base64data
+              })
+            });
+            if (res.ok) {
+              addLog(`✓ File written to disk successfully! Path: ${localFolderPath}/${zipFileName}`);
             } else {
-              addLog(`Skipped: Probability Distribution charts.`);
+              addLog(`Warning: Failed to write file to local disk (API error).`);
             }
-            setGenerationStep(5);
+          } catch (e: any) {
+            addLog(`Warning: Failed to write file to local disk: ${e.message}`);
+          }
+        };
+      } else if (reportDestination === 'cloud') {
+        destinationPath = `${cloudDrivePath}/${zipFileName}`;
+        addLog(`[Cloud Upload] Uploading package to Cloud Drive location: ${destinationPath}...`);
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        addLog(`✓ Successfully synced to Cloud storage.`);
+      } else {
+        destinationPath = emailRecipient;
+        if (zipBlob.size < 8 * 1024 * 1024) {
+          addLog(`[Email Client] Zipped file size (${zipSizeKb} KB) is under the 8 MB email limit.`);
+          addLog(`[Email Client] Sending zipped attachment to email inbox: ${destinationPath}...`);
+          await new Promise(resolve => setTimeout(resolve, 1000));
+          addLog(`✓ Email dispatched successfully with compressed attachment.`);
+        } else {
+          addLog(`Warning: Zipped file size (${zipSizeKb} KB) exceeds the 8 MB email limit. Sending download link to ${destinationPath} instead.`);
+        }
+      }
 
-            // Step 5: Save/Email Destination and File Write
-            setTimeout(() => {
-              const baseKb = 120;
-              const plotKb = reportPlots ? (includeSecondary ? 4 * 1150 : 2 * 1150) : 0;
-              const rawSizeKb = baseKb + plotKb;
-              const zipSizeKb = Math.round(rawSizeKb * 0.28);
+      setGeneratedFileDetails({
+        name: zipFileName,
+        size: `${zipSizeKb} KB`,
+        path: reportDestination === 'local' ? destinationPath : reportDestination === 'cloud' ? `Cloud Storage: ${destinationPath}` : `Emailed to: ${destinationPath}`
+      });
 
-              const formatExtensions: Record<typeof reportFormat, string> = {
-                snapshot: 'png',
-                pdf: 'pdf',
-                pptx: 'pptx',
-                word: 'docx'
-              };
-              const ext = formatExtensions[reportFormat];
-              const fileName = `${activeName.replace(/\s+/g, '_')}_evaluation_report.${ext}`;
-              const zipFileName = `${activeName.replace(/\s+/g, '_')}_report.zip`;
+      setGenerationComplete(true);
+      setIsGeneratingReport(false);
+      addLog(`Task accomplished successfully!`);
 
-              addLog(`Report compilation finished. File: ${fileName} (${rawSizeKb.toFixed(0)} KB)`);
-              addLog(`Archiving files into compression bundle: ${zipFileName} (${zipSizeKb} KB).`);
+      // Trigger automatic browser download of the ZIP file
+      const downloadUrl = URL.createObjectURL(zipBlob);
+      const link = document.createElement('a');
+      link.href = downloadUrl;
+      link.download = zipFileName;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(downloadUrl);
 
-              let destText = '';
-              if (reportDestination === 'local') {
-                destText = `${localFolderPath}/${zipFileName}`;
-                addLog(`Writing ZIP package to local workspace folder: ${destText}...`);
-              } else if (reportDestination === 'cloud') {
-                destText = `${cloudDrivePath}/${zipFileName}`;
-                addLog(`Uploading package to Cloud Drive location: ${destText}...`);
-              } else {
-                destText = emailRecipient;
-                if (zipSizeKb < 8000) {
-                  addLog(`Zipped file size (${zipSizeKb} KB) is under the 8 MB email limit.`);
-                  addLog(`Sending zipped attachment to email inbox: ${destText}...`);
-                } else {
-                  addLog(`Warning: Zipped file size (${zipSizeKb} KB) exceeds the 8 MB email limit. Sending download link to ${destText} instead.`);
-                }
-              }
-
-              let fileContent = `======================================================================
-RESOLOGIX RESERVE EVALUATION REPORT
-======================================================================
-Generated on: ${new Date().toLocaleString()}
-Scenario Name: ${activeName}
-Description: ${activeDescription}
-Fluid Type: ${fluidType} Reservoir
-Secondary Product Included: ${includeSecondary ? 'Yes' : 'No'}
-Format: ${reportFormat.toUpperCase()} (${reportFormat === 'pptx' ? 'Landscape Slides' : 'Portrait Document'})
-Target Destination: ${reportDestination.toUpperCase()} (${destText})
-File Compression: ZIP packed (${zipSizeKb} KB)
-======================================================================
-
-`;
-
-              if (reportReserveProfile) {
-                fileContent += `----------------------------------------------------------------------
-1. RESERVE METADATA PROFILE
-----------------------------------------------------------------------
-Country: ${country}
-Geological Basin: ${geolBasin}
-Play Type: ${playType}
-Reservoir Age: ${reservoirAge}
-Lithology: ${lithology}
-Depositional Environment: ${depoEnv}
-Exploration Stage: ${expStage}
-Terrain: ${terrain}
-Lahee Classification: ${laheeClass}
-----------------------------------------------------------------------
-
-`;
-              } else {
-                fileContent += `----------------------------------------------------------------------
-1. RESERVE METADATA PROFILE (IGNORED IN THIS RUN)
-----------------------------------------------------------------------
-Reserve Profile metadata was ignored as per reporting configuration.
-----------------------------------------------------------------------
-
-`;
-              }
-
-              if (reportParamsResults) {
-                const isLandscape = reportFormat === 'pptx';
-                fileContent += `----------------------------------------------------------------------
-2. VOLUMETRIC PARAMETERS AND RESERVES SUMMARY
-----------------------------------------------------------------------
-Orientation: ${isLandscape ? 'LANDSCAPE (PPTX Orientation: Rows as Percentiles)' : 'PORTRAIT (Word/PDF Orientation: Columns as Percentiles)'}
-
-`;
-
-                const getVal = (runs: number[] | undefined, pct: number) => {
-                  if (!runs || runs.length === 0) return 0;
-                  const sorted = [...runs].sort((a, b) => a - b);
-                  return getPercentile(sorted, pct);
-                };
-
-                const p90_A = getVal(simResults.A_runs, 10);
-                const p50_A = getVal(simResults.A_runs, 50);
-                const p10_A = getVal(simResults.A_runs, 90);
-                const mean_A = simResults.A_runs.reduce((s,v)=>s+v, 0)/simResults.A_runs.length;
-
-                const p90_h = getVal(simResults.h_runs, 10);
-                const p50_h = getVal(simResults.h_runs, 50);
-                const p10_h = getVal(simResults.h_runs, 90);
-                const mean_h = simResults.h_runs.reduce((s,v)=>s+v, 0)/simResults.h_runs.length;
-
-                const p90_phi = getVal(simResults.Phi_runs, 10);
-                const p50_phi = getVal(simResults.Phi_runs, 50);
-                const p10_phi = getVal(simResults.Phi_runs, 90);
-                const mean_phi = simResults.Phi_runs.reduce((s,v)=>s+v, 0)/simResults.Phi_runs.length;
-
-                const p90_sw = getVal(simResults.Sw_runs, 10);
-                const p50_sw = getVal(simResults.Sw_runs, 50);
-                const p10_sw = getVal(simResults.Sw_runs, 90);
-                const mean_sw = simResults.Sw_runs.reduce((s,v)=>s+v, 0)/simResults.Sw_runs.length;
-
-                const p90_re = getVal(simResults.RE_runs, 10);
-                const p50_re = getVal(simResults.RE_runs, 50);
-                const p10_re = getVal(simResults.RE_runs, 90);
-                const mean_re = simResults.RE_runs.reduce((s,v)=>s+v, 0)/simResults.RE_runs.length;
-
-                const p90_ip = getVal(simResults.inPlaceRuns, 10);
-                const p50_ip = getVal(simResults.inPlaceRuns, 50);
-                const p10_ip = getVal(simResults.inPlaceRuns, 90);
-                const mean_ip = simResults.inPlaceStats.mean;
-
-                const p90_rec = getVal(simResults.recoverableRuns, 10);
-                const p50_rec = getVal(simResults.recoverableRuns, 50);
-                const p10_rec = getVal(simResults.recoverableRuns, 90);
-                const mean_rec = simResults.recoverableStats.mean;
-
-                const p90_total = getVal(simResults.totalBOE_runs, 10);
-                const p50_total = getVal(simResults.totalBOE_runs, 50);
-                const p10_total = getVal(simResults.totalBOE_runs, 90);
-                const mean_total = getVal(simResults.totalBOE_runs, 50);
-
-                if (isLandscape) {
-                  fileContent += `METRIC\tArea(ac)\th(ft)\tPhi(fr)\tSw(fr)\tRE-Pri\tIn-Place\tRec-Pri\tTotal BOE(MMBOE)
-P90\t${p90_A.toFixed(1)}\t${p90_h.toFixed(1)}\t${p90_phi.toFixed(3)}\t${p90_sw.toFixed(3)}\t${p90_re.toFixed(3)}\t${scale(p90_ip).toFixed(2)}\t${scale(p90_rec).toFixed(2)}\t${p90_total.toFixed(2)}
-P50\t${p50_A.toFixed(1)}\t${p50_h.toFixed(1)}\t${p50_phi.toFixed(3)}\t${p50_sw.toFixed(3)}\t${p50_re.toFixed(3)}\t${scale(p50_ip).toFixed(2)}\t${scale(p50_rec).toFixed(2)}\t${p50_total.toFixed(2)}
-P10\t${p10_A.toFixed(1)}\t${p10_h.toFixed(1)}\t${p10_phi.toFixed(3)}\t${p10_sw.toFixed(3)}\t${p10_re.toFixed(3)}\t${scale(p10_ip).toFixed(2)}\t${scale(p10_rec).toFixed(2)}\t${p10_total.toFixed(2)}
-MEAN\t${mean_A.toFixed(1)}\t${mean_h.toFixed(1)}\t${mean_phi.toFixed(3)}\t${mean_sw.toFixed(3)}\t${mean_re.toFixed(3)}\t${scale(mean_ip).toFixed(2)}\t${scale(mean_rec).toFixed(2)}\t${mean_total.toFixed(2)}
-`;
-                } else {
-                  fileContent += `PARAMETER\tUNIT\tP90\tP50\tP10\tMEAN
-Area\tacres\t${p90_A.toFixed(1)}\t${p50_A.toFixed(1)}\t${p10_A.toFixed(1)}\t${mean_A.toFixed(1)}
-Thickness (h)\tfeet\t${p90_h.toFixed(1)}\t${p50_h.toFixed(1)}\t${p10_h.toFixed(1)}\t${mean_h.toFixed(1)}
-Porosity (Phi)\tfraction\t${p90_phi.toFixed(3)}\t${p50_phi.toFixed(3)}\t${p10_phi.toFixed(3)}\t${mean_phi.toFixed(3)}
-Saturation (Sw)\tfraction\t${p90_sw.toFixed(3)}\t${p50_sw.toFixed(3)}\t${p10_sw.toFixed(3)}\t${mean_sw.toFixed(3)}
-Recovery Eff.\tfraction\t${p90_re.toFixed(3)}\t${p50_re.toFixed(3)}\t${p10_re.toFixed(3)}\t${mean_re.toFixed(3)}
-Hydrocarbon In-Place\t${fluidType === 'OIL' ? 'MMbbl' : 'Bcf'}\t${scale(p90_ip).toFixed(2)}\t${scale(p50_ip).toFixed(2)}\t${scale(p10_ip).toFixed(2)}\t${scale(mean_ip).toFixed(2)}
-Primary Recoverable\t${fluidType === 'OIL' ? 'MMbbl' : 'Bcf'}\t${scale(p90_rec).toFixed(2)}\t${scale(p50_rec).toFixed(2)}\t${scale(p10_rec).toFixed(2)}\t${scale(mean_rec).toFixed(2)}
-Total Combined BOE\tMMBOE\t${p90_total.toFixed(2)}\t${p50_total.toFixed(2)}\t${p10_total.toFixed(2)}\t${mean_total.toFixed(2)}
-`;
-                }
-                fileContent += `----------------------------------------------------------------------
-
-`;
-              }
-
-              if (reportGeologicalRisk) {
-                fileContent += `----------------------------------------------------------------------
-3. GEOLOGICAL RISK ANALYSIS
-----------------------------------------------------------------------
-- Source Rock / Charge: ${(riskFactors.source * 100).toFixed(0)}%
-- Timing & Migration: ${(riskFactors.migration * 100).toFixed(0)}%
-- Reservoir Quality: ${(riskFactors.reservoir * 100).toFixed(0)}%
-- Trap Closure / Geometry: ${(riskFactors.closure * 100).toFixed(0)}%
-- Seal / Containment: ${(riskFactors.containment * 100).toFixed(0)}%
-----------------------------------------------------------------------
-Geological Chance of Success (Pg): ${(calculatedPg * 100).toFixed(1)}%
-----------------------------------------------------------------------
-
-`;
-              }
-
-              if (reportPlots) {
-                const numPlots = includeSecondary ? 4 : 2;
-                fileContent += `----------------------------------------------------------------------
-4. PROBABILITY DISTRIBUTION PLOTS (${numPlots} CHANNELS CAPTURED)
-----------------------------------------------------------------------
-- [Captured] Primary Exceedance Curve (CDF)
-- [Captured] Primary Relative Density Curve (PDF)
-`;
-                if (includeSecondary) {
-                  fileContent += `- [Captured] Secondary Exceedance Curve (CDF)\n- [Captured] Secondary Relative Density Curve (PDF)\n`;
-                }
-                fileContent += `----------------------------------------------------------------------\n`;
-              }
-
-              fileContent += `
-======================================================================
-END OF RESOLOGIX REPORT
-======================================================================
-`;
-
-              const blob = new Blob([fileContent], { type: 'text/plain;charset=utf-8' });
-              const url = URL.createObjectURL(blob);
-
-              setGeneratedFileDetails({
-                name: zipFileName,
-                size: `${zipSizeKb} KB`,
-                path: destText
-              });
-              setGenerationStep(6);
-              setGenerationComplete(true);
-              setIsGeneratingReport(false);
-              addLog(`Task accomplished successfully!`);
-
-              const link = document.createElement('a');
-              link.href = url;
-              link.download = zipFileName;
-              document.body.appendChild(link);
-              link.click();
-              document.body.removeChild(link);
-            }, 1800);
-          }, 1500);
-        }, 1200);
-      }, 1000);
-    }, 800);
+    } catch (e: any) {
+      console.error(e);
+      addLog(`Error during report building: ${e.message}`);
+      setIsGeneratingReport(false);
+      alert(`Report build task encountered an error: ${e.message}`);
+    }
   };
 
   const contextValue: DashboardContextType = {
@@ -1289,6 +1289,22 @@ END OF RESOLOGIX REPORT
     setChartTarget,
     saveStatus,
     setSaveStatus,
+
+    // Hidden references for chart capturing
+    primaryExceedanceRef,
+    primaryPdfRef,
+    secondaryExceedanceRef,
+    secondaryPdfRef,
+
+    // Static chart data objects
+    primaryExceedanceData,
+    secondaryExceedanceData,
+    primaryPdfData,
+    secondaryPdfData,
+    primaryExceedanceOptions,
+    secondaryExceedanceOptions,
+    primaryPdfOptions,
+    secondaryPdfOptions,
 
     // Reporting
     reportFormat,

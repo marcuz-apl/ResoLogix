@@ -1,9 +1,15 @@
 # ResoLogix
 
+
+
 ## Intro
-  ResoLogix is a full-range Reserve Evaluation and Analytics Platform for Petroleum Reserves, designed to be used by the Exploration and Production (E&P) companies in the Oil and Gas industry. It is used to manage the lifecycle of petroleum reserves from discovery to production.
+
+ResoLogix is a full-range Reserve Evaluation and Analytics Platform for Petroleum Reserves, designed to be used by the Exploration and Production (E&P) companies in the Oil and Gas industry. It is used to manage the lifecycle of petroleum reserves from discovery to production.
+
+
 
 ## Features
+
 - Create and manage petroleum reserves
 - Manage the lifecycle of a petroleum reserve from discovery to production
 - Assess the risks associated with petroleum reserves
@@ -13,6 +19,8 @@
 - Estimate the economics of petroleum reserves using Discounted Cash Flow (DCF) analysis
 - Track and monitor petroleum reserves
 - Manage the lifecycle of petroleum reserves (Pre-Drilling and Post-Drilling)
+
+
 
 ## Getting Started
 
@@ -30,9 +38,7 @@ bun dev
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
 ## Tech Stack
 - Next.js
@@ -41,13 +47,18 @@ This project uses [`next/font`](https://nextjs.org/docs/app/building-your-applic
 - Sqlite3 (Default) / PostgreSQL (Optional)
 - chart.js
 
+
+
 ## Resources
 
 - [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
 - [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
 - [Tailwind CSS](https://tailwindcss.com/) - a utility-first CSS framework.
 - [PostgreSQL](https://www.postgresql.org/) - a powerful, open-source object-relational database system.
-- [D3.js](https://d3js.org/) - a JavaScript library for producing dynamic, interactive data visualizations in web browsers.
+- [Chart.js](https://www.chartjs.org/docs/latest/) - a JavaScript library for producing dynamic, interactive data visualizations in web browsers.
+
+
 
 ## License
+
 Apache 2.0

@@ -35,7 +35,13 @@ export default function ReportGenerator() {
     calculatedPg
   } = useDashboard();
 
-  if (!simResults) return null;
+  console.log("=== ReportGenerator Render ===");
+  console.log("simResults:", !!simResults);
+  console.log("reportFormat:", reportFormat);
+  console.log("reportReserveProfile:", reportReserveProfile);
+  console.log("reportParamsResults:", reportParamsResults);
+  console.log("reportGeologicalRisk:", reportGeologicalRisk);
+  console.log("reportPlots:", reportPlots);
 
   return (
     <div className="glass-panel p-6 rounded-2xl flex flex-col gap-5 border border-card-border/50 bg-card/40 relative overflow-hidden mt-6">
@@ -297,12 +303,17 @@ export default function ReportGenerator() {
           <button
             type="button"
             onClick={handleImplementTask}
-            disabled={isGeneratingReport}
-            className="w-full py-2.5 rounded-xl bg-gradient-to-r from-purple-500 to-pink-600 hover:from-purple-400 hover:to-pink-500 text-white font-bold text-xs shadow-md shadow-purple-950/20 hover:shadow-purple-500/25 transition-all duration-300 disabled:opacity-50 cursor-pointer text-center flex items-center justify-center gap-2"
+            disabled={!simResults || isGeneratingReport}
+            className="w-full py-2.5 rounded-xl bg-gradient-to-r from-purple-500 to-pink-600 hover:from-purple-400 hover:to-pink-500 text-white font-bold text-xs shadow-md shadow-purple-950/20 hover:shadow-purple-500/25 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer text-center flex items-center justify-center gap-2"
           >
             <FileDown className={`w-4 h-4 shrink-0 ${isGeneratingReport ? 'animate-bounce' : ''}`} />
             <span>{isGeneratingReport ? 'Executing Report Build...' : 'Implement the Task'}</span>
           </button>
+          {!simResults && (
+            <div className="mt-2.5 p-2.5 rounded-xl border border-amber-800/40 bg-amber-950/20 text-amber-400 font-bold text-[10px] text-center animate-pulse">
+              ⚠ Please run Monte Carlo simulation first to enable report generation.
+            </div>
+          )}
 
         </div>
 

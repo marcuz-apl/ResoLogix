@@ -42,7 +42,21 @@ export default function ChartsView() {
     exceedanceChartScatterData,
     exceedanceChartOptions,
     pdfChartData,
-    pdfChartOptions
+    pdfChartOptions,
+
+    // Hidden chart configurations
+    primaryExceedanceRef,
+    primaryPdfRef,
+    secondaryExceedanceRef,
+    secondaryPdfRef,
+    primaryExceedanceData,
+    secondaryExceedanceData,
+    primaryPdfData,
+    secondaryPdfData,
+    primaryExceedanceOptions,
+    secondaryExceedanceOptions,
+    primaryPdfOptions,
+    secondaryPdfOptions
   } = useDashboard();
 
   return (
@@ -121,6 +135,53 @@ export default function ChartsView() {
           </div>
         )}
       </div>
+
+      {/* Off-screen hidden canvases for generating exportable chart images */}
+      {simResults && (
+        <div 
+          style={{ 
+            position: 'absolute', 
+            left: '-9999px', 
+            top: '-9999px', 
+            width: '800px', 
+            height: '400px', 
+            pointerEvents: 'none' 
+          }}
+        >
+          <div style={{ width: '800px', height: '400px' }}>
+            <Line 
+              ref={primaryExceedanceRef} 
+              data={primaryExceedanceData} 
+              options={primaryExceedanceOptions} 
+            />
+          </div>
+          <div style={{ width: '800px', height: '400px' }}>
+            <Bar 
+              ref={primaryPdfRef} 
+              data={primaryPdfData} 
+              options={primaryPdfOptions} 
+            />
+          </div>
+          {includeSecondary && (
+            <>
+              <div style={{ width: '800px', height: '400px' }}>
+                <Line 
+                  ref={secondaryExceedanceRef} 
+                  data={secondaryExceedanceData} 
+                  options={secondaryExceedanceOptions} 
+                />
+              </div>
+              <div style={{ width: '800px', height: '400px' }}>
+                <Bar 
+                  ref={secondaryPdfRef} 
+                  data={secondaryPdfData} 
+                  options={secondaryPdfOptions} 
+                />
+              </div>
+            </>
+          )}
+        </div>
+      )}
     </section>
   );
 }
