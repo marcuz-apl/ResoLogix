@@ -16,7 +16,7 @@ export default function ParameterDataTable() {
         <div className="flex items-center gap-2 pb-2 border-b border-card-border/60">
           <Database className="w-5 h-5 text-purple-400" />
           <h2 className="font-extrabold text-sm uppercase tracking-wider text-text-primary">
-            Reserve Evaluation Results
+            Resource Evaluation Results
           </h2>
         </div>
         <div className="overflow-x-auto">

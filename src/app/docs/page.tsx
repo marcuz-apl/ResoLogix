@@ -2,7 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { ArrowLeft, BookOpen, Layers, Cpu, HelpCircle, FileText } from 'lucide-react';
+import { ArrowLeft, BookOpen, Layers, Cpu, HelpCircle, FileText, Compass } from 'lucide-react';
 import pkg from '../../../package.json';
 
 export default function DocsPage() {
@@ -69,18 +69,25 @@ export default function DocsPage() {
               <span>2. Monte Carlo Theory</span>
             </a>
             <a 
+              href="#geological-risk" 
+              className="flex items-center gap-2 py-2 px-3 rounded-lg text-xs font-bold text-text-secondary hover:text-cyan-400 hover:bg-card-border/20 transition-all duration-200"
+            >
+              <Compass className="w-3.5 h-3.5 text-cyan-400 shrink-0" />
+              <span>3. Geological Risk (Pg)</span>
+            </a>
+            <a 
               href="#formulae" 
               className="flex items-center gap-2 py-2 px-3 rounded-lg text-xs font-bold text-text-secondary hover:text-cyan-400 hover:bg-card-border/20 transition-all duration-200"
             >
               <FileText className="w-3.5 h-3.5 text-cyan-400 shrink-0" />
-              <span>3. Scientific Formulae</span>
+              <span>4. Scientific Formulae</span>
             </a>
             <a 
               href="#tutorial" 
               className="flex items-center gap-2 py-2 px-3 rounded-lg text-xs font-bold text-text-secondary hover:text-cyan-400 hover:bg-card-border/20 transition-all duration-200"
             >
               <HelpCircle className="w-3.5 h-3.5 text-cyan-400 shrink-0" />
-              <span>4. Application Tutorial</span>
+              <span>5. Application Tutorial</span>
             </a>
           </aside>
 
@@ -155,11 +162,49 @@ export default function DocsPage() {
               </ul>
             </section>
 
-            {/* Section 3: Scientific Formulae */}
+            {/* Section 3: Geological Risk (Pg) */}
+            <section id="geological-risk" className="glass-panel p-8 rounded-2xl flex flex-col gap-4 border border-card-border/50 bg-card/45 relative scroll-mt-6">
+              <h2 className="text-lg font-extrabold text-text-primary border-b border-card-border pb-2 flex items-center gap-2">
+                <Compass className="w-5 h-5 text-cyan-400" />
+                <span>3. Geological Chance of Success ($P_g$)</span>
+              </h2>
+              <p>
+                Per best practice, the <strong>Geological Chance of Success ($P_g$) is not evaluated for established Reserves</strong>, as Reserves are defined as volumes already discovered and commercially producible. $P_g$ is strictly used for <strong>Prospective Resources</strong> (untested, drill-ready prospects).
+              </p>
+              <p>
+                For a drill-ready prospect, the target $P_g$ generally ranges from <strong>20% to 40%</strong> to meet standard industry and commerciality thresholds.
+              </p>
+              
+              <h3 className="font-bold text-text-primary mt-2 text-xs uppercase tracking-wide">The Evaluation Framework</h3>
+              <p>
+                The $P_g$ is calculated as the product of independent geological risk factors:
+                <br />
+                <code className="font-mono bg-background/50 px-2 py-1 rounded text-cyan-400 mt-2 inline-block">P_g = P_trap × P_reservoir × P_charge × P_seal × P_timing</code>
+              </p>
+              <ul className="list-disc pl-5 flex flex-col gap-2">
+                <li><strong className="text-text-primary">Trap:</strong> Is there a geometric closure or pinch-out?</li>
+                <li><strong className="text-text-primary">Reservoir:</strong> Are porous and permeable rocks present?</li>
+                <li><strong className="text-text-primary">Charge:</strong> Have hydrocarbons been generated and migrated into the trap?</li>
+                <li><strong className="text-text-primary">Seal:</strong> Is there a caprock to prevent the hydrocarbons from leaking?</li>
+                <li><strong className="text-text-primary">Timing:</strong> Did the trap, reservoir, and charge form in the correct geological sequence?</li>
+              </ul>
+
+              <h3 className="font-bold text-text-primary mt-2 text-xs uppercase tracking-wide">Strategic Considerations</h3>
+              <p>
+                While geologists calculate $P_g$ strictly for the presence of hydrocarbons, management also filters projects using the <strong>Probability of Commercial Success ($P_c$)</strong>, which factors in:
+              </p>
+              <ol className="list-decimal pl-5 flex flex-col gap-1">
+                <li>Economic thresholds (Minimum Economic Field Size - MEFS)</li>
+                <li>Development costs</li>
+                <li>Commodity price projections</li>
+              </ol>
+            </section>
+
+            {/* Section 4: Scientific Formulae */}
             <section id="formulae" className="glass-panel p-8 rounded-2xl flex flex-col gap-4 border border-card-border/50 bg-card/45 relative scroll-mt-6">
               <h2 className="text-lg font-extrabold text-text-primary border-b border-card-border pb-2 flex items-center gap-2">
                 <FileText className="w-5 h-5 text-cyan-400" />
-                <span>3. Scientific Formulae & Conversions</span>
+                <span>4. Scientific Formulae & Conversions</span>
               </h2>
               
               <div className="flex flex-col gap-5 mt-2">
@@ -228,11 +273,11 @@ export default function DocsPage() {
               </div>
             </section>
 
-            {/* Section 4: Tutorial */}
+            {/* Section 5: Tutorial */}
             <section id="tutorial" className="glass-panel p-8 rounded-2xl flex flex-col gap-4 border border-card-border/50 bg-card/45 relative scroll-mt-6">
               <h2 className="text-lg font-extrabold text-text-primary border-b border-card-border pb-2 flex items-center gap-2">
                 <HelpCircle className="w-5 h-5 text-cyan-400" />
-                <span>4. Step-by-Step User Tutorial</span>
+                <span>5. Step-by-Step User Tutorial</span>
               </h2>
               
               <div className="flex flex-col gap-4">
