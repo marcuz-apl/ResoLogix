@@ -26,6 +26,7 @@ export interface Evaluation {
   exp_stage?: string;
   terrain?: string;
   lahee_class?: string;
+  type_well?: string;
   parameters: SimulationParams;
   risk_factors: RiskFactors;
   created_at?: string;
@@ -137,6 +138,8 @@ interface DashboardContextType {
   setTerrain: (val: string) => void;
   laheeClass: string;
   setLaheeClass: (val: string) => void;
+  typeWell: string;
+  setTypeWell: (val: string) => void;
   isProfileExpanded: boolean;
   setIsProfileExpanded: (val: boolean) => void;
 
@@ -230,6 +233,7 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
   const [expStage, setExpStage] = useState('undefined');
   const [terrain, setTerrain] = useState('undefined');
   const [laheeClass, setLaheeClass] = useState('undefined');
+  const [typeWell, setTypeWell] = useState('None');
 
   // Collapsible toggle for Reserve Profile
   const [isProfileExpanded, setIsProfileExpanded] = useState(false);
@@ -366,6 +370,7 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
     setExpStage(ev.exp_stage || 'undefined');
     setTerrain(ev.terrain || 'undefined');
     setLaheeClass(ev.lahee_class || 'undefined');
+    setTypeWell(ev.type_well || 'None');
 
     // Ensure all parameters exist with fallback
     const mergedParams = { ...DEFAULT_PARAMS };
@@ -410,6 +415,7 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
     setExpStage('undefined');
     setTerrain('undefined');
     setLaheeClass('undefined');
+    setTypeWell('None');
     setIsProfileExpanded(false);
     setParameters(JSON.parse(JSON.stringify(DEFAULT_PARAMS)));
     setRiskFactors({ ...DEFAULT_RISK });
@@ -442,6 +448,7 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
       exp_stage: expStage,
       terrain,
       lahee_class: laheeClass,
+      type_well: typeWell,
       parameters,
       risk_factors: riskFactors
     };
@@ -596,9 +603,9 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
       step: 0.01
     },
     GOR: { title: 'Solution Gas/Oil Ratio (GOR)', unit: 'scf/STB', min: 1, max: 50000, step: 10 },
-    RE_SolGas: { title: 'Solution Gas Recovery Efficiency (RE-SolGas)', unit: 'fraction', min: 0.01, max: 0.90, step: 0.01 },
+    RE_SolGas: { title: 'Secondary Product RE', unit: 'fraction', min: 0.01, max: 0.90, step: 0.01 },
     CGR: { title: 'Condensate/Gas Ratio (CGR)', unit: 'bbl/MMscf', min: 0.1, max: 1000, step: 1 },
-    RE_Cond: { title: 'Recovery Efficiency of Condensate (RE-Cond)', unit: 'fraction', min: 0.01, max: 0.90, step: 0.01 }
+    RE_Cond: { title: 'Secondary Product RE', unit: 'fraction', min: 0.01, max: 0.90, step: 0.01 }
   }), [fluidType]);
 
   const primaryKeys: Array<keyof SimulationParams> = useMemo(() => ['A', 'h', 'Phi', 'Sw', 'Boi', 'RE'], []);
@@ -1003,6 +1010,8 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
     setTerrain,
     laheeClass,
     setLaheeClass,
+    typeWell,
+    setTypeWell,
     isProfileExpanded,
     setIsProfileExpanded,
 

@@ -25,6 +25,7 @@ export function initDb() {
       exp_stage TEXT DEFAULT 'undefined',
       terrain TEXT DEFAULT 'undefined',
       lahee_class TEXT DEFAULT 'undefined',
+      type_well TEXT DEFAULT 'None',
       created_at TEXT DEFAULT CURRENT_TIMESTAMP,
       updated_at TEXT DEFAULT CURRENT_TIMESTAMP
     );
@@ -67,11 +68,13 @@ export function initDb() {
     'depo_env',
     'exp_stage',
     'terrain',
-    'lahee_class'
+    'lahee_class',
+    'type_well'
   ];
   for (const col of reserveProfileColumns) {
     try {
-      db.exec(`ALTER TABLE evaluations ADD COLUMN ${col} TEXT DEFAULT 'undefined';`);
+      const defaultValue = col === 'type_well' ? 'None' : 'undefined';
+      db.exec(`ALTER TABLE evaluations ADD COLUMN ${col} TEXT DEFAULT '${defaultValue}';`);
     } catch (e) {
       // Column already exists, ignore error
     }

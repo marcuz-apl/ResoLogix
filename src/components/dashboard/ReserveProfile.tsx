@@ -41,6 +41,8 @@ export default function ReserveProfile() {
     setTerrain,
     laheeClass,
     setLaheeClass,
+    typeWell,
+    setTypeWell,
     fluidType,
     setFluidType,
     setParameters,
@@ -270,6 +272,18 @@ export default function ReserveProfile() {
                   <option key={lc} value={lc}>{lc}</option>
                 ))}
               </select>
+            </div>
+
+            {/* Type Well Field */}
+            <div className="flex flex-col">
+              <label className="text-[10px] text-text-muted font-bold uppercase tracking-wider mb-1 block">Type-Well</label>
+              <input
+                type="text"
+                value={typeWell}
+                onChange={(e) => setTypeWell(e.target.value)}
+                className="w-full bg-background border border-card-border rounded-lg px-2.5 py-1 text-xs text-text-primary focus:outline-none focus:border-cyan-500 font-semibold transition-colors duration-200"
+                placeholder="None"
+              />
             </div>
 
           </div>

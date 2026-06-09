@@ -50,7 +50,7 @@ export default function QuickMetrics() {
           <span className="text-xs text-text-secondary font-semibold">{fluidType === 'OIL' ? 'Bcf' : 'MMbbl'}</span>
         </div>
         <span className="text-[10px] text-text-muted mt-1">
-          {!includeSecondary ? 'Secondary Product Disabled' : 'Associated Secondary Product'}
+          {!includeSecondary ? 'Secondary Product Disabled' : 'Secondary Product'}
         </span>
       </div>
 

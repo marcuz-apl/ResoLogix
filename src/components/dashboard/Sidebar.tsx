@@ -49,6 +49,7 @@ export default function Sidebar() {
               <option value="5000">5,000</option>
               <option value="10000">10,000</option>
               <option value="20000">20,000</option>
+              <option value="50000">50,000</option>
             </select>
           </div>
           <button

@@ -103,6 +103,14 @@ Can you come up with a plan of:
 - Please sync the version number in Docs page with the project version number.
 - Please make a fancy favicon.ico for this Reserve Evaluation project.
 - Let's tune the App Name of "ResoLogix" in Header: Please adjust the font size of "ResoLogix" to be bigger, such that the Text of "ResoLogix" can allign by both sides against the underlaying "RESERVE EVALUATION". 
+- In the "RESERVE PROFILE" Section, please add another item named "TYPE-WELL" with Default value of "None", while it can be edited by a user.
+- Add one more number of "50000" at MC Runs.
+- Remove "ASSOCIATED" from "ASSOCIATED SECONDARY PRODUCT PARAMATERS" for Oil and Gas Reservoir;
+- In case of "With Secondary", change the name of second parameter to be "Secondary Product RE", more generic.
+- In "RESERVE EVALUATION RESULTS" data table:
+- Change "PRIMARY LIQUID YEILD" to "PRIMARY YIELD";
+- Change "SECONDARY FLUID YIELD" to "SECONDARY YIELD".
+- In case of "Gas Reservoir", the PRIMARY YIELD shall be "GAS", please correct it.
 
 
 ### Evaluation Reporting Function

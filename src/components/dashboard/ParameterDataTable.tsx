@@ -44,10 +44,10 @@ export default function ParameterDataTable() {
                   {fluidType === 'OIL' ? 'OOIP (MMbbl)' : 'OGIP (Bcf)'}
                 </th>
                 <th className="py-2.5 px-3 text-right bg-emerald-950/10 text-emerald-400">
-                  {fluidType === 'OIL' ? 'Primary Liquid Yield (MMbbl)' : 'Primary Liquid Yield (Condensate, MMbbl)'}
+                  {fluidType === 'OIL' ? 'Primary Yield (MMbbl)' : 'Primary Yield (Bcf)'}
                 </th>
                 <th className="py-2.5 px-3 text-right bg-purple-950/10 text-purple-400">
-                  {fluidType === 'OIL' ? 'Secondary fluid yield (Gas, Bcf)' : 'Secondary fluid yield (Gas, Bcf)'}
+                  {fluidType === 'OIL' ? 'Secondary Yield (Gas, Bcf)' : 'Secondary Yield (Cond, MMbbl)'}
                 </th>
                 <th className="py-2.5 px-3 text-right bg-pink-950/10 text-pink-400">
                   Totalized MMBOE
@@ -80,12 +80,12 @@ export default function ParameterDataTable() {
                   <td className="py-2.5 px-3 text-right font-mono font-bold text-emerald-500 dark:text-emerald-400 bg-emerald-950/5">
                     {fluidType === 'OIL'
                       ? formatVolume(row.primaryLiquid, 'primary')
-                      : (includeSecondary ? formatVolume(row.primaryLiquid, 'secondary') : '—')}
+                      : formatVolume(row.secondaryFluid, 'primary')}
                   </td>
                   <td className="py-2.5 px-3 text-right font-mono font-bold text-purple-500 dark:text-purple-400 bg-purple-950/5">
                     {fluidType === 'OIL'
                       ? (includeSecondary ? formatVolume(row.secondaryFluid, 'secondary') : '—')
-                      : formatVolume(row.secondaryFluid, 'primary')}
+                      : (includeSecondary ? formatVolume(row.primaryLiquid, 'secondary') : '—')}
                   </td>
                   <td className="py-2.5 px-3 text-right font-mono font-bold text-pink-500 dark:text-pink-400 bg-pink-950/5">
                     {row.totalBOE.toLocaleString(undefined, { minimumFractionDigits: 1, maximumFractionDigits: 2 })}

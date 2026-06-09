@@ -108,11 +108,11 @@ export default function VolumetricParameters() {
         </div>
       </div>
 
-      {/* Associated Secondary Product Parameters */}
+      {/* Secondary Product Parameters */}
       <div className="flex flex-col gap-4 pt-4 border-t border-card-border">
         <div className="flex items-center justify-between flex-wrap gap-2 mb-2">
           <div className="text-[11px] font-black uppercase tracking-wider text-purple-500/80">
-            Associated Secondary Product Parameters ({fluidType === 'OIL' ? 'Solution Gas' : 'Condensate'})
+            Secondary Product Parameters ({fluidType === 'OIL' ? 'Solution Gas' : 'Condensate'})
           </div>
           
           {/* Segmented Control for secondary product toggle */}
