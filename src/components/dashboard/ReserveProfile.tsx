@@ -40,32 +40,79 @@ export default function ReserveProfile() {
     terrain,
     setTerrain,
     laheeClass,
-    setLaheeClass
+    setLaheeClass,
+    fluidType,
+    setFluidType,
+    setParameters,
+    setSimResults
   } = useDashboard();
 
   return (
     <div className="glass-panel p-4 rounded-2xl flex flex-col gap-4 mb-6 border border-card-border/50">
-      {/* Name and Description Inputs Row */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div className="flex flex-col gap-1.5 flex-1 min-w-0">
+      {/* Name, Description, and Reservoir Type Selector Row */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+        <div className="flex flex-col gap-1.5 flex-[2] min-w-0">
           <label className="text-[10px] text-text-muted font-bold uppercase tracking-wider block">Scenario Name</label>
           <input
             type="text"
             value={activeName}
             onChange={(e) => setActiveName(e.target.value)}
-            className="bg-transparent text-sm font-bold text-text-primary focus:outline-none border-b border-transparent focus:border-card-border hover:border-card-border/60 px-1 py-0.5 rounded transition-all duration-200 w-full max-w-xl truncate"
+            className="bg-transparent text-sm font-bold text-text-primary focus:outline-none border-b border-transparent focus:border-card-border hover:border-card-border/60 px-1 py-0.5 rounded transition-all duration-200 w-full truncate"
             placeholder="Scenario Name"
           />
         </div>
-        <div className="flex flex-col gap-1.5 flex-1 min-w-0">
+        <div className="flex flex-col gap-1.5 flex-[3] min-w-0">
           <label className="text-[10px] text-text-muted font-bold uppercase tracking-wider block">Description</label>
           <input
             type="text"
             value={activeDescription}
             onChange={(e) => setActiveDescription(e.target.value)}
-            className="bg-transparent text-xs text-text-secondary focus:outline-none border-b border-transparent focus:border-card-border/60 px-1 py-1 rounded transition-all duration-200 w-full max-w-2xl truncate"
+            className="bg-transparent text-xs text-text-secondary focus:outline-none border-b border-transparent focus:border-card-border/60 px-1 py-1 rounded transition-all duration-200 w-full truncate"
             placeholder="Add description..."
           />
+        </div>
+
+        {/* Reservoir Fluid Type Switcher */}
+        <div className="flex flex-col gap-1.5 shrink-0">
+          <label className="text-[10px] text-text-muted font-bold uppercase tracking-wider block">Reservoir Type</label>
+          <div className="flex bg-background border border-card-border rounded-xl p-0.5 text-xs font-semibold">
+            <button
+              onClick={() => {
+                setFluidType('OIL');
+                setParameters(prev => {
+                  const u = { ...prev };
+                  u.Boi = { p90: 1.1, p10: 1.3, distribution: 'LOGNORMAL' };
+                  return u;
+                });
+                setSimResults(null);
+              }}
+              className={`py-1.5 px-3.5 rounded-lg transition-all cursor-pointer ${
+                fluidType === 'OIL'
+                  ? 'bg-blue-600 text-white font-bold shadow'
+                  : 'text-text-secondary hover:text-text-primary'
+              }`}
+            >
+              Oil Reservoir
+            </button>
+            <button
+              onClick={() => {
+                setFluidType('GAS');
+                setParameters(prev => {
+                  const u = { ...prev };
+                  u.Boi = { p90: 100, p10: 200, distribution: 'LOGNORMAL' };
+                  return u;
+                });
+                setSimResults(null);
+              }}
+              className={`py-1.5 px-3.5 rounded-lg transition-all cursor-pointer ${
+                fluidType === 'GAS'
+                  ? 'bg-orange-500 text-white font-bold shadow'
+                  : 'text-text-secondary hover:text-text-primary'
+              }`}
+            >
+              Gas Reservoir
+            </button>
+          </div>
         </div>
       </div>
 

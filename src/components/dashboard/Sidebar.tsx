@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Plus, Check, Save, FolderOpen, Trash2 } from 'lucide-react';
+import { Plus, Check, Save, FolderOpen, Trash2, Sliders, RefreshCw } from 'lucide-react';
 import { useDashboard } from './DashboardContext';
 
 export default function Sidebar() {
@@ -16,7 +16,12 @@ export default function Sidebar() {
     isLoadingScenarios,
     activeId,
     loadScenario,
-    handleDeleteScenario
+    handleDeleteScenario,
+    iterations,
+    setIterations,
+    setSimResults,
+    handleRunSimulation,
+    isSimulating
   } = useDashboard();
 
   return (
@@ -26,6 +31,36 @@ export default function Sidebar() {
         className="shrink-0 border-r border-card-border bg-sidebar p-5 flex flex-col gap-6"
         style={{ width: sidebarWidth }}
       >
+        {/* MC Runs Dropdown and Run Sim Button */}
+        <div className="flex flex-col gap-2.5 bg-card/45 border border-card-border/70 p-3.5 rounded-xl shrink-0">
+          <div className="flex items-center justify-between text-xs text-text-secondary">
+            <span className="font-bold flex items-center gap-1.5">
+              <Sliders className="w-3.5 h-3.5 text-cyan-400" />
+              <span>MC Runs:</span>
+            </span>
+            <select
+              value={iterations}
+              onChange={(e) => {
+                setIterations(Number(e.target.value));
+                setSimResults(null);
+              }}
+              className="bg-background border border-card-border rounded px-2 py-1 text-text-secondary font-semibold focus:outline-none focus:border-cyan-500 text-xs cursor-pointer"
+            >
+              <option value="5000">5,000</option>
+              <option value="10000">10,000</option>
+              <option value="20000">20,000</option>
+            </select>
+          </div>
+          <button
+            onClick={handleRunSimulation}
+            disabled={isSimulating}
+            className="w-full flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white font-bold text-xs shadow shadow-cyan-500/20 hover:shadow-cyan-400/30 transition-all duration-300 disabled:opacity-50 disabled:pointer-events-none cursor-pointer"
+          >
+            <RefreshCw className={`w-3.5 h-3.5 shrink-0 ${isSimulating ? 'animate-spin' : ''}`} />
+            <span>{isSimulating ? 'Simulating...' : 'Run Simulation'}</span>
+          </button>
+        </div>
+
         {/* New / Save Buttons Side-by-Side */}
         <div className="flex gap-2 shrink-0">
           <button

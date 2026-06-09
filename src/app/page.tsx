@@ -11,7 +11,6 @@ import GeologicalRisk from '@/components/dashboard/GeologicalRisk';
 import ChartsView from '@/components/dashboard/ChartsView';
 import SummaryStatsTable from '@/components/dashboard/SummaryStatsTable';
 import ParameterDataTable from '@/components/dashboard/ParameterDataTable';
-import ReportGenerator from '@/components/dashboard/ReportGenerator';
 
 function DashboardContent() {
   const { handleRightPaneMouseDown } = useDashboard();
@@ -71,8 +70,6 @@ function DashboardContent() {
           {/* Percentile Parameters and Reserves Data tables */}
           <ParameterDataTable />
 
-          {/* Reporting Suite Configuration & Build interface */}
-          <ReportGenerator />
 
         </main>
       </div>

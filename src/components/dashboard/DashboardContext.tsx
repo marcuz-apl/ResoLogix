@@ -64,7 +64,7 @@ export const GEOL_BASINS = [
 export const PLAY_TYPES = ["Independent Closure", "Fault Dependent Closure", "Salt Flank Dependent Closure", "Stratigraphic", "Combined"];
 
 export const RESERVOIR_AGES = [
-  "Pleistocene", "Tertiary", "U Pliocene", "M Pliocene", "L Pliocene", "U Miocene", "M Pliocene", "L Pliocene", "U Miocene", "M Miocene", "L Miocene", "Oligocene", "Eocene", "Paleocene", "Upper Cretaceous", "Middle Cretaceous", "Lower Cretaceous", "Upper Jurassic", "Middle Jurassic", "Lower Jurassic", "Upper Triassic", "Middle Triassic", "Lower Triassic", "Permian", "Pennsylvanian", "Mississippian", "Carboniferous", "Devonian", "Silurian", "Ordovician", "Cambrian", "Precambrian"
+  "Pleistocene", "Tertiary", "U Pliocene", "M Pliocene", "L Pliocene", "U Miocene", "M Miocene", "L Miocene", "Oligocene", "Eocene", "Paleocene", "Upper Cretaceous", "Middle Cretaceous", "Lower Cretaceous", "Upper Jurassic", "Middle Jurassic", "Lower Jurassic", "Upper Triassic", "Middle Triassic", "Lower Triassic", "Permian", "Pennsylvanian", "Mississippian", "Carboniferous", "Devonian", "Silurian", "Ordovician", "Cambrian", "Precambrian"
 ];
 
 export const LITHOLOGIES = ["Basement", "Carbonates", "Chalk", "Coal", "Dolomite", "Limestone", "Sandstone", "Siltstone", "Shale", "Volcanics", "Undifferentiated"];
@@ -775,7 +775,7 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
     return chartTarget === 'primary' ? primaryExceedanceData : secondaryExceedanceData;
   }, [chartTarget, primaryExceedanceData, secondaryExceedanceData]);
 
-  // Memoized percentiles table data (P99, P90, P80, ..., P1)
+  // Memoized table data containing exactly P90, P50, MEAN, and P10 rows
   const tableData = useMemo(() => {
     if (!simResults) return null;
 
@@ -785,33 +785,50 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
       return getPercentile(sorted, pct);
     };
 
-    const percentiles = [99, 90, 80, 70, 60, 50, 40, 30, 20, 10, 1];
+    const calcMean = (runs: number[] | undefined) => {
+      if (!runs || runs.length === 0) return 0;
+      const sum = runs.reduce((a, b) => a + b, 0);
+      return sum / runs.length;
+    };
 
-    return percentiles.map((p) => {
-      const targetPct = 100 - p;
+    const rowsConfig = [
+      { key: 'P90', type: 'percentile', value: 10 },
+      { key: 'P50', type: 'percentile', value: 50 },
+      { key: 'MEAN', type: 'mean', value: 0 },
+      { key: 'P10', type: 'percentile', value: 90 },
+    ];
 
-      const Area = calcP(simResults.A_runs, targetPct);
-      const h = calcP(simResults.h_runs, targetPct);
-      const Phi = calcP(simResults.Phi_runs, targetPct);
-      const Sw = calcP(simResults.Sw_runs, targetPct);
-      const Boi = calcP(simResults.Boi_runs, targetPct);
-      const RE = calcP(simResults.RE_runs, targetPct);
-      const secRE = calcP(simResults.secRE_runs, targetPct);
+    return rowsConfig.map((row) => {
+      const getVal = (runs: number[] | undefined) => {
+        if (row.type === 'percentile') {
+          return calcP(runs, row.value);
+        } else {
+          return calcMean(runs);
+        }
+      };
 
-      const primaryInPlace = calcP(simResults.inPlaceRuns, targetPct);
+      const Area = getVal(simResults.A_runs);
+      const h = getVal(simResults.h_runs);
+      const Phi = getVal(simResults.Phi_runs);
+      const Sw = getVal(simResults.Sw_runs);
+      const Boi = getVal(simResults.Boi_runs);
+      const RE = getVal(simResults.RE_runs);
+      const secRE = getVal(simResults.secRE_runs);
+
+      const primaryInPlace = getVal(simResults.inPlaceRuns);
 
       const primaryLiquid = fluidType === 'OIL'
-        ? calcP(simResults.recoverableRuns, targetPct)
-        : calcP(simResults.secRecoverableRuns || [], targetPct);
+        ? getVal(simResults.recoverableRuns)
+        : getVal(simResults.secRecoverableRuns || []);
 
       const secondaryFluid = fluidType === 'OIL'
-        ? calcP(simResults.secRecoverableRuns || [], targetPct)
-        : calcP(simResults.recoverableRuns, targetPct);
+        ? getVal(simResults.secRecoverableRuns || [])
+        : getVal(simResults.recoverableRuns);
 
-      const totalBOE = calcP(simResults.totalBOE_runs, targetPct);
+      const totalBOE = getVal(simResults.totalBOE_runs);
 
       return {
-        prob: `P${p}`,
+        prob: row.key,
         Area,
         h,
         Phi,
