@@ -7,6 +7,7 @@ import { type RiskFactors } from '@/lib/statistics';
 
 export default function GeologicalRisk() {
   const {
+    theme,
     rightPaneWidth,
     calculatedPg,
     riskFactors,
@@ -23,7 +24,11 @@ export default function GeologicalRisk() {
           <Compass className="w-5 h-5 text-emerald-400" />
           <h2 className="font-extrabold text-sm uppercase tracking-wider text-text-primary truncate">Geological Risk</h2>
         </div>
-        <div className="text-[10px] font-bold px-2 py-0.5 rounded bg-emerald-950/25 border border-emerald-800/20 text-emerald-500 dark:text-emerald-400 shrink-0">
+        <div className={`text-[10px] font-bold px-2 py-0.5 rounded border shrink-0 ${
+          theme === 'dark'
+            ? 'bg-emerald-950/35 border-emerald-850/20 text-emerald-400'
+            : 'bg-emerald-100 border-emerald-300 text-emerald-800'
+        }`}>
           Chance: {(calculatedPg * 100).toFixed(1)}%
         </div>
       </div>
@@ -43,7 +48,11 @@ export default function GeologicalRisk() {
             <div key={key} className="flex flex-col gap-1.5">
               <div className="flex items-center justify-between text-xs">
                 <span className="font-bold text-text-primary truncate">{labelMap[key]}</span>
-                <span className="font-black text-emerald-600 dark:text-emerald-400 bg-emerald-950/15 border border-emerald-900/20 px-1.5 py-0.5 rounded text-[11px] shrink-0">
+                <span className={`font-black px-1.5 py-0.5 rounded text-[11px] shrink-0 border ${
+                  theme === 'dark'
+                    ? 'bg-emerald-950/20 border-emerald-850/15 text-emerald-400'
+                    : 'bg-emerald-100 border-emerald-200 text-emerald-800'
+                }`}>
                   {(factorVal * 100).toFixed(0)}%
                 </span>
               </div>

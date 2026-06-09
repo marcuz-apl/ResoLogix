@@ -3,6 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { ArrowLeft, BookOpen, Layers, Cpu, HelpCircle, FileText } from 'lucide-react';
+import pkg from '../../../package.json';
 
 export default function DocsPage() {
   return (
@@ -30,9 +31,7 @@ export default function DocsPage() {
         {/* Documentation Header */}
         <header className="border-b border-card-border pb-8 mb-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
           <div className="flex items-center gap-4">
-            <div className="p-3.5 bg-gradient-to-br from-cyan-500 to-blue-600 rounded-2xl shadow-lg shadow-cyan-500/10">
-              <BookOpen className="w-7 h-7 text-white" />
-            </div>
+            <img src="/logo.png" alt="ResoLogix Logo" className="w-14 h-14 rounded-2xl shadow-lg shadow-cyan-500/10 object-contain animate-pulse" />
             <div>
               <h1 className="text-3xl font-extrabold tracking-tight bg-gradient-to-r from-white via-cyan-100 to-cyan-300 bg-clip-text text-transparent">
                 ResoLogix Knowledge Base
@@ -43,7 +42,7 @@ export default function DocsPage() {
             </div>
           </div>
           <span className="text-xs bg-cyan-950/40 border border-cyan-800/40 text-cyan-400 px-3 py-1.5 rounded-lg font-bold select-none shrink-0 self-start md:self-auto">
-            Documentation Version 1.0.4
+            Documentation Version {pkg.version}
           </span>
         </header>
 

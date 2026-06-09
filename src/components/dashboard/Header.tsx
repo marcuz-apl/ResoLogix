@@ -2,7 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { Activity, Sun, Moon, BookOpen, Info } from 'lucide-react';
+import { Activity, Sun, Moon, BookOpen, Info, X } from 'lucide-react';
 import { useDashboard } from './DashboardContext';
 import pkg from '../../../package.json';
 
@@ -19,7 +19,11 @@ export default function Header() {
           <div className="flex bg-background border border-card-border rounded-xl p-0.5 text-xs font-semibold shrink-0">
             <button
               onClick={() => alert("Current computing engine: Monte Carlo Simulation (active).")}
-              className="py-1.5 px-3.5 rounded-lg bg-cyan-900/35 border border-cyan-800/40 text-cyan-400 font-bold shadow cursor-pointer"
+              className={`py-1.5 px-3.5 rounded-lg font-bold shadow border cursor-pointer ${
+                theme === 'dark'
+                  ? 'bg-cyan-900/35 border-cyan-800/40 text-cyan-400'
+                  : 'bg-cyan-100 border-cyan-300 text-cyan-800'
+              }`}
             >
               Monte Carlo Sim
             </button>
@@ -34,11 +38,9 @@ export default function Header() {
 
         {/* Center Side: Logo, App Name & Version */}
         <div className="flex items-center gap-3 justify-center">
-          <div className="p-2 bg-gradient-to-br from-cyan-500 to-blue-600 rounded-lg shadow shadow-cyan-500/20">
-            <Activity className="w-4 h-4 text-white animate-pulse" />
-          </div>
+          <img src="/logo.png" alt="ResoLogix Logo" className="w-8 h-8 rounded-lg shadow shadow-cyan-500/20 object-contain animate-pulse" />
           <div className="flex flex-col justify-center select-none text-left">
-            <span className="font-extrabold text-base leading-none tracking-wide text-text-primary">
+            <span className="font-extrabold text-[19px] leading-none tracking-[0.025em] text-text-primary">
               ResoLogix
             </span>
             <span className="text-[9px] text-text-muted font-bold uppercase tracking-wider mt-0.5">
@@ -92,14 +94,22 @@ export default function Header() {
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-md animate-fade-in">
           <div className="glass-panel p-6 rounded-2xl max-w-sm w-full border border-card-border/70 bg-card/95 relative overflow-hidden shadow-2xl shadow-cyan-950/20 text-center flex flex-col items-center gap-4">
             
+            {/* Top Right Close Icon */}
+            <button
+              type="button"
+              onClick={() => setShowAbout(false)}
+              className="absolute top-4 right-4 text-text-muted hover:text-text-primary hover:bg-card-border/20 p-1.5 rounded-lg transition-all duration-200 cursor-pointer focus:outline-none"
+              title="Close dialogue"
+            >
+              <X className="w-4 h-4" />
+            </button>
+
             {/* Background Glow */}
             <div className="absolute top-0 right-0 w-36 h-36 bg-cyan-500/10 rounded-full blur-2xl pointer-events-none" />
             
             {/* Logo and Name */}
             <div className="flex flex-col items-center gap-2 mt-2">
-              <div className="p-3.5 bg-gradient-to-br from-cyan-500 to-blue-600 rounded-2xl shadow-lg shadow-cyan-500/20">
-                <Activity className="w-8 h-8 text-white animate-pulse" />
-              </div>
+              <img src="/logo.png" alt="ResoLogix Logo" className="w-16 h-16 rounded-2xl shadow-lg shadow-cyan-500/20 object-contain animate-pulse" />
               <h3 className="font-extrabold text-xl tracking-wide text-text-primary mt-1">
                 ResoLogix
               </h3>
@@ -114,20 +124,12 @@ export default function Header() {
             </div>
 
             {/* alfazen.org Branding & Copyright */}
-            <div className="flex flex-col gap-1 text-xs text-text-secondary font-medium mt-2">
+            <div className="flex flex-col gap-1 text-xs text-text-secondary font-medium mt-2 mb-2">
               <p className="text-text-primary font-bold">An alfazen.org Product</p>
               <p className="text-[10px] text-text-muted mt-2 border-t border-card-border/30 pt-3 font-semibold">
                 All rights reserved @2026
               </p>
             </div>
-            
-            <button
-              type="button"
-              onClick={() => setShowAbout(false)}
-              className="mt-3 w-full py-2 rounded-xl bg-cyan-600 hover:bg-cyan-500 text-white font-bold text-xs shadow hover:shadow-cyan-500/25 transition-all duration-200 cursor-pointer"
-            >
-              Close
-            </button>
           </div>
         </div>
       )}

@@ -32,6 +32,7 @@ ChartJS.register(
 
 export default function ChartsView() {
   const {
+    theme,
     includeSecondary,
     chartTarget,
     setChartTarget,
@@ -76,7 +77,9 @@ export default function ChartsView() {
                 onClick={() => setChartTarget('primary')}
                 className={`py-1 px-3 rounded-lg transition-all ${
                   chartTarget === 'primary'
-                    ? 'bg-cyan-900/35 border border-cyan-800/40 text-cyan-400 font-bold shadow'
+                    ? theme === 'dark'
+                      ? 'bg-cyan-900/35 border border-cyan-800/40 text-cyan-400 font-bold shadow'
+                      : 'bg-cyan-100 border border-cyan-300 text-cyan-800 font-bold shadow'
                     : 'text-text-secondary hover:text-text-primary'
                 }`}
               >
@@ -86,7 +89,9 @@ export default function ChartsView() {
                 onClick={() => setChartTarget('secondary')}
                 className={`py-1 px-3 rounded-lg transition-all ${
                   chartTarget === 'secondary'
-                    ? 'bg-purple-900/35 border border-purple-800/40 text-purple-400 font-bold shadow'
+                    ? theme === 'dark'
+                      ? 'bg-purple-900/35 border border-purple-800/40 text-purple-400 font-bold shadow'
+                      : 'bg-purple-100 border border-purple-300 text-purple-800 font-bold shadow'
                     : 'text-text-secondary hover:text-text-primary'
                 }`}
               >

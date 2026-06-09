@@ -1,0 +1,20 @@
+Country: fetch the list from the Internet please
+
+Geol-Basin:
+Alaska ANWR, Alaska Beaufort Sea, Alaska North Slope, Alaska NPRA, Alberta Basin, Amu-Darya Basin, Angara-Terrace, Anglo-Dutch Basin, Assam, Azov-Kuban Basin, Baram Delta/Brunei-Sabah Basin, Baykit Arch, Bohaiwan Basin, Bombay Basin, Bonaparte Gulf Basin, Browse Basin, Campeche-Sigsbe Salt Basin, Campos Basin, Carpathian-Balkanian Basin, Central Oman Platform, Central Sumatra Basin, Cis-Patom Foredeep, Dnieper-Donets Basin, East Greenland Rift Basins, East Venezuela Basin, Esprito Santo Basin, Fahud Salt Basin, Falklands Plateau, Foz do Amazonas Basin, Gaba Salt Basin, Ganges-Brahmaputra Delta, Ghudin-Khasfeh Flank Province, Gippsland Basin, Grand Erg/Ahnet Basin, Greater Antilles Deformed Belt, Greater Ghawar Uplift, Greater Sarawak Basin, Gulf of Guinea, Gulf of Mexico, Guyana-Suriname Basin, Huqf-Haushi Uplift, Illizi Basin, Indus, Interior Homocline-Central Arch, Irrawddy, Junngar Basin, Kohat-Potwar, Kutei Basin, Labrador-Newfoundland Shelf, Lesser Antilles Deformed Belt, Llanos Basin, Ludlov Saddle, Magallenes Basin, Malay Basin, Malvinas Basin, Maracaibo Basin, Ma'Rib-Al Jawf/Masila Basin, Masila-Jeza Basin, Mesopotamian Foredeep Basin, Middle Caspian Basin, Middle Magdalena, Nepa-Botuoba Arch, Neuquen Basin, Niger Delta, North Barents Basin, North Carpathian Basin, North Caspian Basin, North Sakhalin Basin, North Sea Graben, North Sumatra Basin, North Ustyurt Basin, Northwest German Basin, Northwest Java Basin, Northwest Shelf, Oman Mountains, Orange River Coastal, Ordos Basin, Pannonian Basin, Pelagian Basin, Pelotas Basin, Po Basin, Progreso Basin, Provence Basin, Putumayo-Oriente-Maranon Basin, Qatar Arch, Red Sea Basin, Rocky Moutain Deformed Belt, Rub Al Khali Basin, Saline-Comalcalco Basin, San Jorge Basin, Santa Cruz-Tarija Basin, Santos Basin, Seirra Madre de Chiapas-Peten Foldbelt, Senegal, Sergipe-Alagoas Basin, Shabwah Basin, Sichuan Basin, Sirte Basin, Songliao Basin, South Barents Basin, South Caspian Basin, South Oman Salt basin, South Sumatra Basin, Talara Basin, Tampico-Misantla Basin, Tarim Basin, Timan-Pechora Basin, Tobago Trough, Transylvanian Basin, Trias Ghadames Basin, Veracruz Basin, Vestford-Helgeland, Villahermosa Uplift, Volga-Urals Region, Wadi-Surhan Basin, West Siberian Basin, West-Central Coastal, Widyan Basin-Interior Platform, Williston Basin, Yucatan Platform, Zagros Fold Belt
+
+Reservoir-Age:
+Pleistocene, Tertiary, U Pliocene, M Pliocene, L Pliocene, U Miocene, M Miocene, L Miocene, Oligocene, Eocene, Paleocene, Upper Cretaceous, Middle Cretaceous, Lower Cretaceous, Upper Jurassic, Middle Jurassic, Lower Jurassic, Upper Triassic, Middle Triassic, Lower Triassic, Permian, Pennsylvanian, Mississippian, Carboniferous, Devonian, Silurian, Ordovician, Cambrian, Precambrian
+
+Lithology:
+Basement, Carbonates, Chalk, Coal, Dolomite, Limestone, Sandstone, Siltstone, Shale, Volcanics, Undifferentiated
+
+Depo-Env:
+Alluvial Fan, Atoll, Beach/Nearshore, Chalk/Deepwater Carb, Deltaic, Dune, Fluvial Channel, Fluvial Deltaic, Overbank Splay, Reef, Reef Talus, Shelf, Slope, Tidal Channel/Bar, Tidal Flat, 
+Turbidite/Fan, Turbidite/Overbank, Turbidite/Channel
+
+Terrain:
+Mountains, Plains, Desert, Transitional, Offshore Shelf, Offshore Deep-Water, Offshore Ultra-Deep-Water
+
+Lahee-class:
+New Field Wildcat, New Pool Wildcat, Deeper Pool Test, Shallower Pool Test, Extension or Appraisal Test, Development Well

@@ -1,10 +1,14 @@
 # ResoLogix
 
+**Know Your Reserve at First Place**
+
 
 
 ## Intro
 
 ResoLogix is a full-range Reserve Evaluation and Analytics Platform for Petroleum Reserves, designed to be used by the Exploration and Production (E&P) companies in the Oil and Gas industry. It is used to manage the lifecycle of petroleum reserves from discovery to production.
+
+![ResoLogix Interface](./assets/ResoLogix-1-interface.png)
 
 
 
@@ -41,11 +45,17 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 
 
 ## Tech Stack
-- Next.js
-- TypeScript
-- Tailwind CSS
-- Sqlite3 (Default) / PostgreSQL (Optional)
-- chart.js
+
+### Core Framework & UI
+- **Framework**: [Next.js](https://nextjs.org/) (App Router, React Server Components)
+- **Language**: [TypeScript](https://www.typescript.org/) (Strict type-checking)
+- **Styling**: [Tailwind CSS](https://tailwindcss.com/) (Premium custom dark/light theme support)
+- **Icons**: [Lucide React](https://lucide.dev/)
+
+### Data & Simulation
+- **Database**: [SQLite](https://www.sqlite.org/) via `better-sqlite3` (Scenario management)
+- **Computation Engine**: Custom Monte Carlo Simulation engine in TypeScript
+- **Data Visualization**: [Chart.js](https://www.chartjs.org/) & [React-ChartJS-2](https://react-chartjs-2.js.org/) (Interactive Exceedance CDF & PDF curves)
 
 
 
@@ -54,8 +64,8 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 - [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
 - [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
 - [Tailwind CSS](https://tailwindcss.com/) - a utility-first CSS framework.
-- [PostgreSQL](https://www.postgresql.org/) - a powerful, open-source object-relational database system.
-- [Chart.js](https://www.chartjs.org/docs/latest/) - a JavaScript library for producing dynamic, interactive data visualizations in web browsers.
+- [SQLite Documentation](https://www.sqlite.org/docs.html) - documentation for the self-contained SQL database engine.
+- [Chart.js](https://www.chartjs.org/docs/latest/) - a JavaScript library for producing dynamic, interactive data visualizations.
 
 
 

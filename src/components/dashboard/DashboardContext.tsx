@@ -1,7 +1,6 @@
 'use client';
 
 import React, { createContext, useContext, useState, useEffect, useCallback, useMemo, useRef, ReactNode } from 'react';
-import JSZip from 'jszip';
 import {
   runMonteCarlo,
   generateHistogramData,
@@ -11,7 +10,6 @@ import {
   type SimulationParams,
   type RiskFactors
 } from '@/lib/statistics';
-import { buildPDF, buildPPTX, buildWord } from '@/lib/reportBuilders';
 
 export interface Evaluation {
   id: string;
@@ -178,31 +176,7 @@ interface DashboardContextType {
   primaryPdfOptions: any;
   secondaryPdfOptions: any;
 
-  // Reporting
-  reportFormat: 'snapshot' | 'pdf' | 'pptx' | 'word';
-  setReportFormat: (val: 'snapshot' | 'pdf' | 'pptx' | 'word') => void;
-  reportReserveProfile: boolean;
-  setReportReserveProfile: (val: boolean) => void;
-  reportParamsResults: boolean;
-  setReportParamsResults: (val: boolean) => void;
-  reportGeologicalRisk: boolean;
-  setReportGeologicalRisk: (val: boolean) => void;
-  reportPlots: boolean;
-  setReportPlots: (val: boolean) => void;
-  reportDestination: 'local' | 'cloud' | 'email';
-  setReportDestination: (val: 'local' | 'cloud' | 'email') => void;
-  localFolderPath: string;
-  setLocalFolderPath: (val: string) => void;
-  cloudDrivePath: string;
-  setCloudDrivePath: (val: string) => void;
-  emailRecipient: string;
-  setEmailRecipient: (val: string) => void;
-  isGeneratingReport: boolean;
-  generationStep: number;
-  generationLogs: string[];
-  generationComplete: boolean;
-  generatedFileDetails: { name: string; size: string; path: string } | null;
-  handleImplementTask: () => void;
+
 
   // Scenario CRUD
   loadScenario: (ev: Evaluation) => void;
@@ -292,23 +266,7 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
   const [chartTarget, setChartTarget] = useState<'primary' | 'secondary'>('primary');
   const [saveStatus, setSaveStatus] = useState<'idle' | 'success' | 'error'>('idle');
 
-  // Reporting Part States
-  const [reportFormat, setReportFormat] = useState<'snapshot' | 'pdf' | 'pptx' | 'word'>('pdf');
-  const [reportReserveProfile, setReportReserveProfile] = useState(false);
-  const [reportParamsResults, setReportParamsResults] = useState(true);
-  const [reportGeologicalRisk, setReportGeologicalRisk] = useState(true);
-  const [reportPlots, setReportPlots] = useState(true);
 
-  const [reportDestination, setReportDestination] = useState<'local' | 'cloud' | 'email'>('local');
-  const [localFolderPath, setLocalFolderPath] = useState('/root/projects/ResoLogix/reports');
-  const [cloudDrivePath, setCloudDrivePath] = useState('Google Drive/ResoLogix/Reports');
-  const [emailRecipient, setEmailRecipient] = useState('engineer@company.com');
-
-  const [isGeneratingReport, setIsGeneratingReport] = useState(false);
-  const [generationStep, setGenerationStep] = useState(0);
-  const [generationLogs, setGenerationLogs] = useState<string[]>([]);
-  const [generationComplete, setGenerationComplete] = useState(false);
-  const [generatedFileDetails, setGeneratedFileDetails] = useState<{ name: string; size: string; path: string } | null>(null);
 
   // Load theme from localStorage on mount
   useEffect(() => {
@@ -457,11 +415,6 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
     setRiskFactors({ ...DEFAULT_RISK });
     setSimResults(null);
     setSaveStatus('idle');
-    setIsGeneratingReport(false);
-    setGenerationStep(0);
-    setGenerationLogs([]);
-    setGenerationComplete(false);
-    setGeneratedFileDetails(null);
   };
 
   // Save/Update evaluation
@@ -1006,244 +959,10 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
   }, [chartColors, fluidType]);
 
   const primaryPdfOptions = useMemo(() => getPdfOptions('primary'), [getPdfOptions]);
-  const secondaryPdfOptions = useMemo(() => getPdfOptions('secondary'), [getPdfOptions]);
+      const secondaryPdfOptions = useMemo(() => getPdfOptions('secondary'), [getPdfOptions]);
   const pdfChartOptions = useMemo(() => {
     return chartTarget === 'primary' ? primaryPdfOptions : secondaryPdfOptions;
   }, [chartTarget, primaryPdfOptions, secondaryPdfOptions]);
-
-  // Implement report generation task
-  const handleImplementTask = async () => {
-    if (!simResults) {
-      alert('Please run a simulation first to populate evaluation results.');
-      return;
-    }
-
-    setIsGeneratingReport(true);
-    setGenerationStep(1);
-    setGenerationComplete(false);
-    setGeneratedFileDetails(null);
-
-    const logs: string[] = [];
-    const addLog = (msg: string) => {
-      logs.push(`[${new Date().toLocaleTimeString()}] ${msg}`);
-      setGenerationLogs([...logs]);
-    };
-
-    addLog(`Starting real report build task in ${reportFormat.toUpperCase()} format...`);
-
-    try {
-      // Step 1: Capture charts
-      addLog("Extracting probability distribution chart plots from hidden canvases...");
-      const chartImages: any = {};
-
-      const getChartImageBase64 = (ref: React.RefObject<any>, name: string) => {
-        if (!ref.current) {
-          addLog(`Warning: Reference for '${name}' is not mounted yet.`);
-          return undefined;
-        }
-        try {
-          let base64: string | undefined = undefined;
-          if (typeof ref.current.toBase64Image === 'function') {
-            base64 = ref.current.toBase64Image();
-          } else if (ref.current.chart && typeof ref.current.chart.toBase64Image === 'function') {
-            base64 = ref.current.chart.toBase64Image();
-          } else if (ref.current.canvas && typeof ref.current.canvas.toDataURL === 'function') {
-            base64 = ref.current.canvas.toDataURL('image/png');
-          } else if (typeof ref.current.toDataURL === 'function') {
-            base64 = ref.current.toDataURL('image/png');
-          }
-          
-          if (base64 && base64 !== 'data:,' && base64.length > 10) {
-            return base64;
-          } else {
-            addLog(`Warning: Captured blank or empty image for '${name}'.`);
-          }
-        } catch (err: any) {
-          addLog(`Warning: Failed to capture chart image for '${name}': ${err.message}`);
-        }
-        return undefined;
-      };
-
-      if (reportPlots || reportFormat === 'snapshot') {
-        chartImages.primaryExceedance = getChartImageBase64(primaryExceedanceRef, "Primary Exceedance");
-        chartImages.primaryPdf = getChartImageBase64(primaryPdfRef, "Primary PDF");
-        if (includeSecondary) {
-          chartImages.secondaryExceedance = getChartImageBase64(secondaryExceedanceRef, "Secondary Exceedance");
-          chartImages.secondaryPdf = getChartImageBase64(secondaryPdfRef, "Secondary PDF");
-        }
-        addLog("Chart captures extraction process completed.");
-      }
-
-      setGenerationStep(2);
-      await new Promise(resolve => setTimeout(resolve, 500));
-
-      // Step 2: Configure layout & compile config
-      addLog("Compiling evaluation parameters, metadata, and geological risk...");
-      const reportConfig = {
-        activeName,
-        activeDescription,
-        fluidType,
-        includeSecondary,
-        country,
-        geolBasin,
-        playType,
-        reservoirAge,
-        lithology,
-        depoEnv,
-        expStage,
-        terrain,
-        laheeClass,
-        simResults,
-        riskFactors,
-        calculatedPg,
-        reportReserveProfile,
-        reportParamsResults,
-        reportGeologicalRisk,
-        reportPlots,
-        chartImages
-      };
-
-      setGenerationStep(3);
-      await new Promise(resolve => setTimeout(resolve, 500));
-
-      // Step 3: Build selected format file
-      addLog(`Compiling ${reportFormat.toUpperCase()} document layout and embedding metrics...`);
-      let generatedBlob: Blob | null = null;
-      let fileExt = '';
-
-      if (reportFormat === 'pdf') {
-        generatedBlob = await buildPDF(reportConfig);
-        fileExt = 'pdf';
-      } else if (reportFormat === 'pptx') {
-        generatedBlob = await buildPPTX(reportConfig);
-        fileExt = 'pptx';
-      } else if (reportFormat === 'word') {
-        generatedBlob = await buildWord(reportConfig);
-        fileExt = 'docx';
-      } else {
-        generatedBlob = null;
-        fileExt = 'png';
-      }
-
-      addLog(`Document compilation complete.`);
-      setGenerationStep(4);
-      await new Promise(resolve => setTimeout(resolve, 500));
-
-      // Step 4: Archive files into ZIP package
-      addLog("Packing documents and snapshots into compressed ZIP archive...");
-      const zip = new JSZip();
-      
-      const scenarioSafeName = activeName.replace(/\s+/g, '_');
-      const docName = `${scenarioSafeName}_evaluation_report.${fileExt}`;
-      const zipFileName = `${scenarioSafeName}_report.zip`;
-
-      if (generatedBlob) {
-        zip.file(docName, generatedBlob);
-      }
-
-      // Add individual raw chart images as PNGs inside the ZIP if plots are checked or snapshot format is selected
-      if (reportPlots || reportFormat === 'snapshot') {
-        if (chartImages.primaryExceedance) {
-          const base64Data = chartImages.primaryExceedance.replace(/^data:image\/png;base64,/, "");
-          zip.file("primary_exceedance_curve.png", base64Data, { base64: true });
-        }
-        if (chartImages.primaryPdf) {
-          const base64Data = chartImages.primaryPdf.replace(/^data:image\/png;base64,/, "");
-          zip.file("primary_probability_density.png", base64Data, { base64: true });
-        }
-        if (includeSecondary) {
-          if (chartImages.secondaryExceedance) {
-            const base64Data = chartImages.secondaryExceedance.replace(/^data:image\/png;base64,/, "");
-            zip.file("secondary_exceedance_curve.png", base64Data, { base64: true });
-          }
-          if (chartImages.secondaryPdf) {
-            const base64Data = chartImages.secondaryPdf.replace(/^data:image\/png;base64,/, "");
-            zip.file("secondary_probability_density.png", base64Data, { base64: true });
-          }
-        }
-      }
-
-      const zipBlob = await zip.generateAsync({ type: 'blob' });
-      const zipSizeKb = Math.round(zipBlob.size / 1024);
-      addLog(`ZIP package constructed (${zipSizeKb} KB).`);
-      
-      setGenerationStep(5);
-      await new Promise(resolve => setTimeout(resolve, 500));
-
-      // Step 5: Save/Email Destination and File Write
-      let destinationPath = '';
-      if (reportDestination === 'local') {
-        destinationPath = `${localFolderPath}/${zipFileName}`;
-        addLog(`Writing ZIP package to local workspace folder: ${destinationPath}...`);
-        
-        // Convert Blob to base64 to send via POST API
-        const reader = new FileReader();
-        reader.readAsDataURL(zipBlob);
-        reader.onloadend = async () => {
-          const base64data = (reader.result as string).split(',')[1];
-          try {
-            const res = await fetch('/api/reports/save', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({
-                fileName: zipFileName,
-                folderPath: localFolderPath,
-                fileContent: base64data
-              })
-            });
-            if (res.ok) {
-              addLog(`✓ File written to disk successfully! Path: ${localFolderPath}/${zipFileName}`);
-            } else {
-              addLog(`Warning: Failed to write file to local disk (API error).`);
-            }
-          } catch (e: any) {
-            addLog(`Warning: Failed to write file to local disk: ${e.message}`);
-          }
-        };
-      } else if (reportDestination === 'cloud') {
-        destinationPath = `${cloudDrivePath}/${zipFileName}`;
-        addLog(`[Cloud Upload] Uploading package to Cloud Drive location: ${destinationPath}...`);
-        await new Promise(resolve => setTimeout(resolve, 1000));
-        addLog(`✓ Successfully synced to Cloud storage.`);
-      } else {
-        destinationPath = emailRecipient;
-        if (zipBlob.size < 8 * 1024 * 1024) {
-          addLog(`[Email Client] Zipped file size (${zipSizeKb} KB) is under the 8 MB email limit.`);
-          addLog(`[Email Client] Sending zipped attachment to email inbox: ${destinationPath}...`);
-          await new Promise(resolve => setTimeout(resolve, 1000));
-          addLog(`✓ Email dispatched successfully with compressed attachment.`);
-        } else {
-          addLog(`Warning: Zipped file size (${zipSizeKb} KB) exceeds the 8 MB email limit. Sending download link to ${destinationPath} instead.`);
-        }
-      }
-
-      setGeneratedFileDetails({
-        name: zipFileName,
-        size: `${zipSizeKb} KB`,
-        path: reportDestination === 'local' ? destinationPath : reportDestination === 'cloud' ? `Cloud Storage: ${destinationPath}` : `Emailed to: ${destinationPath}`
-      });
-
-      setGenerationComplete(true);
-      setIsGeneratingReport(false);
-      addLog(`Task accomplished successfully!`);
-
-      // Trigger automatic browser download of the ZIP file
-      const downloadUrl = URL.createObjectURL(zipBlob);
-      const link = document.createElement('a');
-      link.href = downloadUrl;
-      link.download = zipFileName;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      URL.revokeObjectURL(downloadUrl);
-
-    } catch (e: any) {
-      console.error(e);
-      addLog(`Error during report building: ${e.message}`);
-      setIsGeneratingReport(false);
-      alert(`Report build task encountered an error: ${e.message}`);
-    }
-  };
 
   const contextValue: DashboardContextType = {
     theme,
@@ -1323,31 +1042,7 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
     primaryPdfOptions,
     secondaryPdfOptions,
 
-    // Reporting
-    reportFormat,
-    setReportFormat,
-    reportReserveProfile,
-    setReportReserveProfile,
-    reportParamsResults,
-    setReportParamsResults,
-    reportGeologicalRisk,
-    setReportGeologicalRisk,
-    reportPlots,
-    setReportPlots,
-    reportDestination,
-    setReportDestination,
-    localFolderPath,
-    setLocalFolderPath,
-    cloudDrivePath,
-    setCloudDrivePath,
-    emailRecipient,
-    setEmailRecipient,
-    isGeneratingReport,
-    generationStep,
-    generationLogs,
-    generationComplete,
-    generatedFileDetails,
-    handleImplementTask,
+
 
     // Scenario CRUD
     loadScenario,
