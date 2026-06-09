@@ -1,6 +1,6 @@
 # ResoLogix
 
-**Know Your Reserve at First Place**
+**Know Your Resources at First Place**
 
 
 

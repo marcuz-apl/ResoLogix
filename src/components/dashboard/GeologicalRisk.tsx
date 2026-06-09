@@ -24,13 +24,6 @@ export default function GeologicalRisk() {
           <Compass className="w-5 h-5 text-emerald-400" />
           <h2 className="font-extrabold text-sm uppercase tracking-wider text-text-primary truncate">Geological Risk</h2>
         </div>
-        <div className={`text-[10px] font-bold px-2 py-0.5 rounded border shrink-0 ${
-          theme === 'dark'
-            ? 'bg-emerald-950/35 border-emerald-850/20 text-emerald-400'
-            : 'bg-emerald-100 border-emerald-300 text-emerald-800'
-        }`}>
-          Chance: {(calculatedPg * 100).toFixed(1)}%
-        </div>
       </div>
 
       <div className="flex flex-col gap-4">
@@ -73,12 +66,22 @@ export default function GeologicalRisk() {
         })}
       </div>
 
+      <div className="flex justify-end pt-2">
+        <div className={`text-sm font-black px-4 py-1.5 rounded-lg border shadow-sm ${
+          theme === 'dark'
+            ? 'bg-emerald-950/40 border-emerald-800/40 text-emerald-400'
+            : 'bg-emerald-100 border-emerald-300 text-emerald-800 shadow-emerald-500/10'
+        }`}>
+          Chance of Success (Pg): {(calculatedPg * 100).toFixed(1)}%
+        </div>
+      </div>
+
       {/* Informational banner about Pg calculation */}
-      <div className="mt-2 text-[10px] text-text-muted bg-panel p-3 rounded-xl border border-card-border/50 leading-relaxed">
+      <div className="mt-1 text-[10px] text-text-muted bg-panel p-3 rounded-xl border border-card-border/50 leading-relaxed">
         <p className="font-bold text-text-secondary mb-1">Methodology:</p>
         Geological Chance of Success ($P_g$) is the product of these 5 independent geological variables:
         <div className="font-mono text-emerald-500/95 mt-1 select-all font-bold">
-          Pg = S × M × R × C × ST
+          Pg = SR × TM × RQ × TC × SC
         </div>
       </div>
     </section>

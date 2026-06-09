@@ -40,11 +40,11 @@ export default function Header() {
         <div className="flex items-center gap-3 justify-center">
           <img src="/logo.png" alt="ResoLogix Logo" className="w-8 h-8 rounded-lg shadow shadow-cyan-500/20 object-contain animate-pulse" />
           <div className="flex flex-col justify-center select-none text-left">
-            <span className="font-extrabold text-[19px] leading-none tracking-[0.025em] text-text-primary">
+            <span className="font-extrabold text-[22px] leading-none tracking-[0.025em] text-text-primary">
               ResoLogix
             </span>
             <span className="text-[9px] text-text-muted font-bold uppercase tracking-wider mt-0.5">
-              Reserve Evaluation
+              Resource Evaluation
             </span>
           </div>
           <span className="text-[9px] bg-card-border/50 text-text-muted px-2 py-0.5 rounded-md font-mono shrink-0 select-none ml-1">
@@ -114,7 +114,7 @@ export default function Header() {
                 ResoLogix
               </h3>
               <span className="text-[10px] text-text-muted font-bold uppercase tracking-wider">
-                Reserve Evaluation Suite
+                Resource Evaluation Suite
               </span>
             </div>
 
