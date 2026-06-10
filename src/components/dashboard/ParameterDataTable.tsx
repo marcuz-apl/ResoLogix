@@ -10,7 +10,7 @@ export default function ParameterDataTable() {
   if (!simResults || !tableData) return null;
 
   return (
-    <div className="flex flex-col gap-6 mt-6 pb-12">
+    <div className="flex flex-col gap-6 mt-6">
       {/* Merged Reserve Evaluation Results Table */}
       <div className="glass-panel p-6 rounded-2xl flex flex-col gap-3 border border-card-border/50 bg-card/45">
         <div className="flex items-center gap-2 pb-2 border-b border-card-border/60">
