@@ -2,12 +2,16 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { Activity, Sun, Moon, BookOpen, Info, X, Wrench } from 'lucide-react';
+import { Activity, Sun, Moon, BookOpen, Info, X, Wrench, User, LogOut, ShieldAlert, TrendingDown, Dices } from 'lucide-react';
 import { useDashboard } from './DashboardContext';
+import { useSession, signOut } from 'next-auth/react';
+import AuthModal from '../auth/AuthModal';
+import ForcePasswordChangeModal from '../auth/ForcePasswordChangeModal';
 import pkg from '../../../package.json';
 
 export default function Header() {
-  const { toggleTheme, theme } = useDashboard();
+  const { toggleTheme, theme, setShowAuthModal } = useDashboard();
+  const { data: session } = useSession();
   const [showAbout, setShowAbout] = React.useState(false);
 
   return (
@@ -19,21 +23,32 @@ export default function Header() {
           <div className="flex bg-background border border-card-border rounded-xl p-0.5 text-xs font-semibold shrink-0">
             <button
               onClick={() => alert("Current computing engine: Monte Carlo Simulation (active).")}
-              className={`py-1.5 px-3.5 rounded-lg font-bold shadow border cursor-pointer ${
+              className={`py-1.5 px-3.5 rounded-lg font-bold shadow border cursor-pointer flex items-center gap-1.5 ${
                 theme === 'dark'
                   ? 'bg-cyan-900/35 border-cyan-800/40 text-cyan-400'
                   : 'bg-cyan-100 border-cyan-300 text-cyan-800'
               }`}
             >
+              <Dices className="w-3.5 h-3.5" />
               Monte Carlo Sim
             </button>
             <Link
               href="/dca"
-              className="py-1.5 px-3.5 rounded-lg text-text-secondary hover:text-text-primary cursor-pointer flex items-center justify-center"
+              className="py-1.5 px-3.5 rounded-lg text-text-secondary hover:text-text-primary cursor-pointer flex items-center justify-center gap-1.5"
             >
+              <TrendingDown className="w-3.5 h-3.5" />
               DCA
             </Link>
           </div>
+          
+          {/* Tools Page Link */}
+          <Link
+            href="/tools"
+            className="flex items-center gap-1.5 py-1.5 px-3.5 rounded-xl bg-card border border-card-border text-text-secondary hover:text-cyan-400 hover:border-cyan-500/40 hover:bg-cyan-950/10 transition-all duration-200 text-xs font-bold cursor-pointer shrink-0"
+          >
+            <Wrench className="w-3.5 h-3.5 text-cyan-400 shrink-0" />
+            <span>Tools</span>
+          </Link>
         </div>
 
         {/* Center Side: Logo, App Name & Version */}
@@ -54,14 +69,38 @@ export default function Header() {
 
         {/* Right Side: Docs, About & Theme Toggle */}
         <div className="flex items-center gap-3">
-          {/* Tools Page Link */}
-          <Link
-            href="/tools"
-            className="flex items-center gap-1.5 py-1.5 px-3.5 rounded-xl bg-card border border-card-border text-text-secondary hover:text-cyan-400 hover:border-cyan-500/40 hover:bg-cyan-950/10 transition-all duration-200 text-xs font-bold cursor-pointer shrink-0"
-          >
-            <Wrench className="w-3.5 h-3.5 text-cyan-400 shrink-0" />
-            <span>Tools</span>
-          </Link>
+          
+          {/* Auth Button */}
+          {session ? (
+            <div className="flex items-center gap-2">
+              {(session.user as any).isAdmin && (
+                <Link
+                  href="/admin"
+                  className="flex items-center gap-1.5 py-1.5 px-3.5 rounded-xl bg-purple-950/20 border border-purple-500/30 text-purple-400 hover:bg-purple-500/20 hover:border-purple-500/50 transition-all duration-200 text-xs font-bold cursor-pointer shrink-0"
+                  title="Admin Dashboard"
+                >
+                  <ShieldAlert className="w-3.5 h-3.5" />
+                  Admin Panel
+                </Link>
+              )}
+              <button
+                onClick={() => signOut({ redirect: false })}
+                className="flex items-center gap-1.5 py-1.5 px-3.5 rounded-xl bg-card border border-card-border text-text-secondary hover:text-rose-400 hover:border-rose-500/40 hover:bg-rose-950/10 transition-all duration-200 text-xs font-bold cursor-pointer shrink-0"
+                title={`Logged in as ${session.user?.email} - Click to sign out`}
+              >
+                <LogOut className="w-3.5 h-3.5" />
+                Sign Out
+              </button>
+            </div>
+          ) : (
+            <button
+              onClick={() => setShowAuthModal(true)}
+              className="flex items-center gap-1.5 py-1.5 px-3.5 rounded-xl bg-card border border-card-border text-text-secondary hover:text-emerald-400 hover:border-emerald-500/40 hover:bg-emerald-950/10 transition-all duration-200 text-xs font-bold cursor-pointer shrink-0"
+            >
+              <User className="w-3.5 h-3.5" />
+              Log In
+            </button>
+          )}
 
           {/* Docs Page Link */}
           <Link
@@ -96,6 +135,10 @@ export default function Header() {
 
         </div>
       </header>
+
+      {/* Render Auth Modals Here */}
+      <AuthModal />
+      <ForcePasswordChangeModal />
 
       {/* About Modal Dialog Box */}
       {showAbout && (

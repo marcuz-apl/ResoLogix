@@ -107,6 +107,9 @@ interface DashboardContextType {
   handleSidebarMouseDown: (e: React.MouseEvent) => void;
   handleRightPaneMouseDown: (e: React.MouseEvent) => void;
 
+  showAuthModal: boolean;
+  setShowAuthModal: (val: boolean) => void;
+
   evaluations: Evaluation[];
   isLoadingScenarios: boolean;
   isSaving: boolean;
@@ -213,6 +216,9 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
   // Pane dragging widths
   const [sidebarWidth, setSidebarWidth] = useState(256);
   const [rightPaneWidth, setRightPaneWidth] = useState(320);
+
+  // Auth Modal State
+  const [showAuthModal, setShowAuthModal] = useState(false);
 
   // Scenario List and Loading States
   const [evaluations, setEvaluations] = useState<Evaluation[]>([]);
@@ -992,6 +998,9 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
     rightPaneWidth,
     handleSidebarMouseDown,
     handleRightPaneMouseDown,
+
+    showAuthModal,
+    setShowAuthModal,
 
     evaluations,
     isLoadingScenarios,

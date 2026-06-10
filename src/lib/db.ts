@@ -11,8 +11,18 @@ db.pragma('foreign_keys = ON');
 // Initialize database schema
 export function initDb() {
   db.exec(`
+    CREATE TABLE IF NOT EXISTS users (
+      id TEXT PRIMARY KEY,
+      email TEXT UNIQUE NOT NULL,
+      password_hash TEXT NOT NULL,
+      needs_password_change INTEGER DEFAULT 1,
+      is_admin INTEGER DEFAULT 0,
+      created_at TEXT DEFAULT CURRENT_TIMESTAMP
+    );
+
     CREATE TABLE IF NOT EXISTS evaluations (
       id TEXT PRIMARY KEY,
+      user_id TEXT NOT NULL,
       name TEXT NOT NULL,
       description TEXT,
       fluid_type TEXT DEFAULT 'OIL',
@@ -26,8 +36,10 @@ export function initDb() {
       terrain TEXT DEFAULT 'undefined',
       lahee_class TEXT DEFAULT 'undefined',
       type_well TEXT DEFAULT 'None',
+      include_secondary INTEGER DEFAULT 1,
       created_at TEXT DEFAULT CURRENT_TIMESTAMP,
-      updated_at TEXT DEFAULT CURRENT_TIMESTAMP
+      updated_at TEXT DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
     );
 
     CREATE TABLE IF NOT EXISTS parameters (
@@ -51,12 +63,7 @@ export function initDb() {
     );
   `);
 
-  // Migration: add include_secondary to evaluations if not exists
-  try {
-    db.exec(`ALTER TABLE evaluations ADD COLUMN include_secondary INTEGER DEFAULT 1;`);
-  } catch (e) {
-    // Column already exists, ignore error
-  }
+
 
   // Migration: add reserve profile fields to evaluations if not exists
   const reserveProfileColumns = [

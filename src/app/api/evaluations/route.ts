@@ -1,16 +1,23 @@
 import { NextResponse } from 'next/server';
+import { getServerSession } from 'next-auth/next';
+import { authOptions } from '../auth/[...nextauth]/route';
 import db from '@/lib/db';
 import crypto from 'crypto';
 
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
 
-// GET all evaluations
 export async function GET() {
   try {
+    const session = await getServerSession(authOptions);
+    if (!session || !session.user) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+    const userId = (session.user as any).id;
+
     const evaluations = db.prepare(`
-      SELECT * FROM evaluations ORDER BY updated_at DESC
-    `).all() as any[];
+      SELECT * FROM evaluations WHERE user_id = ? ORDER BY updated_at DESC
+    `).all(userId) as any[];
 
     const results = evaluations.map((ev) => {
       // Fetch parameters
@@ -71,10 +78,41 @@ export async function GET() {
   }
 }
 
-// POST: Save or update an evaluation
-export async function POST(request: Request) {
+// DELETE evaluation
+export async function DELETE(req: Request) {
   try {
-    const body = await request.json();
+    const session = await getServerSession(authOptions);
+    if (!session || !session.user) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+    const userId = (session.user as any).id;
+
+    const url = new URL(req.url);
+    const id = url.searchParams.get('id');
+
+    if (!id) {
+      return NextResponse.json({ error: "Missing ID parameter" }, { status: 400 });
+    }
+
+    db.prepare('DELETE FROM evaluations WHERE id = ? AND user_id = ?').run(id, userId);
+
+    return NextResponse.json({ success: true });
+  } catch (error: any) {
+    console.error('Error deleting evaluation:', error);
+    return NextResponse.json({ error: error.message }, { status: 500 });
+  }
+}
+
+// POST - Create or Update evaluation
+export async function POST(req: Request) {
+  try {
+    const session = await getServerSession(authOptions);
+    if (!session || !session.user) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+    const userId = (session.user as any).id;
+
+    const body = await req.json();
     const { 
       name, 
       description, 
@@ -108,11 +146,11 @@ export async function POST(request: Request) {
       // 1. Insert or update evaluation
       db.prepare(`
         INSERT INTO evaluations (
-          id, name, description, fluid_type, include_secondary, 
+          id, user_id, name, description, fluid_type, include_secondary, 
           country, geol_basin, play_type, reservoir_age, lithology, 
           depo_env, exp_stage, terrain, lahee_class, type_well, updated_at
         )
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
         ON CONFLICT(id) DO UPDATE SET
           name = excluded.name,
           description = excluded.description,
@@ -131,6 +169,7 @@ export async function POST(request: Request) {
           updated_at = CURRENT_TIMESTAMP
       `).run(
         id, 
+        userId,
         name, 
         description || '', 
         fluid_type || 'OIL', 

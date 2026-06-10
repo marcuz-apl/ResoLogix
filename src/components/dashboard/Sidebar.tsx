@@ -3,6 +3,7 @@
 import React from 'react';
 import { Plus, Check, Save, FolderOpen, Trash2, Sliders, RefreshCw, Copy } from 'lucide-react';
 import { useDashboard } from './DashboardContext';
+import { useSession } from 'next-auth/react';
 
 export default function Sidebar() {
   const {
@@ -11,6 +12,7 @@ export default function Sidebar() {
     handleNewScenario,
     handleCopyScenario,
     handleSaveScenario,
+    setShowAuthModal,
     isSaving,
     saveStatus,
     evaluations,
@@ -24,6 +26,16 @@ export default function Sidebar() {
     handleRunSimulation,
     isSimulating
   } = useDashboard();
+
+  const { data: session } = useSession();
+
+  const handleSaveClick = () => {
+    if (!session) {
+      setShowAuthModal(true);
+      return;
+    }
+    handleSaveScenario();
+  };
 
   return (
     <>
@@ -84,7 +96,7 @@ export default function Sidebar() {
           </button>
           
           <button
-            onClick={handleSaveScenario}
+            onClick={handleSaveClick}
             disabled={isSaving}
             className={`w-full flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl text-xs font-bold border transition-all duration-200 cursor-pointer truncate ${
               saveStatus === 'success'

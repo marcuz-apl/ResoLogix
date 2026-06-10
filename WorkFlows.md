@@ -173,4 +173,17 @@ If you run git commit -m "Updated some features", it will automatically prepend 
 - On the row of the footer, the left corner shall include "Get in Touch(mailto:[EMAIL_ADDRESS])", then followed by ", " and "LinkedIn(href=https://www.linkedin.com/company/alfazen-org)".
 - On the right-side corner, there shall be a few social icons with links such as, web icon (https://alfazen.org), Twitter icon(https://x.com/marcuszou), LinkedIn icon (https://www.linkedin.com/in/marcuszou/).
 
+### Authentication and User Profile
+
+It's great so far! Thanks gemini.
+Currently we have pretty much all functions ready except a concern: After I created a Scenario and saved to the backend database, when my colleagues access the web app, he can modify/delete the scenario, that's bad. then a user management function or authentication system is needed, isn't it?
+- there shall be a "Log In" icon, at the top-right corner at the Header section, located righr before the "Tools" button;
+- If clicking that icon, the user shall be guided to a login pop-up window, to sign in; sign-in can be via userid + password or through a 3rd-party authentication, say Google, or iCloud, or Github.
+- If the user has never registered with the webapp, there shall be icon of "Not registered? Sign up now" and an "Forgot password" button. The user can receive a newly-generated random password by the WebApp backend, and the user must change the password once he logs in to his profile.
+-  There shall a chance for those lazy or busy users, not register, not log in, but stay on the web app interface to finish a quick Resource Evaluation (One evaluation at a time); If the web browser got closed by accident, the session  is over and can not retrieve anything.
+- any other thoughts? please advise.
+
+Can you help on this authentication and user profile system?
+
+
   
