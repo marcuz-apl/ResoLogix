@@ -54,7 +54,7 @@ export default function DcaPage() {
           className="w-full inline-flex items-center justify-center gap-2 py-2.5 rounded-xl border border-card-border text-xs font-bold uppercase tracking-wider text-text-secondary hover:text-cyan-400 hover:border-cyan-500/40 hover:bg-cyan-950/10 transition-all duration-200 cursor-pointer"
         >
           <ArrowLeft className="w-3.5 h-3.5" />
-          <span>Back to Dashboard</span>
+          <span>Return to main App</span>
         </Link>
 
       </div>

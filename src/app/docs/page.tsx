@@ -24,7 +24,7 @@ export default function DocsPage() {
             className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-text-muted hover:text-cyan-400 transition-colors duration-250 cursor-pointer"
           >
             <ArrowLeft className="w-4 h-4" />
-            Back to Dashboard
+            Return to main App
           </Link>
         </div>
 

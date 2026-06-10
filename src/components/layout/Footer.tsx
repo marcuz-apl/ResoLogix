@@ -11,14 +11,16 @@ export default function Footer() {
   }
 
   return (
-    <footer className="w-full text-[10px] text-text-muted bg-transparent py-4 px-6 mt-auto flex items-center justify-between">
+    <footer className="w-full text-xs text-text-muted bg-transparent py-4 px-6 mt-auto flex items-center justify-between">
       <div className="flex gap-1 items-center">
         <a href="mailto:info@alfazen.org" className="hover:underline transition-colors hover:text-cyan-400">Get in Touch</a>
       </div>
       
-      <div className="flex items-center gap-6 text-center text-text-secondary">
+      <div className="flex items-center gap-3 text-center text-text-secondary">
         <span>ResoLogix Resource Evaluation app</span>
+        <span className="text-text-muted/40">|</span>
         <span>Copyright &copy; 2026 by Marcus Zou & Alfazen Enterprise</span>
+        <span className="text-text-muted/40">|</span>
         <span>Last Updated on {buildDate}</span>
       </div>
 
