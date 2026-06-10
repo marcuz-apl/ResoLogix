@@ -9,10 +9,10 @@
 ResoLogix is a full-range Reserve Evaluation and Analytics Platform for Petroleum Reserves, designed to be used by the Exploration and Production (E&P) companies in the Oil and Gas industry. It is used to manage the lifecycle of petroleum reserves from discovery to production.
 
 ![ResoLogix Interface](./assets/ResoLogix-1-interface.png)
-![ResoLogix CDF](./assets/ResoLogix-2-cdf.png)
-![ResoLogix PDF](./assets/ResoLogix-3-pdf.png)
-![ResoLogix Histogram](./assets/ResoLogix-4-histogram.png)
-
+![ResoLogix CDF Plot](./assets/ResoLogix-2-CDF-Plot.png)
+![ResoLogix PDF Plot](./assets/ResoLogix-3-PDF-Plot.png)
+![ResoLogix Summary Statistics](./assets/ResoLogix-4-Summary-Stats.png)
+![ResoLogix Results Table](./assets/ResoLogix-5-Results-Table.png)
 
 
 
