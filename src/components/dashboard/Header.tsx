@@ -2,7 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { Activity, Sun, Moon, BookOpen, Info, X } from 'lucide-react';
+import { Activity, Sun, Moon, BookOpen, Info, X, Wrench } from 'lucide-react';
 import { useDashboard } from './DashboardContext';
 import pkg from '../../../package.json';
 
@@ -54,7 +54,15 @@ export default function Header() {
 
         {/* Right Side: Docs, About & Theme Toggle */}
         <div className="flex items-center gap-3">
-          
+          {/* Tools Page Link */}
+          <Link
+            href="/tools"
+            className="flex items-center gap-1.5 py-1.5 px-3.5 rounded-xl bg-card border border-card-border text-text-secondary hover:text-cyan-400 hover:border-cyan-500/40 hover:bg-cyan-950/10 transition-all duration-200 text-xs font-bold cursor-pointer shrink-0"
+          >
+            <Wrench className="w-3.5 h-3.5 text-cyan-400 shrink-0" />
+            <span>Tools</span>
+          </Link>
+
           {/* Docs Page Link */}
           <Link
             href="/docs"
