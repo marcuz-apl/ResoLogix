@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Compass } from 'lucide-react';
+import { Compass, ChevronDown, ChevronRight } from 'lucide-react';
 import { useDashboard } from './DashboardContext';
 import { type RiskFactors } from '@/lib/statistics';
 
@@ -11,22 +11,30 @@ export default function GeologicalRisk() {
     rightPaneWidth,
     calculatedPg,
     riskFactors,
-    handleRiskChange
+    handleRiskChange,
+    isSettingsExpanded,
+    setIsSettingsExpanded
   } = useDashboard();
 
   return (
     <section 
-      className="shrink-0 glass-panel p-6 rounded-2xl flex flex-col gap-5"
+      className="shrink-0 glass-panel p-6 rounded-2xl flex flex-col gap-5 transition-all duration-300"
       style={{ width: rightPaneWidth }}
     >
-      <div className="flex items-center justify-between pb-3 border-b border-card-border">
+      <div 
+        className="flex items-center justify-between pb-3 border-b border-card-border cursor-pointer select-none"
+        onClick={() => setIsSettingsExpanded(!isSettingsExpanded)}
+      >
         <div className="flex items-center gap-2">
+          {isSettingsExpanded ? <ChevronDown className="w-5 h-5 text-emerald-400" /> : <ChevronRight className="w-5 h-5 text-emerald-400" />}
           <Compass className="w-5 h-5 text-emerald-400" />
           <h2 className="font-extrabold text-sm uppercase tracking-wider text-text-primary truncate">Geological Risk</h2>
         </div>
       </div>
 
-      <div className="flex flex-col gap-4">
+      {isSettingsExpanded && (
+        <>
+          <div className="flex flex-col gap-4">
         {(Object.keys(riskFactors) as Array<keyof RiskFactors>).map((key) => {
           const factorVal = riskFactors[key];
           const labelMap: Record<keyof RiskFactors, string> = {
@@ -84,6 +92,8 @@ export default function GeologicalRisk() {
           Pg = SR × TM × RQ × TC × SC
         </div>
       </div>
+        </>
+      )}
     </section>
   );
 }

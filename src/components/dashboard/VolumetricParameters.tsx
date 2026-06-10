@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Layers, AlertTriangle } from 'lucide-react';
+import { Layers, AlertTriangle, ChevronDown, ChevronRight } from 'lucide-react';
 import { useDashboard, DEFAULT_PARAMS } from './DashboardContext';
 import { type SimulationParams } from '@/lib/statistics';
 
@@ -14,22 +14,30 @@ export default function VolumetricParameters() {
     handleToggleSecondary,
     paramLabels,
     primaryKeys,
-    secondaryKeys
+    secondaryKeys,
+    isSettingsExpanded,
+    setIsSettingsExpanded
   } = useDashboard();
 
   return (
-    <section className="flex-1 glass-panel p-6 rounded-2xl flex flex-col gap-5 min-w-0">
-      <div className="flex items-center justify-between pb-3 border-b border-card-border">
+    <section className="flex-1 glass-panel p-6 rounded-2xl flex flex-col gap-5 min-w-0 transition-all duration-300">
+      <div 
+        className="flex items-center justify-between pb-3 border-b border-card-border cursor-pointer select-none"
+        onClick={() => setIsSettingsExpanded(!isSettingsExpanded)}
+      >
         <div className="flex items-center gap-2">
+          {isSettingsExpanded ? <ChevronDown className="w-5 h-5 text-cyan-400" /> : <ChevronRight className="w-5 h-5 text-cyan-400" />}
           <Layers className="w-5 h-5 text-cyan-400" />
-          <h2 className="font-extrabold text-sm uppercase tracking-wider text-text-primary">Volumetric Parameters Settings</h2>
+          <h2 className="font-extrabold text-sm uppercase tracking-wider text-text-primary">Volumetric Parameters</h2>
         </div>
         <div className="text-[10px] font-bold px-2 py-0.5 rounded bg-panel text-text-muted border border-card-border/30">
           Inputs must be values &gt; 0
         </div>
       </div>
 
-      {/* Primary Volumetric Parameters */}
+      {isSettingsExpanded && (
+        <>
+          {/* Primary Volumetric Parameters */}
       <div className="flex flex-col gap-4">
         <div className="text-[11px] font-black uppercase tracking-wider text-cyan-500/80 mb-1">
           Primary Product Parameters ({fluidType === 'OIL' ? 'Crude Oil' : 'Natural Gas'})
@@ -214,6 +222,8 @@ export default function VolumetricParameters() {
           })}
         </div>
       </div>
+        </>
+      )}
     </section>
   );
 }

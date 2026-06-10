@@ -142,6 +142,8 @@ interface DashboardContextType {
   setTypeWell: (val: string) => void;
   isProfileExpanded: boolean;
   setIsProfileExpanded: (val: boolean) => void;
+  isSettingsExpanded: boolean;
+  setIsSettingsExpanded: (val: boolean) => void;
 
   parameters: SimulationParams;
   setParameters: React.Dispatch<React.SetStateAction<SimulationParams>>;
@@ -237,6 +239,7 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
 
   // Collapsible toggle for Reserve Profile
   const [isProfileExpanded, setIsProfileExpanded] = useState(false);
+  const [isSettingsExpanded, setIsSettingsExpanded] = useState(false);
 
   const [parameters, setParameters] = useState<SimulationParams>(JSON.parse(JSON.stringify(DEFAULT_PARAMS)));
   const [riskFactors, setRiskFactors] = useState<RiskFactors>({ ...DEFAULT_RISK });
@@ -333,7 +336,10 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
   const fetchEvaluations = async () => {
     setIsLoadingScenarios(true);
     try {
-      const res = await fetch('/api/evaluations');
+      // Add timestamp to bypass aggressive Next.js/Browser caching
+      const res = await fetch(`/api/evaluations?t=${new Date().getTime()}`, { 
+        cache: 'no-store' 
+      });
       if (res.ok) {
         const data = await res.json();
         setEvaluations(data);
@@ -1014,6 +1020,8 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
     setTypeWell,
     isProfileExpanded,
     setIsProfileExpanded,
+    isSettingsExpanded,
+    setIsSettingsExpanded,
 
     parameters,
     setParameters,

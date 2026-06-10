@@ -111,6 +111,8 @@ Can you come up with a plan of:
 - Change "PRIMARY LIQUID YEILD" to "PRIMARY YIELD";
 - Change "SECONDARY FLUID YIELD" to "SECONDARY YIELD".
 - In case of "Gas Reservoir", the PRIMARY YIELD shall be "GAS", please correct it.
+- Please make the "VOLUMETRIC PARAMETERS" and "GEOLOGICAL RISK" sections collapsed by default; and link the two sections together by sharing their "expanded" state through the central context.
+- I have created and saved a scenario in the WebApp and obviously it resides in the database and I can access it every time I browse to http://localhost:3000; but switching to 127.0.0.1 or the host IP address, such scenario doesn't get loaded. Please make sure I can access this example scenario by using IP address.
 
 
 ### Evaluation Reporting Function
