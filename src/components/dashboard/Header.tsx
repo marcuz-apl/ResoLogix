@@ -56,7 +56,7 @@ export default function Header() {
           <img src="/logo.png" alt="ResoLogix Logo" className="w-8 h-8 rounded-lg shadow shadow-cyan-500/20 object-contain animate-pulse" />
           <div className="flex flex-col justify-center select-none text-left">
             <span className="font-extrabold text-[22px] leading-none tracking-[0.025em] text-text-primary">
-              ResoLogix
+              ResoLogix&trade;
             </span>
             <span className="text-[9px] text-text-primary font-bold uppercase tracking-wider mt-0.5">
               Resource Evaluation
@@ -161,9 +161,9 @@ export default function Header() {
             {/* Logo and Name */}
             <div className="flex flex-col items-center gap-2 mt-2">
               <img src="/logo.png" alt="ResoLogix Logo" className="w-16 h-16 rounded-2xl shadow-lg shadow-cyan-500/20 object-contain animate-pulse" />
-              <h3 className="font-extrabold text-xl tracking-wide text-text-primary mt-1">
-                ResoLogix
-              </h3>
+              <h2 className="text-3xl font-black tracking-tight text-text-primary mb-1">
+                ResoLogix&trade;
+              </h2>
               <span className="text-[10px] text-text-muted font-bold uppercase tracking-wider">
                 Resource Evaluation Suite
               </span>

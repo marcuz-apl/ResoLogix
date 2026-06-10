@@ -60,7 +60,7 @@ export default function ForcePasswordChangeModal() {
             {success ? 'Password Updated' : 'Security Required'}
           </h2>
           <p className="text-sm font-bold text-text-secondary mt-2">
-            {success ? 'You can now use ResoLogix securely.' : 'Please choose a permanent password for your account to continue.'}
+            {success ? 'You can now use ResoLogix™ securely.' : 'Please choose a permanent password for your account to continue.'}
           </p>
         </div>
 

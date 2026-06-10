@@ -18,7 +18,7 @@ export default function DocsPage() {
       <div className="relative z-10 max-w-5xl mx-auto px-6 py-12">
         
         {/* Navigation Link back */}
-        <div className="mb-8">
+        <div className="mb-8 flex justify-end">
           <Link 
             href="/"
             className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-text-muted hover:text-cyan-400 transition-colors duration-250 cursor-pointer"
@@ -33,8 +33,8 @@ export default function DocsPage() {
           <div className="flex items-center gap-4">
             <img src="/logo.png" alt="ResoLogix Logo" className="w-14 h-14 rounded-2xl shadow-lg shadow-cyan-500/10 object-contain animate-pulse" />
             <div>
-              <h1 className="text-3xl font-extrabold tracking-tight bg-gradient-to-r from-white via-cyan-100 to-cyan-300 bg-clip-text text-transparent">
-                ResoLogix Knowledge Base
+              <h1 className="text-3xl font-black tracking-tight text-text-primary">
+                ResoLogix&trade; Knowledge Base
               </h1>
               <p className="text-xs text-text-secondary mt-1 font-semibold uppercase tracking-wider">
                 Scientific documentation, formulae & tutorial guide
@@ -127,8 +127,8 @@ export default function DocsPage() {
               </p>
               
               <h3 className="font-bold text-text-primary mt-2 text-xs uppercase tracking-wide">Probability Distributions</h3>
-              <p>
-                ResoLogix supports three key distributions:
+              <p className="text-sm font-bold text-text-secondary leading-relaxed mb-6">
+                ResoLogix&trade; supports three key distributions:
               </p>
               <ul className="list-disc pl-5 flex flex-col gap-2">
                 <li>

@@ -15,7 +15,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "ResoLogix - Petroleum Reserve Evaluation & Risk Analysis",
+  title: "ResoLogix™ - Petroleum Reserve Evaluation & Risk Analysis",
   description: "Sleek, professional Monte Carlo volumetric calculation and geological risk analysis tool for the oil and gas industry, built in the style of RoseRA and MMRA.",
 };
 
