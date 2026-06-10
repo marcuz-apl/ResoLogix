@@ -13,6 +13,8 @@ export default function ReportingSection() {
   } = dashboardCtx;
 
   const [destination, setDestination] = useState<'local' | 'cloud' | 'email'>('local');
+  const [emailAddress, setEmailAddress] = useState('');
+  const [cloudUrl, setCloudUrl] = useState('');
 
   const [isExpanded, setIsExpanded] = useState(false);
 
@@ -56,13 +58,24 @@ export default function ReportingSection() {
     }
 
     try {
-      const response = await fetch('/api/reports/generate', {
+        setLogs(prev => [...prev, '[Info] Beginning generation process...']);
+        
+        if (destination === 'email' && !emailAddress) {
+          throw new Error("Please provide an email address.");
+        }
+        if (destination === 'cloud' && !cloudUrl) {
+          throw new Error("Please provide a Cloud Drive URL/Folder ID.");
+        }
+
+        const response = await fetch('/api/reports/generate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           formats,
           contents,
           activeName,
+          destination,
+          destinationConfig: { email: emailAddress, cloud: cloudUrl },
           data: { 
             tableData, 
             riskFactors, 
@@ -156,18 +169,38 @@ export default function ReportingSection() {
             {/* Destination Options */}
         <div className="flex flex-col gap-3">
           <h3 className="text-xs font-bold text-text-secondary uppercase tracking-wider mb-2">Destination</h3>
-          <label className="flex items-center gap-3 text-sm cursor-pointer hover:text-cyan-400 transition-colors">
-            <input type="radio" name="destination" checked={destination === 'local'} onChange={() => setDestination('local')} className="accent-cyan-500 w-4 h-4" />
-            Save Locally (ZIP Download)
-          </label>
-          <label className="flex items-center gap-3 text-sm cursor-pointer hover:text-cyan-400 transition-colors">
-            <input type="radio" name="destination" checked={destination === 'cloud'} onChange={() => setDestination('cloud')} className="accent-cyan-500 w-4 h-4" />
-            Save to Cloud Drive
-          </label>
-          <label className="flex items-center gap-3 text-sm cursor-pointer hover:text-cyan-400 transition-colors">
-            <input type="radio" name="destination" checked={destination === 'email'} onChange={() => setDestination('email')} className="accent-cyan-500 w-4 h-4" />
-            Send via Email
-          </label>
+          <div className="flex flex-col gap-2 mt-1">
+            <label className="flex items-center gap-3 text-sm cursor-pointer hover:text-cyan-400 transition-colors">
+              <input type="radio" name="destination" checked={destination === 'local'} onChange={() => setDestination('local')} className="accent-cyan-500 w-4 h-4" />
+              Save Locally (ZIP Download)
+            </label>
+            <label className="flex items-center gap-3 text-sm cursor-pointer hover:text-cyan-400 transition-colors">
+              <input type="radio" name="destination" checked={destination === 'cloud'} onChange={() => setDestination('cloud')} className="accent-cyan-500 w-4 h-4" />
+              Save to Cloud Drive
+            </label>
+            {destination === 'cloud' && (
+              <input 
+                type="text" 
+                placeholder="Folder URL or API Link" 
+                value={cloudUrl}
+                onChange={e => setCloudUrl(e.target.value)}
+                className="ml-7 bg-background border border-card-border rounded-md px-2 py-1 text-xs text-text-primary focus:border-cyan-500 outline-none"
+              />
+            )}
+            <label className="flex items-center gap-3 text-sm cursor-pointer hover:text-cyan-400 transition-colors">
+              <input type="radio" name="destination" checked={destination === 'email'} onChange={() => setDestination('email')} className="accent-cyan-500 w-4 h-4" />
+              Send via Email
+            </label>
+            {destination === 'email' && (
+              <input 
+                type="email" 
+                placeholder="recipient@example.com" 
+                value={emailAddress}
+                onChange={e => setEmailAddress(e.target.value)}
+                className="ml-7 bg-background border border-card-border rounded-md px-2 py-1 text-xs text-text-primary focus:border-cyan-500 outline-none"
+              />
+            )}
+          </div>
         </div>
 
         {/* Output Formats */}

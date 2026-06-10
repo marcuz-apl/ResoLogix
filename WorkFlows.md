@@ -167,21 +167,10 @@ If you run git commit -m "Updated some features", it will automatically prepend 
 - I'll let you to design the Funtions and interface and come up with best-fit tech stack to achieve this.
 
 
-- Down below the above radio-boxes, there should be some checkboxes to select with: 
-  - Reserve Profile: Normally ignored
-  - Reserve Parameters and Evaluation Results: 
-    - the P10, MEAN, P50 and P90 values against the input parameters and output results
-    - the P10, MEAN, P50 and P90 values are as Row Name to make landscape print-out when creating PPTX slides
-    - the P10, MEAN, P50 and P90 values are as Column Name to make portrait print-out when drafting Word reports
-  - Geological Risk Inputs and Results (the 5 factors value and the final Pg)
-  - Probability Distributions plots: Including the Exceedance (CDF) and Relative Density (PDF) for the Primary and Secondary products. That's 4 plots or 2 plots if without secondary product.
-- Then a button named as "Implement the Task" to accomplish the job as per the settings above.
-- When creating the reports, the user shall be able to save them into a local folder, or cloud drive, or even email to an email box if the zipped files are smaller than 8 MB.
-
-**Problems reported**:
-
-- The Reporting Functions don't work at all, basically it can neither take any snapshots nor create any reports of any kind.
-
-- The "Take Image Snapshots" is core part of the 4 functions; because it creates the pictures, which will be fetched into the PPTX slides, or PDF/Word reports.
+### Footer
+- The footer shall be under every page of the application, and it will keep consistent across the application.  It will be 1 line and in smaller fonts than the main text.  The footer will contain three items, copyright, created by and last updated.  The copyright shall be in the format of "Copyright (c) 2026 ResoLogix", the created by shall be in the format of "Created by alfazen.org", and the last updated shall be in the format of "Last Updated on [Date]", and the date will be updated automatically.
+- The footer shall be right below the content of the current page, with a small spacing between the content and the footer.  The background color of the footer shall be the same as the background color of the current page.  The text color of the footer shall be black.
+- On the row of the footer, the left corner shall include "Get in Touch(mailto:[EMAIL_ADDRESS])", then followed by ", " and "LinkedIn(href=https://www.linkedin.com/company/alfazen-org)".
+- On the right-side corner, there shall be a few social icons with links such as, web icon (https://alfazen.org), Twitter icon(https://x.com/marcuszou), LinkedIn icon (https://www.linkedin.com/in/marcuszou/).
 
   
