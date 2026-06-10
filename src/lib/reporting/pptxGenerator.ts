@@ -30,8 +30,12 @@ export const generatePptx = async (reportsDir: string, data: any, contents: any,
     const resultsSlide = pptx.addSlide();
     resultsSlide.addText('RESOURCE EVALUATION RESULTS', { x: 0.5, y: 0.5, fontSize: 24, bold: true });
 
+    const primaryInPlaceLabel = data.fluidType === 'OIL' ? 'OOIP' : 'OGIP';
+    const primaryUnit = data.fluidType === 'OIL' ? 'MMSTB' : 'BCF';
+    const secUnit = data.fluidType === 'OIL' ? 'BCF' : 'MMSTB';
+
     const headers = [
-      'PROB', 'Area', 'h', 'Phi', 'Sw', 'Boi/Bgi', 'Pri RE', 'Sec RE', 'In-Place', 'Pri Yield', 'Sec Yield', 'Total BOE'
+      'PROB', 'Area', 'h', 'Phi', 'Sw', 'Boi/Bgi', 'Pri RE', 'Sec RE', primaryInPlaceLabel, `Pri Yield (${primaryUnit})`, `Sec Yield (${secUnit})`, 'Total BOE'
     ];
 
     const tableRows = [headers];

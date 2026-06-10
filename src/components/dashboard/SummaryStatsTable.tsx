@@ -30,13 +30,13 @@ export default function SummaryStatsTable() {
           <div className="flex flex-col gap-2">
             <h3 className="text-xs font-black text-cyan-500 uppercase tracking-wider flex items-center gap-1">
               <span className="w-1.5 h-1.5 rounded-full bg-cyan-500"></span>
-              Primary: {fluidType === 'OIL' ? 'Oil' : 'Gas'} ({fluidType === 'OIL' ? 'MMbbl' : 'Bcf'})
+              Primary: {fluidType === 'OIL' ? 'Oil' : 'Gas'} ({fluidType === 'OIL' ? 'MMSTB' : 'BCF'})
             </h3>
             <table className="w-full text-[11px] text-left text-text-secondary">
               <thead>
                 <tr className="text-[9px] text-text-muted border-b border-card-border">
                   <th className="py-1">Percentile</th>
-                  <th className="py-1 text-right">In-Place</th>
+                  <th className="py-1 text-right">{fluidType === 'OIL' ? 'OOIP' : 'OGIP'}</th>
                   <th className="py-1 text-right">Recoverable</th>
                 </tr>
               </thead>
@@ -74,7 +74,7 @@ export default function SummaryStatsTable() {
           <div className="flex flex-col gap-2 pt-3 border-t border-card-border">
             <h3 className="text-xs font-black text-purple-400 uppercase tracking-wider flex items-center gap-1">
               <span className="w-1.5 h-1.5 rounded-full bg-purple-400"></span>
-              Secondary: {fluidType === 'OIL' ? 'Solution Gas' : 'Condensate'} ({fluidType === 'OIL' ? 'Bcf' : 'MMbbl'})
+              Secondary: {fluidType === 'OIL' ? 'Solution Gas' : 'Condensate'} ({fluidType === 'OIL' ? 'BCF' : 'MMSTB'})
             </h3>
             {!includeSecondary ? (
               <div className="text-center py-6 text-text-muted text-[11px] bg-panel/30 rounded-xl border border-dashed border-card-border/60 font-semibold uppercase tracking-wider my-2">

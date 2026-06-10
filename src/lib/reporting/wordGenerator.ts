@@ -49,6 +49,10 @@ export const generateWord = async (reportsDir: string, data: any, contents: any,
       })
     );
 
+    const primaryInPlaceLabel = data.fluidType === 'OIL' ? 'OOIP' : 'OGIP';
+    const primaryUnit = data.fluidType === 'OIL' ? 'MMSTB' : 'BCF';
+    const secUnit = data.fluidType === 'OIL' ? 'BCF' : 'MMSTB';
+
     const cols = [
       { header: 'Area', key: 'Area' },
       { header: 'Net Pay (h)', key: 'h' },
@@ -57,9 +61,9 @@ export const generateWord = async (reportsDir: string, data: any, contents: any,
       { header: 'Boi / Bgi', key: 'Boi' },
       { header: 'Primary RE', key: 'RE' },
       { header: 'Sec RE', key: 'secRE' },
-      { header: 'In-Place', key: 'primaryInPlace' },
-      { header: 'Primary Yield', key: 'primaryLiquid' },
-      { header: 'Secondary Yield', key: 'secondaryFluid' },
+      { header: primaryInPlaceLabel, key: 'primaryInPlace' },
+      { header: `Primary Yield (${primaryUnit})`, key: 'primaryLiquid' },
+      { header: `Secondary Yield (${secUnit})`, key: 'secondaryFluid' },
       { header: 'Total BOE', key: 'totalBOE' }
     ];
 

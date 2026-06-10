@@ -7,7 +7,7 @@ import { useDashboard } from './DashboardContext';
 export default function ReportingSection() {
   const dashboardCtx = useDashboard();
   const { 
-    activeName, includeSecondary, tableData, riskFactors, calculatedPg, 
+    activeName, fluidType, includeSecondary, tableData, riskFactors, calculatedPg, 
     primaryExceedanceRef, primaryPdfRef, secondaryExceedanceRef, secondaryPdfRef,
     country, geolBasin, playType, reservoirAge, lithology, depoEnv, expStage, terrain, laheeClass, typeWell
   } = dashboardCtx;
@@ -77,6 +77,7 @@ export default function ReportingSection() {
           destination,
           destinationConfig: { email: emailAddress, cloud: cloudUrl },
           data: { 
+            fluidType,
             tableData, 
             riskFactors, 
             calculatedPg,

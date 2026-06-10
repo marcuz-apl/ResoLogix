@@ -53,6 +53,10 @@ export const generatePdf = (reportsDir: string, data: any, contents: any, images
         doc.moveDown(1);
         
         const headers = ['Parameter', ...data.tableData.map((r: any) => r.prob)];
+        const primaryInPlaceLabel = data.fluidType === 'OIL' ? 'OOIP' : 'OGIP';
+        const primaryUnit = data.fluidType === 'OIL' ? 'MMSTB' : 'BCF';
+        const secUnit = data.fluidType === 'OIL' ? 'BCF' : 'MMSTB';
+
         const cols = [
           { header: 'Area', key: 'Area' },
           { header: 'h', key: 'h' },
@@ -61,9 +65,9 @@ export const generatePdf = (reportsDir: string, data: any, contents: any, images
           { header: 'Boi', key: 'Boi' },
           { header: 'Pri RE', key: 'RE' },
           { header: 'Sec RE', key: 'secRE' },
-          { header: 'In-Place', key: 'primaryInPlace' },
-          { header: 'Pri Yield', key: 'primaryLiquid' },
-          { header: 'Sec Yield', key: 'secondaryFluid' },
+          { header: primaryInPlaceLabel, key: 'primaryInPlace' },
+          { header: `Pri Yield (${primaryUnit})`, key: 'primaryLiquid' },
+          { header: `Sec Yield (${secUnit})`, key: 'secondaryFluid' },
           { header: 'Total BOE', key: 'totalBOE' }
         ];
 

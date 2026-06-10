@@ -13,6 +13,10 @@ export const generateExcel = async (reportsDir: string, data: any, contents: any
       pageSetup: { paperSize: 9, orientation: 'landscape' }
     });
 
+    const primaryInPlaceLabel = data.fluidType === 'OIL' ? 'OOIP' : 'OGIP';
+    const primaryUnit = data.fluidType === 'OIL' ? 'MMSTB' : 'BCF';
+    const secUnit = data.fluidType === 'OIL' ? 'BCF' : 'MMSTB';
+
     // Add headers
     const columns = [
       { header: 'PROB', key: 'prob', width: 10 },
@@ -23,9 +27,9 @@ export const generateExcel = async (reportsDir: string, data: any, contents: any
       { header: 'Boi / Bgi', key: 'Boi', width: 12 },
       { header: 'Primary RE', key: 'RE', width: 12 },
       { header: 'Sec RE', key: 'secRE', width: 12 },
-      { header: 'In-Place', key: 'primaryInPlace', width: 15 },
-      { header: 'Primary Yield', key: 'primaryLiquid', width: 15 },
-      { header: 'Secondary Yield', key: 'secondaryFluid', width: 15 },
+      { header: primaryInPlaceLabel, key: 'primaryInPlace', width: 15 },
+      { header: `Primary Yield (${primaryUnit})`, key: 'primaryLiquid', width: 22 },
+      { header: `Secondary Yield (${secUnit})`, key: 'secondaryFluid', width: 22 },
       { header: 'Total BOE', key: 'totalBOE', width: 15 }
     ];
     resultsSheet.columns = columns;

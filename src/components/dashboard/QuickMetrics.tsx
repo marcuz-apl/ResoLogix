@@ -10,14 +10,11 @@ export default function QuickMetrics() {
     <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
       {/* Card 1: Primary Mean In-Place */}
       <div className="glass-panel p-4 rounded-2xl flex flex-col gap-1 border-l-4 border-l-cyan-500">
-        <span className="text-[10px] font-bold text-text-muted uppercase tracking-wider">
+        <div className="text-[10px] uppercase tracking-wider font-bold text-text-secondary">
           Unrisked Mean {fluidType === 'OIL' ? 'OOIP' : 'OGIP'}
-        </span>
-        <div className="flex items-baseline gap-1.5">
-          <span className="text-2xl font-black text-text-primary">
-            {simResults ? formatVolume(simResults.inPlaceStats.mean) : '—'}
-          </span>
-          <span className="text-xs text-text-secondary font-semibold">{fluidType === 'OIL' ? 'MMbbl' : 'Bcf'}</span>
+        </div>
+        <div className="text-xl font-black text-text-primary">
+          {simResults ? formatVolume(simResults.inPlaceStats.mean) : '—'} <span className="text-[10px] text-text-muted font-bold">{fluidType === 'OIL' ? 'MMSTB' : 'BCF'}</span>
         </div>
         <span className="text-[10px] text-text-muted mt-1">Based on volumetric simulation</span>
       </div>
@@ -31,7 +28,7 @@ export default function QuickMetrics() {
           <span className="text-2xl font-black text-emerald-600 dark:text-emerald-400">
             {simResults ? formatVolume(simResults.recoverableStats.mean) : '—'}
           </span>
-          <span className="text-xs text-text-secondary font-semibold">{fluidType === 'OIL' ? 'MMbbl' : 'Bcf'}</span>
+          <span className="text-xs text-text-secondary font-semibold">{fluidType === 'OIL' ? 'MMSTB' : 'BCF'}</span>
         </div>
         <span className="text-[10px] text-text-muted mt-1">Primary Product Reserves</span>
       </div>
@@ -47,7 +44,7 @@ export default function QuickMetrics() {
               ? formatVolume(simResults.secInPlaceStats.mean, 'secondary') 
               : '—'}
           </span>
-          <span className="text-xs text-text-secondary font-semibold">{fluidType === 'OIL' ? 'Bcf' : 'MMbbl'}</span>
+          <span className="text-xs text-text-secondary font-semibold">{fluidType === 'OIL' ? 'BCF' : 'MMSTB'}</span>
         </div>
         <span className="text-[10px] text-text-muted mt-1">
           {!includeSecondary ? 'Secondary Product Disabled' : 'Secondary Product'}
@@ -65,7 +62,7 @@ export default function QuickMetrics() {
               ? formatVolume(simResults.secRecoverableStats.mean, 'secondary') 
               : '—'}
           </span>
-          <span className="text-xs text-text-secondary font-semibold">{fluidType === 'OIL' ? 'Bcf' : 'MMbbl'}</span>
+          <span className="text-xs text-text-secondary font-semibold">{fluidType === 'OIL' ? 'BCF' : 'MMSTB'}</span>
         </div>
         <span className="text-[10px] text-text-muted mt-1">
           {!includeSecondary ? 'Secondary Product Disabled' : 'Associated Secondary Reserves'}
