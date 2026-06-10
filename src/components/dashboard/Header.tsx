@@ -43,11 +43,11 @@ export default function Header() {
             <span className="font-extrabold text-[22px] leading-none tracking-[0.025em] text-text-primary">
               ResoLogix
             </span>
-            <span className="text-[9px] text-text-muted font-bold uppercase tracking-wider mt-0.5">
+            <span className="text-[9px] text-text-primary font-bold uppercase tracking-wider mt-0.5">
               Resource Evaluation
             </span>
           </div>
-          <span className="text-[9px] bg-card-border/50 text-text-muted px-2 py-0.5 rounded-md font-mono shrink-0 select-none ml-1">
+          <span className="text-[9px] bg-card-border/50 text-text-primary px-2 py-0.5 rounded-md font-mono shrink-0 select-none ml-1">
             v{pkg.version}
           </span>
         </div>

@@ -9,7 +9,7 @@ export default function ToolsPage() {
   const [ucExpanded, setUcExpanded] = useState(false);
 
   // Formation Volume Factor Determinator State
-  const [fvfType, setFvfType] = useState<'gas' | 'oil' | 'water'>('gas');
+  const [fvfType, setFvfType] = useState<'oil' | 'gas' | 'water'>('oil');
 
   // Gas FVF State
   const [pressure, setPressure] = useState<number | ''>(3000);
@@ -174,9 +174,9 @@ export default function ToolsPage() {
               
               {/* Tabs */}
               <div className="flex gap-2 p-1 bg-input-bg rounded-lg border border-input-border max-w-sm">
-                <button onClick={() => setFvfType('gas')} className={`flex-1 py-1 text-xs font-bold rounded-md transition-all ${fvfType === 'gas' ? 'bg-cyan-950/50 text-cyan-400 shadow-sm' : 'text-text-muted hover:text-text-primary'}`}>Gas (Bg)</button>
-                <button onClick={() => setFvfType('oil')} className={`flex-1 py-1 text-xs font-bold rounded-md transition-all ${fvfType === 'oil' ? 'bg-cyan-950/50 text-cyan-400 shadow-sm' : 'text-text-muted hover:text-text-primary'}`}>Oil (Bo)</button>
-                <button onClick={() => setFvfType('water')} className={`flex-1 py-1 text-xs font-bold rounded-md transition-all ${fvfType === 'water' ? 'bg-cyan-950/50 text-cyan-400 shadow-sm' : 'text-text-muted hover:text-text-primary'}`}>Water (Bw)</button>
+                <button onClick={() => setFvfType('oil')} className={`flex-1 py-1 text-xs font-bold rounded-md transition-all ${fvfType === 'oil' ? 'bg-cyan-950/50 text-white shadow-sm' : 'text-text-muted hover:text-text-primary'}`}>Oil (Bo)</button>
+                <button onClick={() => setFvfType('gas')} className={`flex-1 py-1 text-xs font-bold rounded-md transition-all ${fvfType === 'gas' ? 'bg-cyan-950/50 text-white shadow-sm' : 'text-text-muted hover:text-text-primary'}`}>Gas (Bg)</button>
+                <button onClick={() => setFvfType('water')} className={`flex-1 py-1 text-xs font-bold rounded-md transition-all ${fvfType === 'water' ? 'bg-cyan-950/50 text-white shadow-sm' : 'text-text-muted hover:text-text-primary'}`}>Water (Bw)</button>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -239,7 +239,7 @@ export default function ToolsPage() {
                       <button 
                         key={cat} 
                         onClick={() => handleCategoryChange(cat)} 
-                        className={`px-3 py-1 text-xs font-bold rounded-md transition-all ${ucCategory === cat ? 'bg-cyan-950/50 text-cyan-400 shadow-sm' : 'text-text-muted hover:text-text-primary hover:bg-card-border/30'}`}
+                        className={`px-3 py-1 text-xs font-bold rounded-md transition-all ${ucCategory === cat ? 'bg-cyan-950/50 text-white shadow-sm' : 'text-text-muted hover:text-text-primary hover:bg-card-border/30'}`}
                       >
                         {cat}
                       </button>

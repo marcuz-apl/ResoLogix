@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Plus, Check, Save, FolderOpen, Trash2, Sliders, RefreshCw } from 'lucide-react';
+import { Plus, Check, Save, FolderOpen, Trash2, Sliders, RefreshCw, Copy } from 'lucide-react';
 import { useDashboard } from './DashboardContext';
 
 export default function Sidebar() {
@@ -9,6 +9,7 @@ export default function Sidebar() {
     sidebarWidth,
     handleSidebarMouseDown,
     handleNewScenario,
+    handleCopyScenario,
     handleSaveScenario,
     isSaving,
     saveStatus,
@@ -62,8 +63,8 @@ export default function Sidebar() {
           </button>
         </div>
 
-        {/* New / Save Buttons Side-by-Side */}
-        <div className="flex gap-2 shrink-0">
+        {/* New / Copy / Save Buttons */}
+        <div className="flex flex-wrap gap-2 shrink-0">
           <button
             onClick={handleNewScenario}
             className="flex-1 flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl font-bold text-xs border border-dashed border-card-border text-text-secondary hover:text-cyan-400 hover:border-cyan-500/40 hover:bg-cyan-950/10 transition-all duration-300 truncate cursor-pointer"
@@ -72,11 +73,20 @@ export default function Sidebar() {
             <Plus className="w-3.5 h-3.5 shrink-0" />
             <span className="truncate">New</span>
           </button>
+
+          <button
+            onClick={handleCopyScenario}
+            className="flex-1 flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl font-bold text-xs bg-card border border-card-border text-text-secondary hover:border-blue-500/40 hover:text-blue-400 hover:bg-blue-950/10 transition-all duration-200 truncate cursor-pointer"
+            title="Copy Active Scenario"
+          >
+            <Copy className="w-3.5 h-3.5 shrink-0" />
+            <span className="truncate">Copy</span>
+          </button>
           
           <button
             onClick={handleSaveScenario}
             disabled={isSaving}
-            className={`flex-1 flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl text-xs font-bold border transition-all duration-200 cursor-pointer truncate ${
+            className={`w-full flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl text-xs font-bold border transition-all duration-200 cursor-pointer truncate ${
               saveStatus === 'success'
                 ? 'bg-emerald-950 border-emerald-500 text-emerald-400'
                 : saveStatus === 'error'
@@ -129,17 +139,19 @@ export default function Sidebar() {
                     <div className="font-semibold text-sm pr-6 text-text-primary group-hover:text-cyan-400 transition-colors duration-200 truncate">
                       {ev.name}
                     </div>
-                    <div className="text-xs text-text-muted mt-1 truncate">
-                      {ev.description || 'No description'}
-                    </div>
+
                     <div className="flex items-center gap-2 mt-2">
                       <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded shrink-0 ${
-                        ev.fluid_type === 'OIL' ? 'bg-blue-950/35 text-blue-400' : 'bg-orange-950/35 text-orange-400'
+                        ev.fluid_type === 'OIL' ? 'bg-green-50 dark:bg-green-950/30 text-green-500' : 'bg-red-50 dark:bg-red-950/30 text-red-500'
                       }`}>
                         {ev.fluid_type}
                       </span>
                       <span className="text-[10px] text-text-muted truncate">
-                        {ev.updated_at ? new Date(ev.updated_at).toLocaleDateString() : ''}
+                        {ev.updated_at ? (() => {
+                          const d = new Date(ev.updated_at);
+                          const pad = (n: number) => n.toString().padStart(2, '0');
+                          return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
+                        })() : ''}
                       </span>
                     </div>
                     <button

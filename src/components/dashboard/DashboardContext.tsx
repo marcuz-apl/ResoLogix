@@ -186,6 +186,7 @@ interface DashboardContextType {
   // Scenario CRUD
   loadScenario: (ev: Evaluation) => void;
   handleNewScenario: () => void;
+  handleCopyScenario: () => void;
   handleSaveScenario: () => void;
   handleDeleteScenario: (id: string, e: React.MouseEvent) => void;
 
@@ -426,6 +427,13 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
     setParameters(JSON.parse(JSON.stringify(DEFAULT_PARAMS)));
     setRiskFactors({ ...DEFAULT_RISK });
     setSimResults(null);
+    setSaveStatus('idle');
+  };
+
+  // Copy current scenario as new
+  const handleCopyScenario = () => {
+    setActiveId(null);
+    setActiveName((prev) => prev + ' Copied');
     setSaveStatus('idle');
   };
 
@@ -1064,6 +1072,7 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
     // Scenario CRUD
     loadScenario,
     handleNewScenario,
+    handleCopyScenario,
     handleSaveScenario,
     handleDeleteScenario,
 
