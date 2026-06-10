@@ -795,15 +795,15 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
       const RE = getVal(simResults.RE_runs);
       const secRE = getVal(simResults.secRE_runs);
 
-      const primaryInPlace = getVal(simResults.inPlaceRuns);
+      const primaryInPlace = scale(getVal(simResults.inPlaceRuns), 'primary');
 
       const primaryLiquid = fluidType === 'OIL'
-        ? getVal(simResults.recoverableRuns)
-        : getVal(simResults.secRecoverableRuns || []);
+        ? scale(getVal(simResults.recoverableRuns), 'primary')
+        : scale(getVal(simResults.secRecoverableRuns || []), 'primary');
 
       const secondaryFluid = fluidType === 'OIL'
-        ? getVal(simResults.secRecoverableRuns || [])
-        : getVal(simResults.recoverableRuns);
+        ? scale(getVal(simResults.secRecoverableRuns || []), 'secondary')
+        : scale(getVal(simResults.recoverableRuns), 'secondary');
 
       const totalBOE = getVal(simResults.totalBOE_runs);
 

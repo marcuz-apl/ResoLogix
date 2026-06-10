@@ -75,17 +75,17 @@ export default function ParameterDataTable() {
                   
                   {/* Reserve Values */}
                   <td className="py-2.5 px-3 text-right font-mono font-bold text-text-primary bg-cyan-950/5 border-l border-card-border/40">
-                    {formatVolume(row.primaryInPlace, 'primary')}
+                    {row.primaryInPlace.toLocaleString(undefined, { minimumFractionDigits: 1, maximumFractionDigits: 2 })}
                   </td>
                   <td className="py-2.5 px-3 text-right font-mono font-bold text-emerald-500 dark:text-emerald-400 bg-emerald-950/5">
                     {fluidType === 'OIL'
-                      ? formatVolume(row.primaryLiquid, 'primary')
-                      : formatVolume(row.secondaryFluid, 'primary')}
+                      ? row.primaryLiquid.toLocaleString(undefined, { minimumFractionDigits: 1, maximumFractionDigits: 2 })
+                      : row.secondaryFluid.toLocaleString(undefined, { minimumFractionDigits: 1, maximumFractionDigits: 2 })}
                   </td>
                   <td className="py-2.5 px-3 text-right font-mono font-bold text-purple-500 dark:text-purple-400 bg-purple-950/5">
                     {fluidType === 'OIL'
-                      ? (includeSecondary ? formatVolume(row.secondaryFluid, 'secondary') : '—')
-                      : (includeSecondary ? formatVolume(row.primaryLiquid, 'secondary') : '—')}
+                      ? (includeSecondary ? row.secondaryFluid.toLocaleString(undefined, { minimumFractionDigits: 1, maximumFractionDigits: 2 }) : '—')
+                      : (includeSecondary ? row.primaryLiquid.toLocaleString(undefined, { minimumFractionDigits: 1, maximumFractionDigits: 2 }) : '—')}
                   </td>
                   <td className="py-2.5 px-3 text-right font-mono font-bold text-pink-500 dark:text-pink-400 bg-pink-950/5">
                     {row.totalBOE.toLocaleString(undefined, { minimumFractionDigits: 1, maximumFractionDigits: 2 })}

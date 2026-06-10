@@ -213,16 +213,16 @@ export default function DocsPage() {
                   <h3 className="font-extrabold text-xs text-blue-400 uppercase tracking-wide mb-2.5">Oil Volumetrics (Liquid Primary)</h3>
                   <div className="flex flex-col gap-3 font-mono text-xs">
                     <div className="bg-background/80 p-3 rounded border border-card-border/30">
-                      OOIP = 7758 * A * h * &Phi; * (1 - S_w) / B_oi
+                      OOIP (MMSTB) = (7758 * A * h * &Phi; * (1 - S_w) / B_oi) / 1,000,000
                     </div>
                     <div className="bg-background/80 p-3 rounded border border-card-border/30">
-                      Unrisked Recoverable Oil = OOIP * RE_oil
+                      Unrisked Recoverable Oil (MMSTB) = OOIP * RE_oil
                     </div>
                     <div className="bg-background/80 p-3 rounded border border-card-border/30">
-                      Solution Gas In-Place = OOIP * GOR
+                      Solution Gas In-Place (BCF) = (OOIP * 1,000,000 * GOR) / 1,000,000,000
                     </div>
                     <div className="bg-background/80 p-3 rounded border border-card-border/30">
-                      Unrisked Rec. Solution Gas = Solution Gas In-Place * RE_solgas
+                      Unrisked Rec. Solution Gas (BCF) = Solution Gas In-Place * RE_solgas
                     </div>
                   </div>
                   <div className="mt-3 text-xs text-text-muted">
@@ -235,16 +235,16 @@ export default function DocsPage() {
                   <h3 className="font-extrabold text-xs text-orange-400 uppercase tracking-wide mb-2.5">Gas Volumetrics (Gas Primary)</h3>
                   <div className="flex flex-col gap-3 font-mono text-xs">
                     <div className="bg-background/80 p-3 rounded border border-card-border/30">
-                      OGIP = 43560 * A * h * &Phi; * (1 - S_w) * GEF
+                      OGIP (BCF) = (43560 * A * h * &Phi; * (1 - S_w) * GEF) / 1,000,000,000
                     </div>
                     <div className="bg-background/80 p-3 rounded border border-card-border/30">
-                      Unrisked Recoverable Gas = OGIP * RE_gas
+                      Unrisked Recoverable Gas (BCF) = OGIP * RE_gas
                     </div>
                     <div className="bg-background/80 p-3 rounded border border-card-border/30">
-                      Condensate In-Place = OGIP * CGR
+                      Condensate In-Place (MMSTB) = (OGIP * 1,000,000,000 * (CGR / 1,000,000)) / 1,000,000
                     </div>
                     <div className="bg-background/80 p-3 rounded border border-card-border/30">
-                      Unrisked Rec. Condensate = Condensate In-Place * RE_cond
+                      Unrisked Rec. Condensate (MMSTB) = Condensate In-Place * RE_cond
                     </div>
                   </div>
                   <div className="mt-3 text-xs text-text-muted">
