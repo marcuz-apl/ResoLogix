@@ -114,15 +114,59 @@ Can you come up with a plan of:
 - Please make the "VOLUMETRIC PARAMETERS" and "GEOLOGICAL RISK" sections collapsed by default; and link the two sections together by sharing their "expanded" state through the central context.
 - I have created and saved a scenario in the WebApp and obviously it resides in the database and I can access it every time I browse to http://localhost:3000; but switching to 127.0.0.1 or the host IP address, such scenario doesn't get loaded. Please make sure I can access this example scenario by using IP address.
 
+### pre-commit question
+Q: Before committing, is there a way to setup the commit message automatically in the format of "v1.0.12 build 2026-06-10-0930"? the version number shall be pulled from the package.json file, while the build number is actally the current date and Time in the format of "YYYY-MM-DD-HHMM".
+
+A: I have successfully configured this for you by creating a Git hook!
+I added a new script at .git/hooks/prepare-commit-msg. This hook runs automatically immediately after your pre-commit hook (which bumps the version) but before the commit message is actually saved.
+Here's how it works:
+It reads the newly bumped version directly from package.json (e.g., 1.0.12).
+It generates the current date and time in the exact format you requested (YYYY-MM-DD-HHMM).
+It combines them into your format: v1.0.12 build 2026-06-10-0930.
+How it will look when you commit:
+```text
+v1.0.12 build 2026-06-10-0930
+Updated some features
+```
+If you simply run git commit, your editor will open with v1.0.12 build 2026-06-10-0930 already pre-filled.
+If you run git commit -m "Updated some features", it will automatically prepend the formatted string, making your final commit message look like this:
+
 
 ### Evaluation Reporting Function
 
-- The Reporting Part shall be right below the 2 Data Tables;
-- It shall bear four radio-box buttons to be toggled: 
-  - Take Image Snapshots:
-  - Generate PDF Reports:
-  - Create PPTX Slides:
-  - Draft  Word Reports:
+- The Evaluation Reporting Part shall be right below the "RESOURCE EVALUATION RESULTS" Data Table;
+  - All reports shall be saved in a local folder ./reports and will be compressed to a zip file later if the "Create Reports" button is activated, and the zip file will be deleted 10 minutes after the task is completed. If the user fails to download the zip file, the zip file shall be kept in the ./reports folder for the user to download later. If the user selects to save the reports in a cloud drive or email to an email box, the zip file will be sent to the cloud drive or email box and keep there for the user's disposal. If the user selects to save the reports locally, the user will need to select the folder where the zip file will be saved. Also the size of the zip file shall be limited to 20 MB, otherwise split to multiple zip files, each with a size of 20 MB (the last zip file may be smaller than 20 MB).
+- It shall be able to generate the following things, depending on user's selection (check boxes are needed in the GUI):
+  - an Excel xlsx or comma-delimited csv file of the "RESOURCE EVALUATION RESULTS" data table, in landscape format, plus a transposed version of such for later outputting to Word report as the transposed results will be in portrait format (for print out in A4 or Letter size).
+  - an Excel xlsx or comma-delimited csv file of the "GEOLOGICAL RISK" input section, in portrait format
+  - Four images in PNG format of the "PROBABILITY DISTRIBUTIONS" section of Primary and Secondary products, including both cumulative and density distributions. If no secondary product, then only 2 pictures. The images shall be saved in a subfolder under ./reports named after the current date and time and the project name.
+- a PPTX slides including the following content:
+    - Title page with Project Name and "ResoLogix" and the date of the reporting in the format of "4 June 2026"
+    - "RESOURCE EVALUATION RESULTS" data table in landscape format (i.e. the values of "PROB" as rows, not columns, i.e. P10, P50, P90 and Mean as rows, not columns)
+    - "GEOLOGICAL RISK" input section always in portrait format with "RISK FACTOR" and "PROB" as the 2 column names, while the data pairs will be the 5 factors plus the "Chance of Success (Pg)" as the last row (i.e. always as 6 rows of data).
+    - Four images of the "PROBABILITY DISTRIBUTIONS" section of Primary and Secondary products, including both cumulative and density distributions. If no secondary product, then only 2 pictures.
+    - The slides shall be able to be printed out in landscape format.
+    - The Title page image background is set to white color, not transparent.
+- a Word-format report shall be created with the same contents of the PPTX slide file, but the "RESOURCE EVALUATION RESULTS" data table in portrait format.
+- a PDF-format report shall be the same as the Word-format report.
+
+- The "Create Reports" and "Download the Reports" buttons shall be the last items in the "Evaluation Reporting" section, and shall be a message box telling the user of the progress of the task, such as,
+  - "Report Generation Started on [Time]" 
+  - "Copying Reserve Parameters"
+  - "Copying Geological Risk Factors"
+  - "Generating Probability Distribution Plots"
+  - "Generating Summary Data Tables"
+  - "Generating PPTX Slides"
+  - "Generating Word Report"
+  - "Generating PDF Report"
+  - "Zipping and Compressing Reports"
+  - "Report Generation Completed at [Time]"
+  - "The reports will stay alive for 10 minutes, after that it will be deleted. Please download it."
+  - "If you fail to download the reports within 10 minutes, the reports will be deleted. You will need to regenerate them."
+  - "If you select to save the reports in a cloud drive or email to an email box, the zip file will be sent to the cloud drive or email box and keep there for the user's disposal. If the user selects to save the reports locally, the user will need to select the folder where the zip file will be saved."
+- I'll let you to design the Funtions and interface and come up with best-fit tech stack to achieve this.
+
+
 - Down below the above radio-boxes, there should be some checkboxes to select with: 
   - Reserve Profile: Normally ignored
   - Reserve Parameters and Evaluation Results: 

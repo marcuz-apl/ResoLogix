@@ -118,7 +118,7 @@ export default function ReserveProfile() {
         </div>
       </div>
 
-      {/* Collapsible Reserve Profile Section */}
+      {/* Collapsible Resource Profile Section */}
       <div className="border-t border-card-border/40 pt-3">
         <button
           type="button"
@@ -130,7 +130,7 @@ export default function ReserveProfile() {
           ) : (
             <ChevronRight className="w-4 h-4 text-text-muted" />
           )}
-          <span>Reserve Profile</span>
+          <span>Resource Profile</span>
           <span className="text-[9px] text-text-muted font-normal lowercase italic normal-case">
             ({isProfileExpanded ? 'click to collapse' : 'click to expand - defaults to undefined'})
           </span>

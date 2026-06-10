@@ -11,6 +11,7 @@ import GeologicalRisk from '@/components/dashboard/GeologicalRisk';
 import ChartsView from '@/components/dashboard/ChartsView';
 import SummaryStatsTable from '@/components/dashboard/SummaryStatsTable';
 import ParameterDataTable from '@/components/dashboard/ParameterDataTable';
+import ReportingSection from '@/components/dashboard/ReportingSection';
 
 function DashboardContent() {
   const { handleRightPaneMouseDown } = useDashboard();
@@ -69,6 +70,7 @@ function DashboardContent() {
 
           {/* Percentile Parameters and Reserves Data tables */}
           <ParameterDataTable />
+          <ReportingSection />
 
 
         </main>

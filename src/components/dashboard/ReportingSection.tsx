@@ -1,0 +1,292 @@
+'use client';
+
+import React, { useState, useEffect } from 'react';
+import { FileText, Download, CheckCircle, Clock, ChevronDown, ChevronUp } from 'lucide-react';
+import { useDashboard } from './DashboardContext';
+
+export default function ReportingSection() {
+  const dashboardCtx = useDashboard();
+  const { 
+    activeName, includeSecondary, tableData, riskFactors, calculatedPg, 
+    primaryExceedanceRef, primaryPdfRef, secondaryExceedanceRef, secondaryPdfRef,
+    country, geolBasin, playType, reservoirAge, lithology, depoEnv, expStage, terrain, laheeClass, typeWell
+  } = dashboardCtx;
+
+  const [destination, setDestination] = useState<'local' | 'cloud' | 'email'>('local');
+
+  const [isExpanded, setIsExpanded] = useState(false);
+
+  // Formats
+  const [formats, setFormats] = useState({
+    excel: true,
+    images: true,
+    pptx: true,
+    word: true,
+    pdf: true,
+  });
+
+  // Content
+  const [contents, setContents] = useState({
+    profile: false,
+    results: true,
+    risk: true,
+    plots: true,
+  });
+
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [logs, setLogs] = useState<string[]>([]);
+  const [downloadReady, setDownloadReady] = useState(false);
+  const [jobId, setJobId] = useState<string | null>(null);
+
+  const handleCreateReports = async () => {
+    setIsGenerating(true);
+    setDownloadReady(false);
+    setLogs([]);
+    setJobId(null);
+
+    // 1. Gather Chart Images
+    const images: any = {};
+    if (contents.plots) {
+      if (primaryExceedanceRef?.current) images.primaryCdf = primaryExceedanceRef.current.toBase64Image();
+      if (primaryPdfRef?.current) images.primaryPdf = primaryPdfRef.current.toBase64Image();
+      if (includeSecondary) {
+        if (secondaryExceedanceRef?.current) images.secondaryCdf = secondaryExceedanceRef.current.toBase64Image();
+        if (secondaryPdfRef?.current) images.secondaryPdf = secondaryPdfRef.current.toBase64Image();
+      }
+    }
+
+    try {
+      const response = await fetch('/api/reports/generate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          formats,
+          contents,
+          activeName,
+          data: { 
+            tableData, 
+            riskFactors, 
+            calculatedPg,
+            profileData: {
+              country, geolBasin, playType, reservoirAge, lithology, depoEnv, expStage, terrain, laheeClass, typeWell
+            }
+          },
+          images
+        })
+      });
+
+      if (!response.body) throw new Error('ReadableStream not supported by browser.');
+
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder('utf-8');
+
+      let buffer = '';
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+
+        buffer += decoder.decode(value, { stream: true });
+        
+        // Process SSE lines
+        let boundary = buffer.indexOf('\n\n');
+        while (boundary !== -1) {
+          const chunk = buffer.slice(0, boundary);
+          buffer = buffer.slice(boundary + 2);
+          
+          if (chunk.startsWith('data: ')) {
+            try {
+              const data = JSON.parse(chunk.slice(6));
+              if (data.message) {
+                setLogs(prev => [...prev, data.message]);
+              }
+              if (data.complete) {
+                setJobId(data.downloadId);
+                setLogs(prev => [
+                  ...prev,
+                  'The reports will stay alive for 10 minutes, after that they will be deleted. Please download them.'
+                ]);
+                setIsGenerating(false);
+                setDownloadReady(true);
+              }
+              if (data.error) {
+                setLogs(prev => [...prev, `[Error] ${data.error}`]);
+                setIsGenerating(false);
+              }
+            } catch (err) {
+              console.error('Failed to parse SSE data', chunk);
+            }
+          }
+          boundary = buffer.indexOf('\n\n');
+        }
+      }
+    } catch (error: any) {
+      setLogs(prev => [...prev, `[Error] Failed to communicate with server: ${error.message}`]);
+      setIsGenerating(false);
+    }
+  };
+
+  const handleDownload = () => {
+    if (jobId) {
+      window.location.href = `/api/reports/download?jobId=${jobId}`;
+    }
+  };
+
+  return (
+    <section className="glass-panel p-6 rounded-2xl flex flex-col gap-6 mt-6 border border-card-border/50">
+      <div 
+        className="flex items-center justify-between pb-3 border-b border-card-border/60 cursor-pointer hover:opacity-80 transition-opacity"
+        onClick={() => setIsExpanded(!isExpanded)}
+      >
+        <div className="flex items-center gap-2">
+          <FileText className="w-5 h-5 text-blue-400" />
+          <h2 className="font-extrabold text-sm uppercase tracking-wider text-text-primary">
+            Evaluation Reporting
+          </h2>
+        </div>
+        {isExpanded ? (
+          <ChevronUp className="w-5 h-5 text-text-muted" />
+        ) : (
+          <ChevronDown className="w-5 h-5 text-text-muted" />
+        )}
+      </div>
+
+      {isExpanded && (
+        <>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {/* Destination Options */}
+        <div className="flex flex-col gap-3">
+          <h3 className="text-xs font-bold text-text-secondary uppercase tracking-wider mb-2">Destination</h3>
+          <label className="flex items-center gap-3 text-sm cursor-pointer hover:text-cyan-400 transition-colors">
+            <input type="radio" name="destination" checked={destination === 'local'} onChange={() => setDestination('local')} className="accent-cyan-500 w-4 h-4" />
+            Save Locally (ZIP Download)
+          </label>
+          <label className="flex items-center gap-3 text-sm cursor-pointer hover:text-cyan-400 transition-colors">
+            <input type="radio" name="destination" checked={destination === 'cloud'} onChange={() => setDestination('cloud')} className="accent-cyan-500 w-4 h-4" />
+            Save to Cloud Drive
+          </label>
+          <label className="flex items-center gap-3 text-sm cursor-pointer hover:text-cyan-400 transition-colors">
+            <input type="radio" name="destination" checked={destination === 'email'} onChange={() => setDestination('email')} className="accent-cyan-500 w-4 h-4" />
+            Send via Email
+          </label>
+        </div>
+
+        {/* Output Formats */}
+        <div className="flex flex-col gap-3">
+          <h3 className="text-xs font-bold text-text-secondary uppercase tracking-wider mb-2">Output Formats</h3>
+          <label className="flex items-center gap-3 text-sm cursor-pointer hover:text-cyan-400 transition-colors">
+            <input type="checkbox" checked={formats.excel} onChange={(e) => setFormats({ ...formats, excel: e.target.checked })} className="accent-cyan-500 w-4 h-4 rounded" />
+            Excel Data Tables
+          </label>
+          <label className="flex items-center gap-3 text-sm cursor-pointer hover:text-cyan-400 transition-colors">
+            <input type="checkbox" checked={formats.images} onChange={(e) => setFormats({ ...formats, images: e.target.checked })} className="accent-cyan-500 w-4 h-4 rounded" />
+            PNG Image Snapshots
+          </label>
+          <label className="flex items-center gap-3 text-sm cursor-pointer hover:text-cyan-400 transition-colors">
+            <input type="checkbox" checked={formats.pptx} onChange={(e) => setFormats({ ...formats, pptx: e.target.checked })} className="accent-cyan-500 w-4 h-4 rounded" />
+            PPTX Slides
+          </label>
+          <label className="flex items-center gap-3 text-sm cursor-pointer hover:text-cyan-400 transition-colors">
+            <input type="checkbox" checked={formats.word} onChange={(e) => setFormats({ ...formats, word: e.target.checked })} className="accent-cyan-500 w-4 h-4 rounded" />
+            Word Report
+          </label>
+          <label className="flex items-center gap-3 text-sm cursor-pointer hover:text-cyan-400 transition-colors">
+            <input type="checkbox" checked={formats.pdf} onChange={(e) => setFormats({ ...formats, pdf: e.target.checked })} className="accent-cyan-500 w-4 h-4 rounded" />
+            PDF Report
+          </label>
+        </div>
+
+        {/* Content Included */}
+        <div className="flex flex-col gap-3">
+          <h3 className="text-xs font-bold text-text-secondary uppercase tracking-wider mb-2">Content Included</h3>
+          <label className="flex items-center gap-3 text-sm cursor-pointer hover:text-cyan-400 transition-colors">
+            <input type="checkbox" checked={contents.profile} onChange={(e) => setContents({ ...contents, profile: e.target.checked })} className="accent-cyan-500 w-4 h-4 rounded" />
+            Resource Profile
+          </label>
+          <label className="flex items-center gap-3 text-sm cursor-pointer hover:text-cyan-400 transition-colors">
+            <input type="checkbox" checked={contents.results} onChange={(e) => setContents({ ...contents, results: e.target.checked })} className="accent-cyan-500 w-4 h-4 rounded" />
+            Parameters & Results
+          </label>
+          <label className="flex items-center gap-3 text-sm cursor-pointer hover:text-cyan-400 transition-colors">
+            <input type="checkbox" checked={contents.risk} onChange={(e) => setContents({ ...contents, risk: e.target.checked })} className="accent-cyan-500 w-4 h-4 rounded" />
+            Geological Risk
+          </label>
+          <label className="flex items-center gap-3 text-sm cursor-pointer hover:text-cyan-400 transition-colors">
+            <input type="checkbox" checked={contents.plots} onChange={(e) => setContents({ ...contents, plots: e.target.checked })} className="accent-cyan-500 w-4 h-4 rounded" />
+            Probability Distribution Plots
+          </label>
+        </div>
+      </div>
+
+      {/* Action Area & Logs */}
+      <div className="flex flex-col lg:flex-row gap-6 mt-4 pt-6 border-t border-card-border/40">
+        <div className="flex-1 flex flex-col gap-3">
+          <div className="bg-background/80 border border-card-border/50 rounded-xl p-4 h-48 overflow-y-auto font-mono text-xs flex flex-col gap-1">
+            {logs.length === 0 ? (
+              <span className="text-text-muted opacity-50 italic">Ready to generate reports. Waiting for input...</span>
+            ) : (
+              logs.map((log, i) => (
+                <div key={i} className="flex gap-2">
+                  <span className="text-cyan-500/50">&gt;</span>
+                  <span className={log.includes('Completed') || log.includes('Stay alive') ? 'text-emerald-400 font-bold' : 'text-text-secondary'}>
+                    {log}
+                  </span>
+                </div>
+              ))
+            )}
+            {isGenerating && (
+              <div className="flex gap-2 animate-pulse mt-1">
+                <span className="text-cyan-500/50">&gt;</span>
+                <span className="text-cyan-400">Processing...</span>
+              </div>
+            )}
+          </div>
+          {destination !== 'local' && (
+            <div className="text-xs text-orange-400 flex items-center gap-1.5 bg-orange-500/10 p-2 rounded border border-orange-500/20">
+              <Clock className="w-3.5 h-3.5" />
+              Cloud/Email options are currently set to generate the files locally until API credentials are provided.
+            </div>
+          )}
+        </div>
+
+        <div className="flex flex-col gap-3 lg:w-64 shrink-0">
+          <button
+            onClick={handleCreateReports}
+            disabled={isGenerating}
+            className={`flex items-center justify-center gap-2 w-full py-3 rounded-xl font-bold text-sm transition-all shadow-lg ${
+              isGenerating
+                ? 'bg-panel text-text-muted cursor-not-allowed border border-card-border'
+                : 'bg-cyan-600 hover:bg-cyan-500 text-white shadow-cyan-900/30 border border-cyan-500/50'
+            }`}
+          >
+            {isGenerating ? (
+              <>
+                <div className="w-4 h-4 border-2 border-text-muted border-t-transparent rounded-full animate-spin" />
+                Working...
+              </>
+            ) : (
+              <>
+                <CheckCircle className="w-4 h-4" />
+                Create Reports
+              </>
+            )}
+          </button>
+
+          <button
+            onClick={handleDownload}
+            disabled={!downloadReady}
+            className={`flex items-center justify-center gap-2 w-full py-3 rounded-xl font-bold text-sm transition-all shadow-lg ${
+              !downloadReady
+                ? 'bg-panel text-text-muted cursor-not-allowed border border-card-border'
+                : 'bg-emerald-600 hover:bg-emerald-500 text-white shadow-emerald-900/30 border border-emerald-500/50 animate-pulse-subtle'
+            }`}
+          >
+            <Download className="w-4 h-4" />
+            Download Reports
+          </button>
+        </div>
+      </div>
+        </>
+      )}
+    </section>
+  );
+}
