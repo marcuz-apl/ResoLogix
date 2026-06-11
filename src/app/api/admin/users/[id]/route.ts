@@ -22,6 +22,11 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
       if (user.is_superadmin && !(session.user as any).isSuperAdmin) {
         return NextResponse.json({ error: "Only SuperAdmins can modify a SuperAdmin's role" }, { status: 403 });
       }
+      
+      // Regular Admins cannot modify other Admins
+      if (user.is_admin && !(session.user as any).isSuperAdmin) {
+        return NextResponse.json({ error: "Only SuperAdmins can modify another Admin's role" }, { status: 403 });
+      }
 
       const newStatus = user.is_admin === 1 ? 0 : 1;
       db.prepare('UPDATE users SET is_admin = ? WHERE id = ?').run(newStatus, resolvedParams.id);
@@ -41,6 +46,14 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
     }
 
     if (action === 'reset_password') {
+      const user = db.prepare('SELECT is_admin, is_superadmin FROM users WHERE id = ?').get(resolvedParams.id) as any;
+      if (!user) return NextResponse.json({ error: "User not found" }, { status: 404 });
+      
+      // Regular Admins cannot reset passwords for other Admins or SuperAdmins
+      if ((user.is_admin || user.is_superadmin) && !(session.user as any).isSuperAdmin) {
+        return NextResponse.json({ error: "Only SuperAdmins can reset passwords for other Admins" }, { status: 403 });
+      }
+
       const rawPassword = crypto.randomBytes(8).toString('hex');
       const passwordHash = await bcrypt.hash(rawPassword, 10);
       db.prepare('UPDATE users SET password_hash = ?, needs_password_change = 1 WHERE id = ?').run(passwordHash, resolvedParams.id);

@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth/next';
 import { authOptions } from '../auth/[...nextauth]/route';
 import db from '@/lib/db';
-import crypto from 'crypto';
+import { generateHumanId } from '@/lib/utils';
 
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
@@ -140,7 +140,7 @@ export async function POST(req: Request) {
     }
 
     if (!id) {
-      id = crypto.randomUUID();
+      id = generateHumanId('eid');
     }
 
     // Run in a transaction
@@ -202,7 +202,7 @@ export async function POST(req: Request) {
 
         for (const [paramName, config] of Object.entries(parameters) as [string, any][]) {
           insertParam.run(
-            crypto.randomUUID(),
+            generateHumanId('pid'),
             id,
             paramName,
             config.distribution || 'LOGNORMAL',

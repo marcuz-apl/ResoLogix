@@ -348,8 +348,9 @@ export default function AdminPage() {
                                   {u.is_superadmin ? '- SuperAdmin' : '+ SuperAdmin'}
                                 </button>
                               )}
-                              {/* Regular Admins can promote to Admin, but not modify SuperAdmins */}
-                              {u.email !== session?.user?.email && !u.is_superadmin && (
+                              
+                              {/* SuperAdmins can promote/demote anyone to Admin. Regular Admins can only promote Users, cannot modify Admins */}
+                              {u.email !== session?.user?.email && !u.is_superadmin && (isSuperAdmin || !u.is_admin) && (
                                 <button
                                   onClick={() => toggleRole(u.id, 'toggle_admin')}
                                   className="text-[10px] px-2 py-1 rounded bg-background border border-card-border text-text-secondary hover:text-purple-400 hover:border-purple-500/50 transition-colors font-semibold"
@@ -357,13 +358,17 @@ export default function AdminPage() {
                                   {u.is_admin ? '- Admin' : '+ Admin'}
                                 </button>
                               )}
-                              <button
-                                onClick={() => resetPassword(u.id, u.email)}
-                                title="Reset Password"
-                                className="p-1.5 rounded bg-background border border-card-border text-text-secondary hover:text-cyan-400 hover:border-cyan-500/50 transition-colors"
-                              >
-                                <KeyRound className="w-4 h-4" />
-                              </button>
+                              
+                              {/* Regular Admins cannot reset passwords for other Admins */}
+                              {(isSuperAdmin || (!u.is_admin && !u.is_superadmin) || u.email === session?.user?.email) && (
+                                <button
+                                  onClick={() => resetPassword(u.id, u.email)}
+                                  title="Reset Password"
+                                  className="p-1.5 rounded bg-background border border-card-border text-text-secondary hover:text-cyan-400 hover:border-cyan-500/50 transition-colors"
+                                >
+                                  <KeyRound className="w-4 h-4" />
+                                </button>
+                              )}
                               
                               {/* Only SuperAdmins can delete users entirely */}
                               {isSuperAdmin && u.email !== session?.user?.email && (

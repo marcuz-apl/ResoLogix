@@ -10,11 +10,17 @@ export async function GET() {
       return NextResponse.json({ error: "Forbidden: Admins only" }, { status: 403 });
     }
 
-    const users = db.prepare(`
+    const isSuperAdmin = (session.user as any).isSuperAdmin;
+    let query = `
       SELECT id, email, name, last_login, is_admin, is_superadmin, needs_password_change, created_at 
       FROM users 
-      ORDER BY created_at DESC
-    `).all();
+    `;
+    if (!isSuperAdmin) {
+      query += ` WHERE is_superadmin = 0 `;
+    }
+    query += ` ORDER BY created_at DESC `;
+
+    const users = db.prepare(query).all();
 
     return NextResponse.json(users);
 

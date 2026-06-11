@@ -3,6 +3,7 @@ import db from '@/lib/db';
 import bcrypt from 'bcryptjs';
 import crypto from 'crypto';
 import nodemailer from 'nodemailer';
+import { generateHumanId } from '@/lib/utils';
 
 function generateRandomPassword() {
   return crypto.randomBytes(8).toString('hex'); // 16 character random password
@@ -57,7 +58,7 @@ export async function POST(req: Request) {
     // Generate random password and hash it
     const rawPassword = generateRandomPassword();
     const passwordHash = await bcrypt.hash(rawPassword, 10);
-    const id = crypto.randomUUID();
+    const id = generateHumanId('uid');
 
     // Check if it's the first user
     const { count } = db.prepare('SELECT COUNT(*) as count FROM users').get() as { count: number };
