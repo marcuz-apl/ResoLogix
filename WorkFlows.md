@@ -43,7 +43,15 @@ Can you come up with a plan of:
 
 
 
-## Fine-Tuning
+### Versioning system
+Please set up the versioning in the format of "m.n.p":
+- "m" is the major version, can be 2-digit, numbering from 0 to 99
+- "n" is the minor version, 1-digit, numbering from 0 to 9
+- "p" is the patch version, 1-digit, numbering from 0 to 9
+- the version starts from 0.0.1
+- the patch number increment by 1 for every commit, same for major version and minor version
+- when the patch version reaches 9, next increment/patch will lead 1 increment on minor version, while patch version back to 0;
+- the same logic shall be applied on minor version increment.
 
 
 
