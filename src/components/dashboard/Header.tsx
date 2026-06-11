@@ -2,7 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { Activity, Sun, Moon, BookOpen, Info, X, Wrench, User, LogOut, ShieldAlert, TrendingDown, Dices } from 'lucide-react';
+import { Sun, Moon, BookOpen, Info, X, Wrench, User, LogOut, ShieldAlert, TrendingDown, Dices, Activity } from 'lucide-react';
 import { useDashboard } from './DashboardContext';
 import { useSession, signOut } from 'next-auth/react';
 import AuthModal from '../auth/AuthModal';
