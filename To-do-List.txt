@@ -1,0 +1,22 @@
+# To-do List
+
+## Core Components (5)
+- FVF/GEF Determinitor: Done at v1.0.20
+- Unit Converter: Done at v1.0.21
+- Athentication: Done at v2.0.1
+- Sidebar: Folderize the cards: not started
+- Reporting function: not started
+    - Preview of Excel/PPTX/Word Reports: Not started
+    - Cleanup: Not started
+    - Sned via Email: to be verified
+    - Rename Report Name: not started
+
+## Module Development
+- Multi-Layer Reservoirs: Not started
+
+## Tools (1)
+- FVF/GEF Determinator: 
+    - Gas (Bg): adding gas components to determine Z-factor
+
+    
+

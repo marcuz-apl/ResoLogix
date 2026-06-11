@@ -1,6 +1,0 @@
-# To-do List
-- FVF/GEF Determinitor: Done at v1.0.20
-- Unit Converter: Done at v1.0.21
-- Athentication: Done at v2.0.1
-- Multi-Layer Reservoirs: Not started
-- 
