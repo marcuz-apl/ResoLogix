@@ -5,7 +5,7 @@
 - Unit Converter: Done at v1.0.21
 - Athentication: Done at v2.0.1
 - Sidebar: Folderize the cards: not started
-- Reporting function:
+- Reporting function: Done v2.1.0
     - Set up a timer to remove the temporary files in ./reports folder in 10 minutes
     - Rename Report Name: add the scenario name ahead of the current report name when generating them.
     - when exporting parameters and reaults, please put the units:
@@ -26,13 +26,14 @@
     
     
 
-        - 
+- Reporting Function:
     - Preview of Excel/PPTX/Word Reports: Not started
     - Send via Email: to be verified
 
 ## Tools (1)
-- FVF/GEF Determinator: 
-    - Gas (Bg): adding gas components to determine Z-factor
+- FVF/GEF Determinator: Done v2.1.2
+    - Oil (Bo): Please refer to https://pvtsolver.com/calculator/oil-formation-volume-factor-standing/ to create the tool as per Standing (1947).
+    - Gas (Bg): Please refer to https://pvtsolver.com/calculator/gas-formation-volume-factor-dranchuk/ to create the tool as per Dranchuk-Abou-Kassem (1975).
 
 ## Module Development
 - Multi-Layer Reservoirs: Not started

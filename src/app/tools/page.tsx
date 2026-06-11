@@ -13,13 +13,16 @@ export default function ToolsPage() {
 
   // Gas FVF State
   const [pressure, setPressure] = useState<number | ''>(3000);
-  const [temperature, setTemperature] = useState<number | ''>(600); // Rankine
-  const [zFactor, setZFactor] = useState<number | ''>(0.85);
+  const [temperature, setTemperature] = useState<number | ''>(150); // Fahrenheit
+  const [gammaG_gas, setGammaG_gas] = useState<number | ''>(0.7);
+  const [h2s, setH2s] = useState<number | ''>(0); // mole %
+  const [co2, setCo2] = useState<number | ''>(0); // mole %
+  const [n2, setN2] = useState<number | ''>(0); // mole %
 
   // Oil FVF State (Standing's)
   const [rs, setRs] = useState<number | ''>(500); // scf/stb
   const [gammaG, setGammaG] = useState<number | ''>(0.7);
-  const [gammaO, setGammaO] = useState<number | ''>(0.85);
+  const [apiOil, setApiOil] = useState<number | ''>(35); // °API
   const [tempOil, setTempOil] = useState<number | ''>(150); // Fahrenheit
 
   // Water FVF State
@@ -27,15 +30,72 @@ export default function ToolsPage() {
   const [pressureWater, setPressureWater] = useState<number | ''>(3000); // psia
 
   const calculateGasFVF = () => {
-    if (pressure === '' || temperature === '' || zFactor === '') return '--';
-    if (pressure <= 0) return 'Error (P > 0)';
-    const bg = 0.02827 * zFactor * temperature / pressure;
-    return (bg * 1000).toFixed(4) + ' rb/Mscf';
+    if (pressure === '' || temperature === '' || gammaG_gas === '' || h2s === '' || co2 === '' || n2 === '') return '--';
+    if (pressure <= 0 || gammaG_gas < 0.55) return 'Error';
+
+    const GG = gammaG_gas;
+    const Y_H2S = h2s / 100;
+    const Y_CO2 = co2 / 100;
+    const Y_N2 = n2 / 100;
+    const T = temperature;
+    const P = pressure;
+
+    const Y_HC = 1 - (Y_H2S + Y_CO2 + Y_N2);
+    if (Y_HC <= 0) return 'Error';
+
+    const GG_HC = (GG - (34.08 * Y_H2S + 44.01 * Y_CO2 + 28.01 * Y_N2) / 28.9647) / Y_HC;
+    
+    // Sutton (1985) for Pseudo-Critical Properties
+    const P_pcHC = 756.8 - 131.0 * GG_HC - 3.6 * Math.pow(GG_HC, 2);
+    const T_pcHC = 169.2 + 349.5 * GG_HC - 74.0 * Math.pow(GG_HC, 2);
+
+    const P_pc_1 = Y_HC * P_pcHC + Y_H2S * 1300 + Y_CO2 * 1071 + Y_N2 * 493.1;
+    const T_pc_1 = Y_HC * T_pcHC + Y_H2S * 672.45 + Y_CO2 * 547.91 + Y_N2 * 227.49;
+
+    // Wichert-Aziz (1972) correction
+    const EPSI = 107.6 * (Y_H2S + Y_CO2 - Math.pow(Y_H2S + Y_CO2, 2.2)) + 5.9 * (Math.pow(Y_H2S, 0.06) - Math.pow(Y_H2S, 0.68));
+
+    const T_pc = T_pc_1 - EPSI;
+    const P_pc = (P_pc_1 * (T_pc_1 - EPSI)) / (T_pc_1 + Y_H2S * (1 - Y_H2S) * EPSI);
+
+    const T_pr = (T + 459.67) / T_pc;
+    const P_pr = P / P_pc;
+
+    // Dranchuk-Abou-Kassem (1975) Constants
+    const A_1 = 0.3265, A_2 = -1.07, A_3 = -0.5339, A_4 = 0.01569, A_5 = -0.05165;
+    const A_6 = 0.5475, A_7 = -0.7361, A_8 = 0.1844, A_9 = 0.1056, A_10 = 0.6134, A_11 = 0.721;
+
+    let Z_Trial = 1;
+    let dZ = 1;
+    let i = 0;
+
+    while (i < 10000 && Math.abs(dZ) > 1e-13) {
+      const Den_r = (0.27 * P_pr) / (Z_Trial * T_pr);
+      const C1 = A_1 + A_2 / T_pr + A_3 / Math.pow(T_pr, 3) + A_4 / Math.pow(T_pr, 4) + A_5 / Math.pow(T_pr, 5);
+      const C2 = A_6 + A_7 / T_pr + A_8 / Math.pow(T_pr, 2);
+      const C3 = A_9 * (A_7 / T_pr + A_8 / Math.pow(T_pr, 2));
+      const C4 = (A_10 * (1 + A_11 * Math.pow(Den_r, 2))) / Math.pow(T_pr, 3);
+      
+      const Z_Calc = 1 + C1 * Den_r + C2 * Math.pow(Den_r, 2) - C3 * Math.pow(Den_r, 5) + C4 * Math.pow(Den_r, 2) * Math.exp(-1 * A_11 * Math.pow(Den_r, 2));
+      
+      dZ = Z_Calc - Z_Trial;
+      if (P_pr <= 2) Z_Trial += dZ;
+      else if (P_pr <= 3) Z_Trial += dZ / 2;
+      else if (P_pr <= 6) Z_Trial += dZ / 3;
+      else Z_Trial += dZ / 5;
+      
+      i++;
+    }
+
+    const bg_rcf_scf = 0.02827 * Z_Trial * (T + 459.67) / P;
+    const bg_rb_scf = bg_rcf_scf / 5.61458;
+    return bg_rb_scf.toFixed(5) + ' rb/scf';
   };
 
   const calculateOilFVF = () => {
-    if (rs === '' || gammaG === '' || gammaO === '' || tempOil === '') return '--';
-    if (gammaO <= 0) return 'Error';
+    if (rs === '' || gammaG === '' || apiOil === '' || tempOil === '') return '--';
+    if (apiOil <= 0) return 'Error';
+    const gammaO = 141.5 / (131.5 + apiOil);
     const bo = 0.9759 + 0.000120 * Math.pow(rs * Math.pow(gammaG / gammaO, 0.5) + 1.25 * tempOil, 1.2);
     return bo.toFixed(4) + ' rb/STB';
   };
@@ -183,10 +243,13 @@ export default function ToolsPage() {
                 <div className="flex flex-col gap-4">
                   {fvfType === 'gas' && (
                     <>
-                      <p className="text-xs text-text-secondary mb-2">Calculates Gas FVF (Bg) using Real Gas Law</p>
+                      <p className="text-xs text-text-secondary mb-2">Calculates Gas FVF (Bg) using Dranchuk-Abou-Kassem (1975)</p>
+                      <label className="flex flex-col gap-1 text-xs font-semibold text-text-primary">Gas Specific Gravity (γg):<input type="number" step="0.01" value={gammaG_gas} onChange={e => setGammaG_gas(e.target.value === '' ? '' : parseFloat(e.target.value))} className="bg-input-bg text-text-primary border border-input-border rounded-md px-3 py-1.5 focus:border-cyan-500 outline-none" /></label>
+                      <label className="flex flex-col gap-1 text-xs font-semibold text-text-primary">H2S Content (mole %):<input type="number" step="0.1" value={h2s} onChange={e => setH2s(e.target.value === '' ? '' : parseFloat(e.target.value))} className="bg-input-bg text-text-primary border border-input-border rounded-md px-3 py-1.5 focus:border-cyan-500 outline-none" /></label>
+                      <label className="flex flex-col gap-1 text-xs font-semibold text-text-primary">CO2 Content (mole %):<input type="number" step="0.1" value={co2} onChange={e => setCo2(e.target.value === '' ? '' : parseFloat(e.target.value))} className="bg-input-bg text-text-primary border border-input-border rounded-md px-3 py-1.5 focus:border-cyan-500 outline-none" /></label>
+                      <label className="flex flex-col gap-1 text-xs font-semibold text-text-primary">N2 Content (mole %):<input type="number" step="0.1" value={n2} onChange={e => setN2(e.target.value === '' ? '' : parseFloat(e.target.value))} className="bg-input-bg text-text-primary border border-input-border rounded-md px-3 py-1.5 focus:border-cyan-500 outline-none" /></label>
+                      <label className="flex flex-col gap-1 text-xs font-semibold text-text-primary">Temperature (°F):<input type="number" step="5" value={temperature} onChange={e => setTemperature(e.target.value === '' ? '' : parseFloat(e.target.value))} className="bg-input-bg text-text-primary border border-input-border rounded-md px-3 py-1.5 focus:border-cyan-500 outline-none" /></label>
                       <label className="flex flex-col gap-1 text-xs font-semibold text-text-primary">Pressure (psia):<input type="number" step="10" value={pressure} onChange={e => setPressure(e.target.value === '' ? '' : parseFloat(e.target.value))} className="bg-input-bg text-text-primary border border-input-border rounded-md px-3 py-1.5 focus:border-cyan-500 outline-none" /></label>
-                      <label className="flex flex-col gap-1 text-xs font-semibold text-text-primary">Temperature (°R):<input type="number" step="10" value={temperature} onChange={e => setTemperature(e.target.value === '' ? '' : parseFloat(e.target.value))} className="bg-input-bg text-text-primary border border-input-border rounded-md px-3 py-1.5 focus:border-cyan-500 outline-none" /></label>
-                      <label className="flex flex-col gap-1 text-xs font-semibold text-text-primary">Z-Factor (dimensionless):<input type="number" step="0.01" value={zFactor} onChange={e => setZFactor(e.target.value === '' ? '' : parseFloat(e.target.value))} className="bg-input-bg text-text-primary border border-input-border rounded-md px-3 py-1.5 focus:border-cyan-500 outline-none" /></label>
                     </>
                   )}
                   {fvfType === 'oil' && (
@@ -194,7 +257,7 @@ export default function ToolsPage() {
                       <p className="text-xs text-text-secondary mb-2">Calculates Oil FVF (Bo) using Standing's Correlation</p>
                       <label className="flex flex-col gap-1 text-xs font-semibold text-text-primary">Solution GOR - Rs (scf/STB):<input type="number" step="10" value={rs} onChange={e => setRs(e.target.value === '' ? '' : parseFloat(e.target.value))} className="bg-input-bg text-text-primary border border-input-border rounded-md px-3 py-1.5 focus:border-cyan-500 outline-none" /></label>
                       <label className="flex flex-col gap-1 text-xs font-semibold text-text-primary">Gas Specific Gravity (γg):<input type="number" step="0.01" value={gammaG} onChange={e => setGammaG(e.target.value === '' ? '' : parseFloat(e.target.value))} className="bg-input-bg text-text-primary border border-input-border rounded-md px-3 py-1.5 focus:border-cyan-500 outline-none" /></label>
-                      <label className="flex flex-col gap-1 text-xs font-semibold text-text-primary">Oil Specific Gravity (γo):<input type="number" step="0.01" value={gammaO} onChange={e => setGammaO(e.target.value === '' ? '' : parseFloat(e.target.value))} className="bg-input-bg text-text-primary border border-input-border rounded-md px-3 py-1.5 focus:border-cyan-500 outline-none" /></label>
+                      <label className="flex flex-col gap-1 text-xs font-semibold text-text-primary">Oil Gravity (°API):<input type="number" step="0.1" value={apiOil} onChange={e => setApiOil(e.target.value === '' ? '' : parseFloat(e.target.value))} className="bg-input-bg text-text-primary border border-input-border rounded-md px-3 py-1.5 focus:border-cyan-500 outline-none" /></label>
                       <label className="flex flex-col gap-1 text-xs font-semibold text-text-primary">Temperature (°F):<input type="number" step="5" value={tempOil} onChange={e => setTempOil(e.target.value === '' ? '' : parseFloat(e.target.value))} className="bg-input-bg text-text-primary border border-input-border rounded-md px-3 py-1.5 focus:border-cyan-500 outline-none" /></label>
                     </>
                   )}
