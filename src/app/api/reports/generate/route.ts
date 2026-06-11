@@ -38,7 +38,8 @@ export async function POST(req: NextRequest) {
         
         // Setup temporary directory
         const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
-        const jobId = `report-${timestamp}`;
+        const safeName = activeName ? activeName.replace(/[^a-zA-Z0-9-]/g, '_') : 'report';
+        const jobId = `${safeName}-${timestamp}`;
         const reportsDir = path.join(process.cwd(), 'reports', jobId);
         if (!fs.existsSync(reportsDir)) {
           fs.mkdirSync(reportsDir, { recursive: true });

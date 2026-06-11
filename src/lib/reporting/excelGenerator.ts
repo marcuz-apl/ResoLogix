@@ -1,8 +1,9 @@
 import ExcelJS from 'exceljs';
 import path from 'path';
 
-export const generateExcel = async (reportsDir: string, data: any, contents: any) => {
+export const generateExcel = async (reportsDir: string, data: any, contents: any, activeName: string) => {
   const workbook = new ExcelJS.Workbook();
+  const safeName = activeName ? activeName.replace(/[^a-zA-Z0-9-]/g, '_') : 'Evaluation';
   workbook.creator = 'ResoLogix';
   workbook.created = new Date();
 
@@ -20,17 +21,17 @@ export const generateExcel = async (reportsDir: string, data: any, contents: any
     // Add headers
     const columns = [
       { header: 'PROB', key: 'prob', width: 10 },
-      { header: 'Area', key: 'Area', width: 12 },
-      { header: 'Net Pay (h)', key: 'h', width: 12 },
-      { header: 'Porosity (Phi)', key: 'Phi', width: 15 },
-      { header: 'Sw', key: 'Sw', width: 12 },
-      { header: 'Boi / Bgi', key: 'Boi', width: 12 },
-      { header: 'Primary RE', key: 'RE', width: 12 },
-      { header: 'Sec RE', key: 'secRE', width: 12 },
-      { header: primaryInPlaceLabel, key: 'primaryInPlace', width: 15 },
-      { header: `Primary Yield (${primaryUnit})`, key: 'primaryLiquid', width: 22 },
+      { header: 'Area (Acre)', key: 'Area', width: 15 },
+      { header: 'Net Pay (feet)', key: 'h', width: 15 },
+      { header: 'Porosity (frac)', key: 'Phi', width: 15 },
+      { header: 'Sw (frac)', key: 'Sw', width: 12 },
+      { header: data.fluidType === 'OIL' ? 'Bo (bbl/STB)' : 'Bg (bbl/SCF)', key: 'Boi', width: 15 },
+      { header: 'Pri RE (frac)', key: 'RE', width: 18 },
+      { header: 'Sec RE (frac)', key: 'secRE', width: 18 },
+      { header: `${primaryInPlaceLabel} (${data.fluidType === 'OIL' ? 'MMbbl' : 'BCF'})`, key: 'primaryInPlace', width: 18 },
+      { header: `Pri Yield (${primaryUnit})`, key: 'primaryLiquid', width: 22 },
       { header: `Secondary Yield (${secUnit})`, key: 'secondaryFluid', width: 22 },
-      { header: 'Total BOE', key: 'totalBOE', width: 15 }
+      { header: 'Total Yield (MMBOE)', key: 'totalBOE', width: 20 }
     ];
     resultsSheet.columns = columns;
 
@@ -108,6 +109,6 @@ export const generateExcel = async (reportsDir: string, data: any, contents: any
     profileSheet.getRow(1).font = { bold: true };
   }
 
-  const outputPath = path.join(reportsDir, 'Evaluation_Data.xlsx');
+  const outputPath = path.join(reportsDir, `${safeName}_Report.xlsx`);
   await workbook.xlsx.writeFile(outputPath);
 };

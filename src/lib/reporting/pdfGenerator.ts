@@ -58,17 +58,17 @@ export const generatePdf = (reportsDir: string, data: any, contents: any, images
         const secUnit = data.fluidType === 'OIL' ? 'BCF' : 'MMSTB';
 
         const cols = [
-          { header: 'Area', key: 'Area' },
-          { header: 'h', key: 'h' },
-          { header: 'Phi', key: 'Phi' },
-          { header: 'Sw', key: 'Sw' },
-          { header: 'Boi', key: 'Boi' },
-          { header: 'Pri RE', key: 'RE' },
-          { header: 'Sec RE', key: 'secRE' },
-          { header: primaryInPlaceLabel, key: 'primaryInPlace' },
+          { header: 'Area (Acre)', key: 'Area' },
+          { header: 'h (feet)', key: 'h' },
+          { header: 'Phi (frac)', key: 'Phi' },
+          { header: 'Sw (frac)', key: 'Sw' },
+          { header: data.fluidType === 'OIL' ? 'Bo (bbl/STB)' : 'Bg (bbl/SCF)', key: 'Boi' },
+          { header: 'Pri RE (frac)', key: 'RE' },
+          { header: 'Sec RE (frac)', key: 'secRE' },
+          { header: `${primaryInPlaceLabel} (${data.fluidType === 'OIL' ? 'MMbbl' : 'BCF'})`, key: 'primaryInPlace' },
           { header: `Pri Yield (${primaryUnit})`, key: 'primaryLiquid' },
           { header: `Sec Yield (${secUnit})`, key: 'secondaryFluid' },
-          { header: 'Total BOE', key: 'totalBOE' }
+          { header: 'Total (MMBOE)', key: 'totalBOE' }
         ];
 
         const rows = cols.map(col => {

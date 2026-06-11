@@ -5,18 +5,38 @@
 - Unit Converter: Done at v1.0.21
 - Athentication: Done at v2.0.1
 - Sidebar: Folderize the cards: not started
-- Reporting function: not started
-    - Preview of Excel/PPTX/Word Reports: Not started
-    - Cleanup: Not started
-    - Sned via Email: to be verified
-    - Rename Report Name: not started
+- Reporting function:
+    - Set up a timer to remove the temporary files in ./reports folder in 10 minutes
+    - Rename Report Name: add the scenario name ahead of the current report name when generating them.
+    - when exporting parameters and reaults, please put the units:
+        - Area: Acre
+        - h: feet
+        - Phi: frac
+        - Sw: frac
+        - Bo: bbl/STB
+        - Bg: bbl/SCF
+        - Primary RE: frac
+        - Secondary RE: frac
+        - OOIP: MMBBL
+        - OGIP: BCF
+        - Primary Yield: MMSTB
+        - Secondary Yield: MMSTB
+        - Total Yield: MMBOE
+    - When exporting PPTX Slides, make sure each image occupy a slide, such that to have a better resolution
+    
+    
 
-## Module Development
-- Multi-Layer Reservoirs: Not started
+        - 
+    - Preview of Excel/PPTX/Word Reports: Not started
+    - Send via Email: to be verified
 
 ## Tools (1)
 - FVF/GEF Determinator: 
     - Gas (Bg): adding gas components to determine Z-factor
 
-    
+## Module Development
+- Multi-Layer Reservoirs: Not started
+
+## Misc
+- Unsecure local web access: to be Developed   
 

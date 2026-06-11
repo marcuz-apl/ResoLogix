@@ -35,7 +35,7 @@ export const generatePptx = async (reportsDir: string, data: any, contents: any,
     const secUnit = data.fluidType === 'OIL' ? 'BCF' : 'MMSTB';
 
     const headers = [
-      'PROB', 'Area', 'h', 'Phi', 'Sw', 'Boi/Bgi', 'Pri RE', 'Sec RE', primaryInPlaceLabel, `Pri Yield (${primaryUnit})`, `Sec Yield (${secUnit})`, 'Total BOE'
+      'PROB', 'Area\n(Acre)', 'h\n(feet)', 'Phi\n(frac)', 'Sw\n(frac)', data.fluidType === 'OIL' ? 'Bo\n(bbl/STB)' : 'Bg\n(bbl/SCF)', 'Pri RE\n(frac)', 'Sec RE\n(frac)', `${primaryInPlaceLabel}\n(${data.fluidType === 'OIL' ? 'MMbbl' : 'BCF'})`, `Pri Yield\n(${primaryUnit})`, `Sec Yield\n(${secUnit})`, 'Total\n(MMBOE)'
     ];
 
     const tableRows = [headers];
@@ -119,30 +119,26 @@ export const generatePptx = async (reportsDir: string, data: any, contents: any,
 
   // --- SLIDES: Probability Distributions (Images) ---
   if (contents.plots && images) {
-    // Primary Product Slide
-    if (images.primaryCdf || images.primaryPdf) {
-      const primarySlide = pptx.addSlide();
-      primarySlide.addText('PROBABILITY DISTRIBUTIONS (PRIMARY)', { x: 0.5, y: 0.3, fontSize: 24, bold: true });
-
-      if (images.primaryCdf) {
-        primarySlide.addImage({ data: images.primaryCdf, x: 1.5, y: 1.0, w: 7, h: 2.1 });
-      }
-      if (images.primaryPdf) {
-        primarySlide.addImage({ data: images.primaryPdf, x: 1.5, y: 3.3, w: 7, h: 2.1 });
-      }
+    if (images.primaryCdf) {
+      const slide = pptx.addSlide();
+      slide.addText('PRIMARY EXCEEDANCE (CDF) PLOT', { x: 0.5, y: 0.3, fontSize: 24, bold: true });
+      slide.addImage({ data: images.primaryCdf, x: 0.5, y: 1.0, w: 9, h: 4.2 });
+    }
+    if (images.primaryPdf) {
+      const slide = pptx.addSlide();
+      slide.addText('PRIMARY DISTRIBUTION (PDF) PLOT', { x: 0.5, y: 0.3, fontSize: 24, bold: true });
+      slide.addImage({ data: images.primaryPdf, x: 0.5, y: 1.0, w: 9, h: 4.2 });
     }
 
-    // Secondary Product Slide
-    if (images.secondaryCdf || images.secondaryPdf) {
-      const secondarySlide = pptx.addSlide();
-      secondarySlide.addText('PROBABILITY DISTRIBUTIONS (SECONDARY)', { x: 0.5, y: 0.3, fontSize: 24, bold: true });
-
-      if (images.secondaryCdf) {
-        secondarySlide.addImage({ data: images.secondaryCdf, x: 1.5, y: 1.0, w: 7, h: 2.1 });
-      }
-      if (images.secondaryPdf) {
-        secondarySlide.addImage({ data: images.secondaryPdf, x: 1.5, y: 3.3, w: 7, h: 2.1 });
-      }
+    if (images.secondaryCdf) {
+      const slide = pptx.addSlide();
+      slide.addText('SECONDARY EXCEEDANCE (CDF) PLOT', { x: 0.5, y: 0.3, fontSize: 24, bold: true });
+      slide.addImage({ data: images.secondaryCdf, x: 0.5, y: 1.0, w: 9, h: 4.2 });
+    }
+    if (images.secondaryPdf) {
+      const slide = pptx.addSlide();
+      slide.addText('SECONDARY DISTRIBUTION (PDF) PLOT', { x: 0.5, y: 0.3, fontSize: 24, bold: true });
+      slide.addImage({ data: images.secondaryPdf, x: 0.5, y: 1.0, w: 9, h: 4.2 });
     }
   }
 

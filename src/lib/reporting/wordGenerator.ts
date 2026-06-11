@@ -54,17 +54,17 @@ export const generateWord = async (reportsDir: string, data: any, contents: any,
     const secUnit = data.fluidType === 'OIL' ? 'BCF' : 'MMSTB';
 
     const cols = [
-      { header: 'Area', key: 'Area' },
-      { header: 'Net Pay (h)', key: 'h' },
-      { header: 'Porosity (Phi)', key: 'Phi' },
-      { header: 'Sw', key: 'Sw' },
-      { header: 'Boi / Bgi', key: 'Boi' },
-      { header: 'Primary RE', key: 'RE' },
-      { header: 'Sec RE', key: 'secRE' },
-      { header: primaryInPlaceLabel, key: 'primaryInPlace' },
+      { header: 'Area (Acre)', key: 'Area' },
+      { header: 'Net Pay (feet)', key: 'h' },
+      { header: 'Porosity (frac)', key: 'Phi' },
+      { header: 'Sw (frac)', key: 'Sw' },
+      { header: data.fluidType === 'OIL' ? 'Bo (bbl/STB)' : 'Bg (bbl/SCF)', key: 'Boi' },
+      { header: 'Primary RE (frac)', key: 'RE' },
+      { header: 'Secondary RE (frac)', key: 'secRE' },
+      { header: `${primaryInPlaceLabel} (${data.fluidType === 'OIL' ? 'MMbbl' : 'BCF'})`, key: 'primaryInPlace' },
       { header: `Primary Yield (${primaryUnit})`, key: 'primaryLiquid' },
       { header: `Secondary Yield (${secUnit})`, key: 'secondaryFluid' },
-      { header: 'Total BOE', key: 'totalBOE' }
+      { header: 'Total Yield (MMBOE)', key: 'totalBOE' }
     ];
 
     cols.forEach(col => {
