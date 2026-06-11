@@ -92,7 +92,7 @@ export default function DcaPage() {
       
       {/* Header */}
       <header className="sticky top-0 z-40 bg-background/80 backdrop-blur-xl border-b border-card-border/50">
-        <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
+        <div className="w-full px-6 h-16 flex items-center justify-between">
           <div className="flex items-center gap-4">
             <Link href="/" className="p-2 hover:bg-card-border/50 rounded-lg transition-colors cursor-pointer group">
               <ArrowLeft className="w-5 h-5 text-text-muted group-hover:text-cyan-400" />
@@ -120,7 +120,7 @@ export default function DcaPage() {
       </header>
 
       {/* Main Content */}
-      <main className="flex-1 max-w-7xl w-full mx-auto p-6 flex flex-col lg:flex-row gap-6">
+      <main className="flex-1 w-full p-6 flex flex-col lg:flex-row gap-6">
         
         {/* Left Column: Input & Controls */}
         <div className="w-full lg:w-[400px] flex flex-col gap-6 shrink-0">
