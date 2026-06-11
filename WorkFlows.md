@@ -207,5 +207,53 @@ Currently we have pretty much all functions ready except a concern: After I crea
   - For Admin user, apaprt from user management function named currently as "Manager users and flatform roles" Sub-page, there will be an "Manage Database" sub-page for Admin users to manage the database, including the CRUD operations on the database.
   - Also another dashboard displaying system performance and resource utilizations if possible.
 
+## Completed Tasks (Merged from To-do-List.txt)
 
-  
+- FVF/GEF Determinitor: Done at v1.0.20
+- Unit Converter: Done at v1.0.21
+- Athentication: Done at v2.0.1
+- Sidebar: Folderize the cards: Done at v2.1.3
+- Timestamp issue: Done at v2.1.4
+    - Please sync the timestamps on Evaluation Cards and the Reporting Function with local time, not the UTC.
+- Reporting function: Done at v2.1.0
+    - Set up a timer to remove the temporary files in ./reports folder in 10 minutes
+    - Rename Report Name: add the scenario name ahead of the current report name when generating them.
+    - when exporting parameters and reaults, please put the units:
+        - Area: Acre
+        - h: feet
+        - Phi: frac
+        - Sw: frac
+        - Bo: bbl/STB
+        - Bg: bbl/SCF
+        - Primary RE: frac
+        - Secondary RE: frac
+        - OOIP: MMBBL
+        - OGIP: BCF
+        - Primary Yield: MMSTB
+        - Secondary Yield: MMSTB
+        - Total Yield: MMBOE
+    - When exporting PPTX Slides, make sure each image occupy a slide, such that to have a better resolution
+- Reporting Function: v3 - Done at v2.1.6
+    - Let's tune the reprting worklow a bit:
+    - Step 1: Generate reports (Images+Excel/PPTX/Word)
+    - Step 2: add "Preview" buttons after the text of Excel/PPTX/Word Report, these buttons will be lit up once the reports are generated without issue report;
+    - Step 3: Clicking the preview button will open the corresponding report in a new browser tab to preview it.
+    - Step 4: Once the preview done, then the user will click "Download Reports" button to download the reports. At this time, the app will zip the reports, user download it;
+    - Step 5: Once the reports are zipped, the app will clean up the temp files in ./reports folder in 10 minutes as per a timer set up.
+    - Please select proper tech stack to support the previews.
+- FVF/GEF Determinator: Done v2.1.2
+    - Oil (Bo): Please refer to https://pvtsolver.com/calculator/oil-formation-volume-factor-standing/ to create the tool as per Standing (1947).
+    - Gas (Bg): Please refer to https://pvtsolver.com/calculator/gas-formation-volume-factor-dranchuk/ to create the tool as per Dranchuk-Abou-Kassem (1975).
+
+## To-Do List
+
+- **DCA Module**     
+  - DCA module: to be developed.
+- **EMV Module**     
+  - EMV module: to be developed.
+- **Reporting Function**     
+  - Send via Email: to be verified
+- **Module Development**
+  - Multi-Layer Reservoirs: Not started
+- **Misc**
+  - Unsecure local web access: to be Developed
