@@ -12,10 +12,16 @@ import pkg from '../../../package.json';
 
 export default function Header() {
   const { toggleTheme, theme, setShowAuthModal } = useDashboard();
+  const [showToast, setShowToast] = React.useState(false);
   const { data: session } = useSession();
   const [showAbout, setShowAbout] = React.useState(false);
   const [showProfileDropdown, setShowProfileDropdown] = React.useState(false);
   const [showProfileModal, setShowProfileModal] = React.useState(false);
+
+  const handleEngineClick = () => {
+    setShowToast(true);
+    setTimeout(() => setShowToast(false), 3000);
+  };
 
   // Close dropdown if clicking outside
   React.useEffect(() => {
@@ -36,7 +42,7 @@ export default function Header() {
         <div className="flex items-center gap-4">
           <div className="flex bg-background border border-card-border rounded-xl p-0.5 text-xs font-semibold shrink-0">
             <button
-              onClick={() => alert("Current computing engine: Monte Carlo Simulation (active).")}
+              onClick={handleEngineClick}
               className={`py-1.5 px-3.5 rounded-lg font-bold shadow border cursor-pointer flex items-center gap-1.5 ${
                 theme === 'dark'
                   ? 'bg-cyan-900/35 border-cyan-800/40 text-cyan-400'
@@ -194,6 +200,18 @@ export default function Header() {
 
         </div>
       </header>
+
+      {/* Floating Toast Notification */}
+      <div 
+        className={`fixed top-20 left-1/2 transform -translate-x-1/2 z-50 transition-all duration-300 pointer-events-none ${
+          showToast ? 'opacity-100 translate-y-0 scale-100' : 'opacity-0 -translate-y-4 scale-95'
+        }`}
+      >
+        <div className="bg-cyan-950/90 border border-cyan-500/50 text-cyan-100 px-4 py-2.5 rounded-xl shadow-[0_0_20px_rgba(6,182,212,0.3)] backdrop-blur-md flex items-center gap-2.5">
+          <Dices className="w-4 h-4 text-cyan-400 animate-spin-slow" />
+          <span className="text-xs font-bold tracking-wide">Current computing engine: Monte Carlo Simulation (active)</span>
+        </div>
+      </div>
 
       {/* Render Auth Modals Here */}
       <AuthModal />

@@ -3,7 +3,8 @@
 import React, { useEffect, useState } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
-import { Shield, ShieldAlert, Trash2, KeyRound, Loader2, Users, Database, Activity, Play, Table as TableIcon, Edit, Check, X } from 'lucide-react';
+import Link from 'next/link';
+import { Shield, ShieldAlert, Trash2, KeyRound, Loader2, Users, Database, Activity, Play, Table as TableIcon, Edit, Check, X, ArrowLeft } from 'lucide-react';
 import Header from '@/components/dashboard/Header';
 import { DashboardProvider } from '@/components/dashboard/DashboardContext';
 
@@ -284,6 +285,15 @@ export default function AdminPage() {
             >
               <Activity className="w-5 h-5" /> System Perf
             </button>
+
+            <div className="h-px bg-card-border my-2 mx-3"></div>
+            
+            <Link 
+              href="/"
+              className="flex items-center gap-3 px-4 py-3 rounded-xl transition-all font-semibold text-sm text-text-muted hover:bg-card-border/30 hover:text-cyan-400"
+            >
+              <ArrowLeft className="w-5 h-5" /> Return to main App
+            </Link>
           </aside>
 
           {/* Content Area */}
