@@ -4,8 +4,11 @@
 - FVF/GEF Determinitor: Done at v1.0.20
 - Unit Converter: Done at v1.0.21
 - Athentication: Done at v2.0.1
-- Sidebar: Folderize the cards: not started
-- Reporting function: Done v2.1.0
+- Sidebar: Folderize the cards: Done at v2.1.3
+- Timestamp issue: Done at v2.1.4
+    - Please sync the timestamps on Evaluation Cards and the Reporting Function with local time, not the UTC.
+    
+- Reporting function: Done at v2.1.0
     - Set up a timer to remove the temporary files in ./reports folder in 10 minutes
     - Rename Report Name: add the scenario name ahead of the current report name when generating them.
     - when exporting parameters and reaults, please put the units:

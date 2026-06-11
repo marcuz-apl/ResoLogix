@@ -195,7 +195,8 @@ export default function Sidebar() {
                                 </span>
                                 <span className="text-[10px] text-text-muted truncate">
                                   {ev.updated_at ? (() => {
-                                    const d = new Date(ev.updated_at);
+                                    // Append 'Z' and replace space with 'T' to ensure it's parsed as UTC, converting to local time
+                                    const d = new Date(ev.updated_at.replace(' ', 'T') + 'Z');
                                     const pad = (n: number) => n.toString().padStart(2, '0');
                                     return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
                                   })() : ''}

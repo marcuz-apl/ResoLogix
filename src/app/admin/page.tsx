@@ -148,7 +148,7 @@ export default function AdminPage() {
                       </div>
                     </td>
                     <td className="py-4 px-6 text-sm font-bold text-text-secondary">
-                      {new Date(user.created_at).toLocaleDateString()}
+                      {new Date(user.created_at.replace(' ', 'T') + 'Z').toLocaleDateString()}
                     </td>
                     <td className="py-4 px-6">
                       <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-bold ${

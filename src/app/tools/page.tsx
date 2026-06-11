@@ -5,7 +5,7 @@ import { ChevronDown, ChevronUp, Wrench, Calculator, ArrowRightLeft, ArrowLeft }
 import Link from 'next/link';
 
 export default function ToolsPage() {
-  const [ffExpanded, setFfExpanded] = useState(false);
+  const [ffExpanded, setFfExpanded] = useState(true);
   const [ucExpanded, setUcExpanded] = useState(false);
 
   // Formation Volume Factor Determinator State

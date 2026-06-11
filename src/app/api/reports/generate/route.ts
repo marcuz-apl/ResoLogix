@@ -37,7 +37,8 @@ export async function POST(req: NextRequest) {
         sendEvent(`Report Generation Started on ${new Date().toLocaleTimeString()}`);
         
         // Setup temporary directory
-        const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+        const now = new Date();
+        const timestamp = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}T${String(now.getHours()).padStart(2, '0')}-${String(now.getMinutes()).padStart(2, '0')}-${String(now.getSeconds()).padStart(2, '0')}`;
         const safeName = activeName ? activeName.replace(/[^a-zA-Z0-9-]/g, '_') : 'report';
         const jobId = `${safeName}-${timestamp}`;
         const reportsDir = path.join(process.cwd(), 'reports', jobId);
