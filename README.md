@@ -2,68 +2,65 @@
 
 **Know Your Resources at First Place**
 
-
-
 ## Intro
 
-ResoLogix is a full-range Resource Evaluation and Analytics Platform for Petroleum Resources, designed to be used by the Exploration and Production (E&P) companies in the Oil and Gas industry. It is used to manage the lifecycle of petroleum resources from discovery to production.
+ResoLogix is a premium, full-range Resource Evaluation and Analytics Platform for Petroleum Resources, specifically engineered for Exploration and Production (E&P) companies. It handles the lifecycle of petroleum resources from early discovery to active production with a suite of sophisticated data tools.
 
 ![ResoLogix Interface](./assets/ResoLogix-1-interface.png)
-![ResoLogix CDF Plot](./assets/ResoLogix-2-CDF-Plot.png)
-![ResoLogix PDF Plot](./assets/ResoLogix-3-PDF-Plot.png)
-![ResoLogix Results Table](./assets/ResoLogix-4-Results-Table.png)
-![ResoLogix Summary Statistics](./assets/ResoLogix-5-Summary-Stats.png)
 
+## Core Features
 
-## Features
+- **Monte Carlo Engine**: Advanced, localized probabilistic simulations for reserve estimations.
+- **Decline Curve Analysis (DCA)**: Deep analytical tools for active production wells.
+- **Reporting Suite**: Instantly generate highly-formatted PDF, Word (docx), PowerPoint (pptx), and Excel workbooks containing generated charts and volumetric tables.
+- **Geological Risk Assessment**: Fully integrated risk matrices for trap, reservoir, charge, and seal.
+- **Premium Interface**: A customized Next.js App Router UI featuring sleek animations, a responsive dark mode layout, and intuitive data visualizations via Chart.js.
 
-- Create and manage petroleum resources
-- Manage the lifecycle of a petroleum resource from discovery to production
-- Assess the risks associated with petroleum resources
-- Visualize and draft reports of petroleum resources
-- Estimate resources using Monte Carlo Simulation and Decline Curve Analysis (DCA)
-- Create and manage simple resource models
-- Estimate the economics of petroleum resources using Discounted Cash Flow (DCF) analysis
-- Track and monitor petroleum resources
-- Manage the lifecycle of petroleum resources (Pre-Drilling and Post-Drilling)
+## Advanced Security & User Management
 
+ResoLogix comes equipped with a strict hierarchical Role-Based Access Control (RBAC) system:
+- **SuperAdmin**: Supreme access. Can execute Raw SQL via the built-in database terminal, permanently delete users, and orchestrate other SuperAdmins. (The very first registered user is automatically elevated).
+- **Admin**: Mid-level access. Can view the system telemetry, edit restricted tables via a safe point-and-click GUI, and promote regular users.
+- **User**: Standard evaluation tier. Completely restricted from all `/admin` routes. 
 
-
-## Getting Started
-
-First, run the development server:
-
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
-
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-
+## ID Architecture
+Instead of unreadable UUIDs, the database employs customized, human-readable, millisecond-collision-safe timestamps (e.g. `uid-2026-06-11-16-08-20-4a8f` and `eid-2026-06-11-16-10-14-b2c1`) across the `users`, `evaluations`, and `parameters` tables for rapid tracking and debugging.
 
 ## Tech Stack
 
-### Core Framework & UI
-- **Framework**: [Next.js](https://nextjs.org/) (App Router, React Server Components)
-- **Language**: [TypeScript](https://www.typescript.org/) (Strict type-checking)
-- **Styling**: [Tailwind CSS](https://tailwindcss.com/) (Premium custom dark/light theme support)
+### Frameworks & UI
+- **Framework**: [Next.js v15](https://nextjs.org/) (App Router & Server Components)
+- **Language**: [TypeScript](https://www.typescript.org/) (Strict typings)
+- **Styling**: [Tailwind CSS v4](https://tailwindcss.com/) (Custom UI/UX and dark mode handling)
 - **Icons**: [Lucide React](https://lucide.dev/)
 
-### Data & Simulation
-- **Database**: [SQLite](https://www.sqlite.org/) via `better-sqlite3` (Scenario & User management)
-- **Computation Engine**: Custom Monte Carlo Simulation engine in TypeScript
-- **Data Visualization**: [Chart.js](https://www.chartjs.org/) & [React-ChartJS-2](https://react-chartjs-2.js.org/) (Interactive Exceedance CDF & PDF curves)
+### State, Data & Engine
+- **Database**: Native [SQLite](https://www.sqlite.org/) via `better-sqlite3`
+- **Charts**: [Chart.js](https://www.chartjs.org/) & `react-chartjs-2`
+- **Engine**: Custom TypeScript Monte Carlo engine (Local Execution)
+- **Authentication**: `next-auth` (Credentials Provider, strictly typed JWT sessions)
+- **Encryption**: `bcryptjs` for secure password hashing
 
-### Backend & Reporting
-- **Authentication**: [NextAuth.js](https://next-auth.js.org/) & `bcryptjs`
-- **Email Service**: `nodemailer`
-- **Report Generation**: `exceljs`, `docx`, `pdfkit`, `pptxgenjs`, `archiver`
+### Export & Reporting Layer
+- **PDF**: `pdfkit`
+- **Word / Docx**: `docx`
+- **Excel**: `exceljs`
+- **PowerPoint**: `pptxgenjs`
+- **Archiving**: `archiver` for bundled `.zip` downloads
+
+## Getting Started
+
+1. Clone the repository and install dependencies.
+```bash
+npm install
+```
+
+2. Boot the development server. The local SQLite database (`resologix.db`) will auto-initialize upon startup.
+```bash
+npm run dev
+```
+
+3. Open [http://localhost:3000](http://localhost:3000) and register your first user (they will automatically become the SuperAdmin).
 
 ## License
 
