@@ -1,6 +1,7 @@
 'use client';
 
 import React, { createContext, useContext, useState, useEffect, useCallback, useMemo, useRef, ReactNode } from 'react';
+import { useSession } from 'next-auth/react';
 import {
   runMonteCarlo,
   generateHistogramData,
@@ -212,8 +213,10 @@ interface DashboardContextType {
 
 const DashboardContext = createContext<DashboardContextType | undefined>(undefined);
 
-export function DashboardProvider({ children }: { children: ReactNode }) {
-  // Theme state
+export const DashboardProvider = ({ children }: { children: ReactNode }) => {
+  const { data: session, status: sessionStatus } = useSession();
+
+  // Layout State
   const [theme, setTheme] = useState<'dark' | 'light'>('dark');
 
   // Pane dragging widths
@@ -368,8 +371,13 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
   };
 
   useEffect(() => {
-    fetchEvaluations();
-  }, []);
+    if (sessionStatus === 'authenticated') {
+      fetchEvaluations();
+    } else if (sessionStatus === 'unauthenticated') {
+      setEvaluations([]);
+      handleNewScenario();
+    }
+  }, [sessionStatus]);
 
   // Load a scenario into state
   const loadScenario = (ev: Evaluation) => {
