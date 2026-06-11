@@ -1,6 +1,6 @@
 {
   "name": "ResoLogix",
-  "version": "2.2.8",
+  "version": "3.0.1",
   "private": true,
   "scripts": {
     "clean": "rm -rf .next",
@@ -19,6 +19,7 @@
     "docx": "^9.7.1",
     "exceljs": "^4.4.0",
     "lucide-react": "^1.17.0",
+    "ml-levenberg-marquardt": "^5.0.1",
     "next": "16.2.7",
     "next-auth": "^4.24.14",
     "nodemailer": "^8.0.10",
@@ -41,5 +42,5 @@
     "tailwindcss": "^4",
     "typescript": "^5"
   },
-  "buildTime": "build 2026-06-11-2108"
+  "buildTime": "build 2026-06-11-2122"
 }
