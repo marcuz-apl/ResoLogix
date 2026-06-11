@@ -2,7 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { ArrowLeft, BookOpen, Layers, Cpu, HelpCircle, FileText, Compass } from 'lucide-react';
+import { ArrowLeft, BookOpen, Layers, Cpu, HelpCircle, FileText, Compass, Activity, Droplets } from 'lucide-react';
 import pkg from '../../../package.json';
 
 export default function DocsPage() {
@@ -37,7 +37,7 @@ export default function DocsPage() {
                 ResoLogix&trade; Knowledge Base
               </h1>
               <p className="text-xs text-text-secondary mt-1 font-semibold uppercase tracking-wider">
-                Scientific documentation, formulae & tutorial guide
+                Scientific documentation, formulae & industry insights
               </p>
             </div>
           </div>
@@ -52,116 +52,100 @@ export default function DocsPage() {
           {/* Left Navigation Menu (3 cols) */}
           <aside className="lg:col-span-3 flex flex-col gap-1.5 shrink-0 self-start sticky top-6">
             <label className="text-[10px] text-text-muted font-bold uppercase tracking-wider mb-2.5 px-3 block">
-              Table of Contents
+              Chapters
             </label>
             <a 
-              href="#background" 
+              href="#chapter-1" 
               className="flex items-center gap-2 py-2 px-3 rounded-lg text-xs font-bold text-text-secondary hover:text-cyan-400 hover:bg-card-border/20 transition-all duration-200"
             >
               <Layers className="w-3.5 h-3.5 text-cyan-400 shrink-0" />
-              <span>1. Reserve Estimation</span>
+              <span className="leading-tight">1. Introduction to Resource Evaluation</span>
             </a>
             <a 
-              href="#monte-carlo" 
+              href="#chapter-2" 
               className="flex items-center gap-2 py-2 px-3 rounded-lg text-xs font-bold text-text-secondary hover:text-cyan-400 hover:bg-card-border/20 transition-all duration-200"
             >
               <Cpu className="w-3.5 h-3.5 text-cyan-400 shrink-0" />
-              <span>2. Monte Carlo Theory</span>
+              <span className="leading-tight">2. Monte Carlo Simulation</span>
             </a>
             <a 
-              href="#geological-risk" 
+              href="#chapter-3" 
               className="flex items-center gap-2 py-2 px-3 rounded-lg text-xs font-bold text-text-secondary hover:text-cyan-400 hover:bg-card-border/20 transition-all duration-200"
             >
-              <Compass className="w-3.5 h-3.5 text-cyan-400 shrink-0" />
-              <span>3. Geological Risk (Pg)</span>
+              <Activity className="w-3.5 h-3.5 text-cyan-400 shrink-0" />
+              <span className="leading-tight">3. Decline Curve Analysis (DCA)</span>
             </a>
             <a 
-              href="#formulae" 
+              href="#chapter-4" 
               className="flex items-center gap-2 py-2 px-3 rounded-lg text-xs font-bold text-text-secondary hover:text-cyan-400 hover:bg-card-border/20 transition-all duration-200"
             >
-              <FileText className="w-3.5 h-3.5 text-cyan-400 shrink-0" />
-              <span>4. Scientific Formulae</span>
+              <Droplets className="w-3.5 h-3.5 text-cyan-400 shrink-0" />
+              <span className="leading-tight">4. Analytical Tools & Theory</span>
             </a>
+            
+            <div className="h-px bg-card-border my-2 mx-3"></div>
+            
             <a 
-              href="#tutorial" 
+              href="#appendix" 
               className="flex items-center gap-2 py-2 px-3 rounded-lg text-xs font-bold text-text-secondary hover:text-cyan-400 hover:bg-card-border/20 transition-all duration-200"
             >
               <HelpCircle className="w-3.5 h-3.5 text-cyan-400 shrink-0" />
-              <span>5. Application Tutorial</span>
+              <span>Appendix: Tutorial</span>
             </a>
           </aside>
 
           {/* Right Contents (9 cols) */}
           <main className="lg:col-span-9 flex flex-col gap-12 text-sm text-text-secondary leading-relaxed">
             
-            {/* Section 1: Reserve Estimation */}
-            <section id="background" className="glass-panel p-8 rounded-2xl flex flex-col gap-4 border border-card-border/50 bg-card/45 relative scroll-mt-6">
-              <h2 className="text-lg font-extrabold text-text-primary border-b border-card-border pb-2 flex items-center gap-2">
-                <Layers className="w-5 h-5 text-cyan-400" />
-                <span>1. Reserve Estimation Background</span>
+            {/* Chapter 1: Resource Evaluation */}
+            <section id="chapter-1" className="glass-panel p-8 rounded-2xl flex flex-col gap-4 border border-card-border/50 bg-card/45 relative scroll-mt-6">
+              <h2 className="text-xl font-extrabold text-text-primary border-b border-card-border pb-3 mb-2 flex items-center gap-2">
+                <Layers className="w-6 h-6 text-cyan-400" />
+                <span>Chapter 1: Introduction to Resource Evaluation</span>
               </h2>
+              
+              <img 
+                src="/docs_exploration_rig.png" 
+                alt="Offshore Exploration Rig" 
+                className="w-full h-64 object-cover rounded-xl border border-card-border shadow-lg mb-4"
+              />
+
               <p>
                 In the petroleum industry, estimating the volume of hydrocarbons stored in a reservoir (and the percentage that can be commercially extracted) is a core engineering task. Since geological datasets (cores, well logs, seismic records) are sparse, every parameter carries a high degree of uncertainty.
               </p>
+
+              <h3 className="font-bold text-text-primary mt-2 text-xs uppercase tracking-wide">Prospective Resources vs. Reserves</h3>
               <p>
-                Estimation approaches fall into two categories:
+                A critical distinction must be made depending on the lifecycle phase of the asset:
               </p>
               <ul className="list-disc pl-5 flex flex-col gap-2">
                 <li>
-                  <strong className="text-text-primary">Deterministic:</strong> Employs single values (often representing low, middle, and high estimates) for each parameter to compute static outputs. While simple, it fails to quantify the likelihood of achieving those outcomes.
+                  <strong className="text-text-primary text-cyan-300">Exploration Phase (Prospective Resources):</strong> These are estimated volumes of hydrocarbons that are <em>potentially</em> recoverable from undiscovered accumulations. Because they haven't been drilled or proven yet, they carry a <strong>Geological Chance of Success (P<sub>g</sub>)</strong>. Estimation here relies heavily on regional geology, seismic amplitude anomalies, and analog fields.
                 </li>
                 <li>
-                  <strong className="text-text-primary">Probabilistic:</strong> Treats each parameter as a probability distribution. Computer algorithms (like Monte Carlo simulations) perform thousands of runs by randomly sampling these distributions to construct an output probability curve. This curve yields precise estimates of conservative, average, and optimistic recoverable reserves.
+                  <strong className="text-text-primary text-emerald-300">Development Phase (Reserves):</strong> Once a discovery is made and confirmed to be commercially viable, the volumes are classified as Reserves. These are known accumulations. The Geological Risk (P<sub>g</sub>) is no longer applicable (it effectively becomes 100%). Estimation shifts towards precise well-log interpretations, core data, and production history.
                 </li>
               </ul>
             </section>
 
-            {/* Section 2: Monte Carlo Theory */}
-            <section id="monte-carlo" className="glass-panel p-8 rounded-2xl flex flex-col gap-4 border border-card-border/50 bg-card/45 relative scroll-mt-6">
-              <h2 className="text-lg font-extrabold text-text-primary border-b border-card-border pb-2 flex items-center gap-2">
-                <Cpu className="w-5 h-5 text-cyan-400" />
-                <span>2. Monte Carlo Probabilistic Theory</span>
+            {/* Chapter 2: Monte Carlo Simulation */}
+            <section id="chapter-2" className="glass-panel p-8 rounded-2xl flex flex-col gap-4 border border-card-border/50 bg-card/45 relative scroll-mt-6">
+              <h2 className="text-xl font-extrabold text-text-primary border-b border-card-border pb-3 mb-2 flex items-center gap-2">
+                <Cpu className="w-6 h-6 text-cyan-400" />
+                <span>Chapter 2: Monte Carlo Simulation & Statistics</span>
               </h2>
-              <p>
-                A Monte Carlo simulation models uncertainty by generating thousands of virtual trials. For each trial, the system randomly samples a value from the probability distribution defined for each parameter (e.g. Area, Net Pay, Porosity) according to its shape and bounds, then computes the volume equations.
-              </p>
-              
-              <h3 className="font-bold text-text-primary mt-2 text-xs uppercase tracking-wide">Probability Distributions</h3>
-              <p className="text-sm font-bold text-text-secondary leading-relaxed mb-6">
-                ResoLogix&trade; supports three key distributions:
-              </p>
-              <ul className="list-disc pl-5 flex flex-col gap-2">
-                <li>
-                  <strong className="text-text-primary">Lognormal (Recommended):</strong> Positively skewed distribution bounded by zero. Skewness prevents negative value generation and models typical geological characteristics (like reservoir area and net pay thickness) which tend to have a long tail of rare, exceptionally large values.
-                </li>
-                <li>
-                  <strong className="text-text-primary">Normal (Gaussian):</strong> Symmetric bell curve characterized by its mean and standard deviation. Best for parameters with symmetric deviation patterns.
-                </li>
-                <li>
-                  <strong className="text-text-primary">Uniform:</strong> Flat distribution where all values between the minimum and maximum have equal likelihood. Useful when data is extremely sparse.
-                </li>
-              </ul>
 
-              <h3 className="font-bold text-text-primary mt-2 text-xs uppercase tracking-wide">Key Percentiles ($P_{90}$, $P_{50}$, $P_{10}$)</h3>
-              <p>
-                The outputs are sorted to construct an <strong>Exceedance Curve (Cumulative Distribution Function - CDF)</strong>:
-              </p>
-              <ul className="list-disc pl-5 flex flex-col gap-2">
-                <li>
-                  <strong className="text-text-primary">P90 (Proven / Conservative):</strong> There is a 90% probability that the actual volumes in the reservoir will equal or exceed this estimate.
-                </li>
-                <li>
-                  <strong className="text-text-primary">P50 (Probable / Median):</strong> There is a 50% probability that the actual volumes will equal or exceed this estimate.
-                </li>
-                <li>
-                  <strong className="text-text-primary">P10 (Possible / Optimistic):</strong> There is a 10% probability that the actual volumes will equal or exceed this estimate.
-                </li>
-                <li>
-                  <strong className="text-text-primary">MEAN (Expected Value):</strong> The statistical average of all simulation trials. Used as the base case in economic calculations.
-                </li>
-              </ul>
+              <img 
+                src="/docs_monte_carlo.png" 
+                alt="Monte Carlo Simulation Visualization" 
+                className="w-full h-64 object-cover rounded-xl border border-card-border shadow-lg mb-4"
+              />
 
-              <h3 className="font-bold text-text-primary mt-4 text-xs uppercase tracking-wide">The Aggregation Paradox (Why A<sub>P90</sub> &times; B<sub>P90</sub> &ne; C<sub>P90</sub>)</h3>
+              <p>
+                A Monte Carlo simulation models uncertainty by generating thousands of virtual trials. For each trial, the system randomly samples a value from the probability distribution defined for each parameter (e.g., Area, Net Pay, Porosity) according to its shape and bounds, then computes the volume equations.
+              </p>
+
+              <h3 className="font-bold text-text-primary mt-2 text-xs uppercase tracking-wide">The Aggregation Paradox (Why A<sub>P90</sub> &times; B<sub>P90</sub> &ne; C<sub>P90</sub>)</h3>
               <p>
                 When calculating reserves (A &times; B = C), it is a common observation that multiplying the deterministic P<sub>90</sub> of the inputs does <strong>not</strong> equal the P<sub>90</sub> of the output, yet the Means do.
               </p>
@@ -177,175 +161,146 @@ export default function DocsPage() {
                   <strong className="text-text-primary">The Result:</strong> Because Monte Carlo correctly accounts for this independence, the resulting output distribution is narrower than deterministically multiplying the extremes. Therefore, the actual P<sub>90</sub> of the output is significantly <strong>higher</strong> (more optimistic) than A<sub>P90</sub> &times; B<sub>P90</sub>. Conversely, the P<sub>10</sub> of the output is significantly <strong>lower</strong> (more conservative) than A<sub>P10</sub> &times; B<sub>P10</sub>. This phenomenon prevents the calculation of unrealistic "phantom" reserves.
                 </li>
               </ul>
-            </section>
 
-            {/* Section 3: Geological Risk (Pg) */}
-            <section id="geological-risk" className="glass-panel p-8 rounded-2xl flex flex-col gap-4 border border-card-border/50 bg-card/45 relative scroll-mt-6">
-              <h2 className="text-lg font-extrabold text-text-primary border-b border-card-border pb-2 flex items-center gap-2">
-                <Compass className="w-5 h-5 text-cyan-400" />
-                <span>3. Geological Chance of Success ($P_g$)</span>
-              </h2>
+              <h3 className="font-bold text-text-primary mt-4 text-xs uppercase tracking-wide">Geological Chance of Success (P<sub>g</sub>)</h3>
               <p>
-                Per best practice, the <strong>Geological Chance of Success ($P_g$) is not evaluated for established Reserves</strong>, as Reserves are defined as volumes already discovered and commercially producible. $P_g$ is strictly used for <strong>Prospective Resources</strong> (untested, drill-ready prospects).
-              </p>
-              <p>
-                For a drill-ready prospect, the target $P_g$ generally ranges from <strong>20% to 40%</strong> to meet standard industry and commerciality thresholds.
-              </p>
-              
-              <h3 className="font-bold text-text-primary mt-2 text-xs uppercase tracking-wide">The Evaluation Framework</h3>
-              <p>
-                The $P_g$ is calculated as the product of independent geological risk factors:
+                As discussed in Chapter 1, P<sub>g</sub> is strictly used for <strong>Prospective Resources</strong>. It is calculated as the product of independent geological risk factors:
                 <br />
-                <code className="font-mono bg-background/50 px-2 py-1 rounded text-cyan-400 mt-2 inline-block">P_g = P_trap × P_reservoir × P_charge × P_seal × P_timing</code>
+                <code className="font-mono bg-background/50 px-2 py-1 rounded text-cyan-400 mt-2 inline-block">P_g = P_trap &times; P_reservoir &times; P_charge &times; P_seal &times; P_timing</code>
               </p>
-              <ul className="list-disc pl-5 flex flex-col gap-2">
-                <li><strong className="text-text-primary">Trap:</strong> Is there a geometric closure or pinch-out?</li>
-                <li><strong className="text-text-primary">Reservoir:</strong> Are porous and permeable rocks present?</li>
-                <li><strong className="text-text-primary">Charge:</strong> Have hydrocarbons been generated and migrated into the trap?</li>
-                <li><strong className="text-text-primary">Seal:</strong> Is there a caprock to prevent the hydrocarbons from leaking?</li>
-                <li><strong className="text-text-primary">Timing:</strong> Did the trap, reservoir, and charge form in the correct geological sequence?</li>
-              </ul>
 
-              <h3 className="font-bold text-text-primary mt-2 text-xs uppercase tracking-wide">Strategic Considerations</h3>
-              <p>
-                While geologists calculate $P_g$ strictly for the presence of hydrocarbons, management also filters projects using the <strong>Probability of Commercial Success ($P_c$)</strong>, which factors in:
-              </p>
-              <ol className="list-decimal pl-5 flex flex-col gap-1">
-                <li>Economic thresholds (Minimum Economic Field Size - MEFS)</li>
-                <li>Development costs</li>
-                <li>Commodity price projections</li>
-              </ol>
-            </section>
-
-            {/* Section 4: Scientific Formulae */}
-            <section id="formulae" className="glass-panel p-8 rounded-2xl flex flex-col gap-4 border border-card-border/50 bg-card/45 relative scroll-mt-6">
-              <h2 className="text-lg font-extrabold text-text-primary border-b border-card-border pb-2 flex items-center gap-2">
-                <FileText className="w-5 h-5 text-cyan-400" />
-                <span>4. Scientific Formulae & Conversions</span>
-              </h2>
-              
-              <div className="flex flex-col gap-5 mt-2">
-                {/* Oil Formulas */}
-                <div className="bg-background/40 border border-card-border/60 p-4 rounded-xl">
-                  <h3 className="font-extrabold text-xs text-blue-400 uppercase tracking-wide mb-2.5">Oil Volumetrics (Liquid Primary)</h3>
-                  <div className="flex flex-col gap-3 font-mono text-xs">
-                    <div className="bg-background/80 p-3 rounded border border-card-border/30">
-                      OOIP (MMSTB) = (7758 * A * h * &Phi; * (1 - S_w) / B_oi) / 1,000,000
-                    </div>
-                    <div className="bg-background/80 p-3 rounded border border-card-border/30">
-                      Unrisked Recoverable Oil (MMSTB) = OOIP * RE_oil
-                    </div>
-                    <div className="bg-background/80 p-3 rounded border border-card-border/30">
-                      Solution Gas In-Place (BCF) = (OOIP * 1,000,000 * GOR) / 1,000,000,000
-                    </div>
-                    <div className="bg-background/80 p-3 rounded border border-card-border/30">
-                      Unrisked Rec. Solution Gas (BCF) = Solution Gas In-Place * RE_solgas
-                    </div>
-                  </div>
-                  <div className="mt-3 text-xs text-text-muted">
-                    Where: 7758 = conversion factor from acre-feet to barrels (bbl); A = Area (acres); h = Net Pay (ft); &Phi; = Porosity (frac); S_w = Water Saturation (frac); B_oi = Formation Volume Factor (res bbl/STB); GOR = Solution Gas/Oil Ratio (scf/STB); RE = Recovery Efficiency (frac).
-                  </div>
+              <h3 className="font-bold text-text-primary mt-4 text-xs uppercase tracking-wide">Scientific Formulae</h3>
+              <div className="bg-background/40 p-4 rounded-xl border border-card-border text-xs font-mono space-y-4">
+                <div>
+                  <div className="text-cyan-400 mb-1 font-bold tracking-wide uppercase">Oil In-Place (STOOIP)</div>
+                  <div className="text-text-muted">MMSTB = Area &times; h &times; &Phi; &times; (1 - S_wi) / (B_oi &times; 7758)</div>
                 </div>
-
-                {/* Gas Formulas */}
-                <div className="bg-background/40 border border-card-border/60 p-4 rounded-xl">
-                  <h3 className="font-extrabold text-xs text-orange-400 uppercase tracking-wide mb-2.5">Gas Volumetrics (Gas Primary)</h3>
-                  <div className="flex flex-col gap-3 font-mono text-xs">
-                    <div className="bg-background/80 p-3 rounded border border-card-border/30">
-                      OGIP (BCF) = (43560 * A * h * &Phi; * (1 - S_w) * GEF) / 1,000,000,000
-                    </div>
-                    <div className="bg-background/80 p-3 rounded border border-card-border/30">
-                      Unrisked Recoverable Gas (BCF) = OGIP * RE_gas
-                    </div>
-                    <div className="bg-background/80 p-3 rounded border border-card-border/30">
-                      Condensate In-Place (MMSTB) = (OGIP * 1,000,000,000 * (CGR / 1,000,000)) / 1,000,000
-                    </div>
-                    <div className="bg-background/80 p-3 rounded border border-card-border/30">
-                      Unrisked Rec. Condensate (MMSTB) = Condensate In-Place * RE_cond
-                    </div>
-                  </div>
-                  <div className="mt-3 text-xs text-text-muted">
-                    Where: 43560 = conversion factor from acres to square feet; GEF = Gas Expansion Factor (scf/rcf); CGR = Condensate/Gas Ratio (bbl/MMscf). Note: CGR values are divided by 1,000,000 to maintain correct dimension scaling.
-                  </div>
-                </div>
-
-                {/* Risk Integration */}
-                <div className="bg-background/40 border border-card-border/60 p-4 rounded-xl">
-                  <h3 className="font-extrabold text-xs text-purple-400 uppercase tracking-wide mb-2.5">Geological Risk & BOE conversions</h3>
-                  <div className="flex flex-col gap-3 font-mono text-xs">
-                    <div className="bg-background/80 p-3 rounded border border-card-border/30">
-                      P_g (Chance of Success) = source * migration * reservoir * closure * containment
-                    </div>
-                    <div className="bg-background/80 p-3 rounded border border-card-border/30">
-                      Risked Recoverable Volume = Unrisked Recoverable * P_g
-                    </div>
-                    <div className="bg-background/80 p-3 rounded border border-card-border/30">
-                      Total MMBOE = Primary Liquid + (Secondary Gas / 5.8)
-                    </div>
-                  </div>
-                  <div className="mt-3 text-xs text-text-muted">
-                    P_g represents the product of the 5 geological risk factor probabilities (Source rock, Migration pathway, Reservoir presence, Structure closure, and Seal containment). Total Barrels of Oil Equivalent (BOE) utilizes the energy equivalence scale of 5.8 Bcf of gas per 1 Million barrels of oil.
-                  </div>
+                <div>
+                  <div className="text-cyan-400 mb-1 font-bold tracking-wide uppercase">Gas In-Place (GIIP)</div>
+                  <div className="text-text-muted">BCF = Area &times; h &times; &Phi; &times; (1 - S_wi) / (B_gi &times; 43560)</div>
                 </div>
               </div>
+
             </section>
 
-            {/* Section 5: Tutorial */}
-            <section id="tutorial" className="glass-panel p-8 rounded-2xl flex flex-col gap-4 border border-card-border/50 bg-card/45 relative scroll-mt-6">
+            {/* Chapter 3: Decline Curve Analysis */}
+            <section id="chapter-3" className="glass-panel p-8 rounded-2xl flex flex-col gap-4 border border-card-border/50 bg-card/45 relative scroll-mt-6">
+              <h2 className="text-xl font-extrabold text-text-primary border-b border-card-border pb-3 mb-2 flex items-center gap-2">
+                <Activity className="w-6 h-6 text-cyan-400" />
+                <span>Chapter 3: Decline Curve Analysis (DCA)</span>
+              </h2>
+
+              <img 
+                src="/docs_dca.png" 
+                alt="Decline Curve Analysis Dashboard" 
+                className="w-full h-64 object-cover rounded-xl border border-card-border shadow-lg mb-4"
+              />
+
+              <p>
+                Decline Curve Analysis (DCA) is the industry standard for forecasting production and estimating the Estimated Ultimate Recovery (EUR) of a well. It has evolved significantly from foundational empirical models to handle modern unconventional reservoirs.
+              </p>
+
+              <h3 className="font-bold text-text-primary mt-2 text-xs uppercase tracking-wide">1. Traditional Arps Models</h3>
+              <p>
+                Developed in 1945 by J.J. Arps, these equations form the backbone of conventional DCA, assuming constant bottom-hole pressure and boundary-dominated flow:
+              </p>
+              <ul className="list-disc pl-5 flex flex-col gap-2">
+                <li><strong className="text-text-primary">Exponential (b = 0):</strong> The decline rate is constant over time. Usually observed in highly permeable reservoirs or late-life production.</li>
+                <li><strong className="text-text-primary">Hyperbolic (0 &lt; b &lt; 1):</strong> The decline rate slows down over time. This is the most common model for solution-gas drive reservoirs.</li>
+                <li><strong className="text-text-primary">Harmonic (b = 1):</strong> A special case of hyperbolic decline where the decline rate drops inversely proportional to production rate.</li>
+              </ul>
+
+              <h3 className="font-bold text-text-primary mt-4 text-xs uppercase tracking-wide">2. Modern Advanced DCA Methods</h3>
+              <p>
+                With the rise of unconventional shale and tight oil/gas, standard Arps models often fail because these wells exhibit multi-year transient flow. A standard hyperbolic curve with a high <em>b-factor</em> (&gt;1) can mathematically project infinite unrealistic reserves.
+              </p>
+              <ul className="list-disc pl-5 flex flex-col gap-2">
+                <li><strong className="text-text-primary">Modified Hyperbolic:</strong> Uses a hyperbolic curve initially, but mathematically forces the curve to switch to an exponential decline once a minimum terminal decline rate (e.g., 5-8% per year) is reached. This is the current industry standard for shale forecasting.</li>
+                <li><strong className="text-text-primary">Logistic Growth Models (LGM):</strong> Incorporates a "carrying capacity" concept, forcing the cumulative production to logically converge to a realistic maximum volume without requiring manual terminal decline inputs.</li>
+                <li><strong className="text-text-primary">Duong & SEPD:</strong> Specifically designed to model the ultra-long linear flow periods observed in fractured shale reservoirs.</li>
+              </ul>
+
+              <h3 className="font-bold text-text-primary mt-4 text-xs uppercase tracking-wide">3. Physics-Informed Machine Learning (PIML)</h3>
+              <p>
+                The latest frontier in forecasting is integrating Machine Learning with physical constraints. PIML approaches use deep learning (like RNNs or LSTMs) to identify complex non-linear patterns—such as the impact of adjacent well interference or changing choke sizes—while using standard Arps logic as a constraint to ensure long-term physical depletion realism.
+              </p>
+
+            </section>
+
+            {/* Chapter 4: Analytical Tools & Theory */}
+            <section id="chapter-4" className="glass-panel p-8 rounded-2xl flex flex-col gap-4 border border-card-border/50 bg-card/45 relative scroll-mt-6">
+              <h2 className="text-xl font-extrabold text-text-primary border-b border-card-border pb-3 mb-2 flex items-center gap-2">
+                <Droplets className="w-6 h-6 text-cyan-400" />
+                <span>Chapter 4: Analytical Tools & Theory</span>
+              </h2>
+
+              <img 
+                src="/docs_pvt.png" 
+                alt="PVT Laboratory Setup" 
+                className="w-full h-64 object-cover rounded-xl border border-card-border shadow-lg mb-4"
+              />
+
+              <p>
+                Accurate volumetric calculation requires precise fluid property data. When laboratory Pressure-Volume-Temperature (PVT) data is unavailable, petroleum engineers rely on established empirical correlations to determine the Formation Volume Factors.
+              </p>
+
+              <h3 className="font-bold text-text-primary mt-2 text-xs uppercase tracking-wide">Oil Formation Volume Factor (B<sub>o</sub>)</h3>
+              <p>
+                B<sub>o</sub> represents the ratio of the volume of oil (including dissolved gas) at reservoir conditions to its volume at standard surface conditions. To calculate this without lab data, two empirical correlations are industry-standard:
+              </p>
+              <ul className="list-disc pl-5 flex flex-col gap-3">
+                <li>
+                  <strong className="text-text-primary">Standing Correlation (1947):</strong> Developed using experimental data from California crude oils. It estimates B<sub>o</sub> as a function of Solution Gas-Oil Ratio (R<sub>s</sub>), Gas Specific Gravity (&gamma;<sub>g</sub>), Oil Specific Gravity (&gamma;<sub>o</sub> / API), and Reservoir Temperature. Best suited for lighter crude oils and medium API gravities.
+                </li>
+                <li>
+                  <strong className="text-text-primary">Vasquez-Beggs Correlation (1980):</strong> Based on a massive database of over 6,000 measurements gathered worldwide. It is highly versatile and specifically categorizes oils by their API gravity (e.g., above or below 30&deg; API) to dynamically adjust its coefficients. This is typically the default recommendation in modern petroleum software.
+                </li>
+              </ul>
+
+              <h3 className="font-bold text-text-primary mt-4 text-xs uppercase tracking-wide">Gas Formation Volume Factor (B<sub>g</sub>)</h3>
+              <p>
+                Unlike oil, gas behavior is highly predictable using the Real Gas Law (Equation of State), eliminating the need for strict geographic empirical correlations.
+              </p>
+              <div className="bg-background/40 p-4 rounded-xl border border-card-border text-xs font-mono space-y-2 mt-2">
+                <div className="text-cyan-400 font-bold tracking-wide">B<sub>g</sub> = 0.02827 &times; Z &times; (T + 460) / P</div>
+                <div className="text-text-muted mt-2">Where:</div>
+                <div className="text-text-muted pl-4">Z = Gas Compressibility Factor (e.g., Standing-Katz chart)</div>
+                <div className="text-text-muted pl-4">T = Reservoir Temperature (&deg;F)</div>
+                <div className="text-text-muted pl-4">P = Reservoir Pressure (psia)</div>
+              </div>
+
+            </section>
+
+            {/* Appendix: Tutorial */}
+            <section id="appendix" className="glass-panel p-8 rounded-2xl flex flex-col gap-4 border border-card-border/50 bg-card/45 relative scroll-mt-6 mb-12">
               <h2 className="text-lg font-extrabold text-text-primary border-b border-card-border pb-2 flex items-center gap-2">
                 <HelpCircle className="w-5 h-5 text-cyan-400" />
-                <span>5. Step-by-Step User Tutorial</span>
+                <span>Appendix: Application Tutorial</span>
               </h2>
               
-              <div className="flex flex-col gap-4">
-                <div className="flex items-start gap-4 bg-background/20 p-3.5 rounded-xl border border-card-border/35">
-                  <span className="flex-shrink-0 flex items-center justify-center w-6 h-6 rounded-full bg-cyan-950 text-cyan-400 font-extrabold border border-cyan-800/40 text-xs">1</span>
-                  <div>
-                    <strong className="text-text-primary block text-xs uppercase tracking-wide">Create or Select Scenario</strong>
-                    Manage your evaluations list using the left sidebar. Click <strong>New</strong> to start a blank scenario or click <strong>Save</strong> to save your current config.
-                  </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                <div className="bg-background/50 p-5 rounded-xl border border-card-border/50">
+                  <h4 className="font-bold text-cyan-400 mb-2">1. Distribution Setup</h4>
+                  <p className="text-xs">Navigate to the Volumetrics tab. For each parameter (Area, Net Pay, etc.), select the distribution type and enter the minimum, mode (most likely), and maximum values. The system will automatically construct the probability density functions.</p>
                 </div>
-
-                <div className="flex items-start gap-4 bg-background/20 p-3.5 rounded-xl border border-card-border/35">
-                  <span className="flex-shrink-0 flex items-center justify-center w-6 h-6 rounded-full bg-cyan-950 text-cyan-400 font-extrabold border border-cyan-800/40 text-xs">2</span>
-                  <div>
-                    <strong className="text-text-primary block text-xs uppercase tracking-wide">Set Scenario Profile & Reservoir Type</strong>
-                    Provide a name and description in the top section. Set your reservoir type to either <strong>Oil Reservoir</strong> or <strong>Gas Reservoir</strong>.
-                  </div>
+                <div className="bg-background/50 p-5 rounded-xl border border-card-border/50">
+                  <h4 className="font-bold text-cyan-400 mb-2">2. Risk Matrix</h4>
+                  <p className="text-xs">If evaluating a prospective resource, switch to the Geological Risk tab. Adjust the sliders for Trap, Reservoir, Charge, and Seal. The application will instantly compute the compounded probability of geological success (Pg).</p>
                 </div>
-
-                <div className="flex items-start gap-4 bg-background/20 p-3.5 rounded-xl border border-card-border/35">
-                  <span className="flex-shrink-0 flex items-center justify-center w-6 h-6 rounded-full bg-cyan-950 text-cyan-400 font-extrabold border border-cyan-800/40 text-xs">3</span>
-                  <div>
-                    <strong className="text-text-primary block text-xs uppercase tracking-wide">Enter Parameter Bounds & Distributions</strong>
-                    Configure your volumetric parameters. Input conservative (P90) and optimistic (P10) values, and set their statistical distributions. For secondary products, you can check/uncheck the toggles to add or ignore gas/condensate calculation.
-                  </div>
+                <div className="bg-background/50 p-5 rounded-xl border border-card-border/50">
+                  <h4 className="font-bold text-cyan-400 mb-2">3. Engine Execution</h4>
+                  <p className="text-xs">Click the Run Simulation button. The Monte Carlo engine will perform the trials locally within your browser, ensuring your proprietary data never leaves your machine.</p>
                 </div>
-
-                <div className="flex items-start gap-4 bg-background/20 p-3.5 rounded-xl border border-card-border/35">
-                  <span className="flex-shrink-0 flex items-center justify-center w-6 h-6 rounded-full bg-cyan-950 text-cyan-400 font-extrabold border border-cyan-800/40 text-xs">4</span>
-                  <div>
-                    <strong className="text-text-primary block text-xs uppercase tracking-wide">Evaluate Geological Factors</strong>
-                    Use the Geological Risk sliders on the right panel to assess individual risk factors. The app calculates the final chance of success $P_g$ dynamically.
-                  </div>
-                </div>
-
-                <div className="flex items-start gap-4 bg-background/20 p-3.5 rounded-xl border border-card-border/35">
-                  <span className="flex-shrink-0 flex items-center justify-center w-6 h-6 rounded-full bg-cyan-950 text-cyan-400 font-extrabold border border-cyan-800/40 text-xs">5</span>
-                  <div>
-                    <strong className="text-text-primary block text-xs uppercase tracking-wide">Run Simulation & Analyze Results</strong>
-                    Adjust the number of Monte Carlo runs in the left sidebar and click <strong>Run Simulation</strong>. Look down at the generated CDF exceedance curve, PDF frequency bar chart, and results tables to study your proven and potential reserve volumes.
-                  </div>
+                <div className="bg-background/50 p-5 rounded-xl border border-card-border/50">
+                  <h4 className="font-bold text-cyan-400 mb-2">4. Automated Reporting</h4>
+                  <p className="text-xs">Review the resulting Exceedance Curves and P90/P50/P10 outputs. You can then navigate to the Reporting dashboard to generate comprehensive Word, PDF, Excel, and PowerPoint documents instantly.</p>
                 </div>
               </div>
             </section>
 
           </main>
-
         </div>
-
       </div>
-
     </div>
   );
 }

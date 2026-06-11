@@ -174,6 +174,14 @@ If you run git commit -m "Updated some features", it will automatically prepend 
   - "If you select to save the reports in a cloud drive or email to an email box, the zip file will be sent to the cloud drive or email box and keep there for the user's disposal. If the user selects to save the reports locally, the user will need to select the folder where the zip file will be saved."
 - I'll let you to design the Funtions and interface and come up with best-fit tech stack to achieve this.
 
+### Docs Page - Reorganization
+Please re-organize the Docs Pages into 4 Chapters:
+## Chapter 1 - Introduction of Resource Evaluation: this is the current Point "1. Reserve Estimation", But replace the "Reserve" with "Resource"; Also please add some difference of Prospective Estimation at Exploration Phase versus the reserve estimation at Development Phase.
+## Chapter 2 - Mornte Carlo Simulation: Pretty much the Point 2-5 of current page.
+## Chapter 3 - Decline Curve Analysis: Please find some latest information from Internet.
+## Chapter 4 - Some theory and intro about the Tools Page: for instance, How to determine the Bo and Bg, the typical and popular approaches, etc. Use Internet for resources.,
+- I don't mind you quote some beautiful pictures in those chapters, such that making the Knowledge Base more vivid and convincing.
+
 
 ### Footer
 - The footer shall be under every page of the application, and it will keep consistent across the application.  It will be 1 line and in smaller fonts than the main text.  The footer will contain three items, copyright, created by and last updated.  The copyright shall be in the format of "Copyright (c) 2026 ResoLogix", the created by shall be in the format of "Created by alfazen.org", and the last updated shall be in the format of "Last Updated on [Date]", and the date will be updated automatically.
