@@ -189,7 +189,7 @@ Please re-organize the Docs Pages into 4 Chapters:
 - On the row of the footer, the left corner shall include "Get in Touch(mailto:[EMAIL_ADDRESS])", then followed by ", " and "LinkedIn(href=https://www.linkedin.com/company/alfazen-org)".
 - On the right-side corner, there shall be a few social icons with links such as, web icon (https://alfazen.org), Twitter icon(https://x.com/marcuszou), LinkedIn icon (https://www.linkedin.com/in/marcuszou/).
 
-### Authentication and User Profile
+### Authentication
 
 It's great so far! Thanks gemini.
 Currently we have pretty much all functions ready except a concern: After I created a Scenario and saved to the backend database, when my colleagues access the web app, he can modify/delete the scenario, that's bad. then a user management function or authentication system is needed, isn't it?
@@ -199,7 +199,13 @@ Currently we have pretty much all functions ready except a concern: After I crea
 -  There shall a chance for those lazy or busy users, not register, not log in, but stay on the web app interface to finish a quick Resource Evaluation (One evaluation at a time); If the web browser got closed by accident, the session  is over and can not retrieve anything.
 - any other thoughts? please advise.
 
-Can you help on this authentication and user profile system?
+### User Management
+- Once the user logged in successfully, there shall be a user profile drop-down menu at the top-right corner at the Header section, located right before the "Docs" button; the drop-down menu shall contain "User Name", "Role", "Last Log in Time", "Log Out", and possibly "User Profile" for updating some basic info of the user.
+- There shall be a user role system with two roles: Admin and regular user.  The Admin user is the one who is granted by the ResoLogix team, and can manage other users, such as, upgrade a user to Admin, or downgrade a Admin to regular user, or delete a user, etc.  The regular user can only manage his own account, such as, changing his password, or updating some basic info of the user.
+- The user's ID is his email address (which must be a valid email address format), and the user's name (or teh first part of his email address before teh @ sign) will be used as his display name in the web app. He can update it later.
+- There will be an "Admin" page in the web app for Admin users to manage other users, and this page will not be visible to regular users.
+  - For Admin user, apaprt from user management function named currently as "Manager users and flatform roles" Sub-page, there will be an "Manage Database" sub-page for Admin users to manage the database, including the CRUD operations on the database.
+  - Also another dashboard displaying system performance and resource utilizations if possible.
 
 
   

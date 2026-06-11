@@ -11,7 +11,7 @@ export async function GET() {
     }
 
     const users = db.prepare(`
-      SELECT id, email, is_admin, needs_password_change, created_at 
+      SELECT id, email, name, last_login, is_admin, is_superadmin, needs_password_change, created_at 
       FROM users 
       ORDER BY created_at DESC
     `).all();

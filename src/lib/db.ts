@@ -17,6 +17,9 @@ export function initDb() {
       password_hash TEXT NOT NULL,
       needs_password_change INTEGER DEFAULT 1,
       is_admin INTEGER DEFAULT 0,
+      is_superadmin INTEGER DEFAULT 0,
+      name TEXT,
+      last_login TEXT,
       created_at TEXT DEFAULT CURRENT_TIMESTAMP
     );
 
@@ -88,6 +91,20 @@ export function initDb() {
       db.exec(`ALTER TABLE evaluations ADD COLUMN ${col} TEXT DEFAULT '${defaultValue}';`);
     } catch (e) {
       // Column already exists, ignore error
+    }
+  }
+
+  // Migration: add name, last_login, is_superadmin to users
+  const userColumns = ['name', 'last_login', 'is_superadmin'];
+  for (const col of userColumns) {
+    try {
+      if (col === 'is_superadmin') {
+        db.exec(`ALTER TABLE users ADD COLUMN ${col} INTEGER DEFAULT 0;`);
+      } else {
+        db.exec(`ALTER TABLE users ADD COLUMN ${col} TEXT;`);
+      }
+    } catch (e) {
+      // Column already exists
     }
   }
 }

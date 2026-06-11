@@ -62,12 +62,13 @@ export async function POST(req: Request) {
     // Check if it's the first user
     const { count } = db.prepare('SELECT COUNT(*) as count FROM users').get() as { count: number };
     const isAdmin = count === 0 ? 1 : 0;
+    const isSuperAdmin = count === 0 ? 1 : 0;
 
     // Insert user
     db.prepare(`
-      INSERT INTO users (id, email, password_hash, needs_password_change, is_admin)
-      VALUES (?, ?, ?, 1, ?)
-    `).run(id, emailLower, passwordHash, isAdmin);
+      INSERT INTO users (id, email, password_hash, needs_password_change, is_admin, is_superadmin)
+      VALUES (?, ?, ?, 1, ?, ?)
+    `).run(id, emailLower, passwordHash, isAdmin, isSuperAdmin);
 
     // Send email
     const emailSent = await sendEmail(

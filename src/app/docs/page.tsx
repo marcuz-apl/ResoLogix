@@ -2,10 +2,14 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { ArrowLeft, BookOpen, Layers, Cpu, HelpCircle, FileText, Compass, Activity, Droplets } from 'lucide-react';
+import { ArrowLeft, BookOpen, Layers, Cpu, HelpCircle, FileText, Compass, Activity, Droplets, ShieldAlert, Database } from 'lucide-react';
+import { useSession } from 'next-auth/react';
 import pkg from '../../../package.json';
 
 export default function DocsPage() {
+  const { data: session } = useSession();
+  const isAdmin = (session?.user as any)?.isAdmin;
+
   return (
     <div className="min-h-screen bg-[#070a13] text-[#f8fafc] font-sans selection:bg-cyan-500/30 selection:text-cyan-200">
       
@@ -92,6 +96,16 @@ export default function DocsPage() {
               <HelpCircle className="w-3.5 h-3.5 text-cyan-400 shrink-0" />
               <span>Appendix: Tutorial</span>
             </a>
+
+            {isAdmin && (
+              <a 
+                href="#admin-guide" 
+                className="flex items-center gap-2 py-2 px-3 rounded-lg text-xs font-bold text-purple-400 hover:text-purple-300 hover:bg-purple-900/20 transition-all duration-200 mt-2 border border-purple-500/20"
+              >
+                <ShieldAlert className="w-3.5 h-3.5 shrink-0" />
+                <span>Admin DB Guide</span>
+              </a>
+            )}
           </aside>
 
           {/* Right Contents (9 cols) */}
@@ -297,6 +311,55 @@ export default function DocsPage() {
                 </div>
               </div>
             </section>
+
+            {/* Admin Database Guide (Only visible to Admins) */}
+            {isAdmin && (
+              <section id="admin-guide" className="glass-panel p-8 rounded-2xl flex flex-col gap-4 border border-purple-500/30 bg-purple-950/10 relative scroll-mt-6 mb-12 shadow-[0_0_30px_rgba(168,85,247,0.1)]">
+                <h2 className="text-lg font-extrabold text-purple-400 border-b border-purple-500/30 pb-2 flex items-center gap-2">
+                  <ShieldAlert className="w-5 h-5" />
+                  <span>Admin Guide: Database Introspection</span>
+                </h2>
+                
+                <p className="text-sm">
+                  As a system administrator, you may need to inspect the underlying database architecture. The specific query to list all table names in a database depends on the SQL dialect of the relational database management system (RDBMS) you are using.
+                </p>
+
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-4">
+                  {/* SQLite */}
+                  <div className="bg-background/80 p-5 rounded-xl border border-card-border">
+                    <h4 className="font-bold text-text-primary mb-2 flex items-center gap-2">
+                      <Database className="w-4 h-4 text-cyan-400" /> SQLite3
+                    </h4>
+                    <p className="text-xs text-text-muted mb-3">ResoLogix currently uses SQLite natively. You can query the internal master table.</p>
+                    <div className="bg-black/50 p-3 rounded-lg font-mono text-[10px] text-emerald-400 border border-card-border overflow-x-auto">
+                      SELECT name FROM sqlite_master WHERE type='table';
+                    </div>
+                  </div>
+
+                  {/* PostgreSQL */}
+                  <div className="bg-background/80 p-5 rounded-xl border border-card-border">
+                    <h4 className="font-bold text-text-primary mb-2 flex items-center gap-2">
+                      <Database className="w-4 h-4 text-blue-400" /> PostgreSQL
+                    </h4>
+                    <p className="text-xs text-text-muted mb-3">Postgres strictly adheres to the ANSI standard information schema.</p>
+                    <div className="bg-black/50 p-3 rounded-lg font-mono text-[10px] text-emerald-400 border border-card-border overflow-x-auto">
+                      SELECT table_name<br/>FROM information_schema.tables<br/>WHERE table_schema = 'public';
+                    </div>
+                  </div>
+
+                  {/* MySQL */}
+                  <div className="bg-background/80 p-5 rounded-xl border border-card-border">
+                    <h4 className="font-bold text-text-primary mb-2 flex items-center gap-2">
+                      <Database className="w-4 h-4 text-amber-400" /> MySQL
+                    </h4>
+                    <p className="text-xs text-text-muted mb-3">MySQL provides a highly simplified syntax for introspection.</p>
+                    <div className="bg-black/50 p-3 rounded-lg font-mono text-[10px] text-emerald-400 border border-card-border overflow-x-auto">
+                      SHOW TABLES;
+                    </div>
+                  </div>
+                </div>
+              </section>
+            )}
 
           </main>
         </div>

@@ -7,12 +7,26 @@ import { useDashboard } from './DashboardContext';
 import { useSession, signOut } from 'next-auth/react';
 import AuthModal from '../auth/AuthModal';
 import ForcePasswordChangeModal from '../auth/ForcePasswordChangeModal';
+import UserProfileModal from '../auth/UserProfileModal';
 import pkg from '../../../package.json';
 
 export default function Header() {
   const { toggleTheme, theme, setShowAuthModal } = useDashboard();
   const { data: session } = useSession();
   const [showAbout, setShowAbout] = React.useState(false);
+  const [showProfileDropdown, setShowProfileDropdown] = React.useState(false);
+  const [showProfileModal, setShowProfileModal] = React.useState(false);
+
+  // Close dropdown if clicking outside
+  React.useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (!(e.target as Element).closest('.profile-dropdown-container')) {
+        setShowProfileDropdown(false);
+      }
+    };
+    document.addEventListener('click', handleClickOutside);
+    return () => document.removeEventListener('click', handleClickOutside);
+  }, []);
 
   return (
     <>
@@ -72,7 +86,7 @@ export default function Header() {
           
           {/* Auth Button */}
           {session ? (
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 relative profile-dropdown-container">
               {(session.user as any).isAdmin && (
                 <Link
                   href="/admin"
@@ -83,14 +97,59 @@ export default function Header() {
                   Admin Panel
                 </Link>
               )}
+              
+              {/* Profile Avatar Button */}
               <button
-                onClick={() => signOut({ redirect: false })}
-                className="flex items-center gap-1.5 py-1.5 px-3.5 rounded-xl bg-card border border-card-border text-text-secondary hover:text-rose-400 hover:border-rose-500/40 hover:bg-rose-950/10 transition-all duration-200 text-xs font-bold cursor-pointer shrink-0"
-                title={`Logged in as ${session.user?.email} - Click to sign out`}
+                onClick={() => setShowProfileDropdown(!showProfileDropdown)}
+                className="flex items-center justify-center h-8 px-3 rounded-full bg-cyan-900/30 border border-cyan-800/50 text-cyan-400 hover:bg-cyan-800/40 transition-colors gap-1.5"
+                title="User Profile"
               >
-                <LogOut className="w-3.5 h-3.5" />
-                Sign Out
+                <User className="w-3.5 h-3.5" />
+                <span className="text-xs font-bold truncate max-w-[100px]">
+                  {((session.user as any)?.name || session.user?.email?.split('@')[0] || 'User')}
+                </span>
               </button>
+
+              {/* Dropdown Menu */}
+              {showProfileDropdown && (
+                <div className="absolute top-10 right-0 w-64 bg-card border border-card-border rounded-xl shadow-2xl py-2 z-50 animate-in fade-in zoom-in-95 duration-200">
+                  <div className="px-4 py-2 border-b border-card-border/50">
+                    <p className="text-sm font-bold text-text-primary truncate">
+                      {(session.user as any)?.name}
+                    </p>
+                    <p className="text-xs text-text-muted truncate mt-0.5">{session.user?.email}</p>
+                    <div className="mt-2 flex items-center justify-between">
+                      <span className={`text-[10px] font-bold uppercase px-2 py-0.5 rounded-full ${
+                        (session.user as any)?.isSuperAdmin ? 'bg-fuchsia-900/40 text-fuchsia-400 border border-fuchsia-500/30' :
+                        (session.user as any)?.isAdmin ? 'bg-purple-900/40 text-purple-400 border border-purple-500/30' : 
+                        'bg-cyan-900/40 text-cyan-400 border border-cyan-500/30'
+                      }`}>
+                        Role: {(session.user as any)?.isSuperAdmin ? 'SuperAdmin' : (session.user as any)?.isAdmin ? 'Admin' : 'User'}
+                      </span>
+                    </div>
+                    {(session.user as any)?.lastLogin && (
+                      <p className="text-[10px] text-text-muted mt-2">
+                        Last Login:<br/>{new Date((session.user as any).lastLogin).toLocaleString()}
+                      </p>
+                    )}
+                  </div>
+                  
+                  <div className="px-2 pt-2 flex flex-col gap-1">
+                    <button
+                      onClick={() => { setShowProfileDropdown(false); setShowProfileModal(true); }}
+                      className="w-full text-left px-3 py-2 text-xs font-semibold text-text-secondary hover:text-cyan-400 hover:bg-cyan-950/20 rounded-lg transition-colors flex items-center gap-2"
+                    >
+                      <User className="w-4 h-4" /> User Profile
+                    </button>
+                    <button
+                      onClick={() => signOut({ redirect: false })}
+                      className="w-full text-left px-3 py-2 text-xs font-semibold text-text-secondary hover:text-rose-400 hover:bg-rose-950/20 rounded-lg transition-colors flex items-center gap-2"
+                    >
+                      <LogOut className="w-4 h-4" /> Log Out
+                    </button>
+                  </div>
+                </div>
+              )}
             </div>
           ) : (
             <button
@@ -139,6 +198,7 @@ export default function Header() {
       {/* Render Auth Modals Here */}
       <AuthModal />
       <ForcePasswordChangeModal />
+      <UserProfileModal isOpen={showProfileModal} onClose={() => setShowProfileModal(false)} />
 
       {/* About Modal Dialog Box */}
       {showAbout && (

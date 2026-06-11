@@ -16,12 +16,28 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
     const { action } = await req.json();
 
     if (action === 'toggle_admin') {
-      const user = db.prepare('SELECT is_admin FROM users WHERE id = ?').get(resolvedParams.id) as any;
+      const user = db.prepare('SELECT is_admin, is_superadmin FROM users WHERE id = ?').get(resolvedParams.id) as any;
       if (!user) return NextResponse.json({ error: "User not found" }, { status: 404 });
       
+      if (user.is_superadmin && !(session.user as any).isSuperAdmin) {
+        return NextResponse.json({ error: "Only SuperAdmins can modify a SuperAdmin's role" }, { status: 403 });
+      }
+
       const newStatus = user.is_admin === 1 ? 0 : 1;
       db.prepare('UPDATE users SET is_admin = ? WHERE id = ?').run(newStatus, resolvedParams.id);
       return NextResponse.json({ success: true, is_admin: newStatus });
+    }
+
+    if (action === 'toggle_superadmin') {
+      if (!(session.user as any).isSuperAdmin) {
+        return NextResponse.json({ error: "Forbidden: SuperAdmins only" }, { status: 403 });
+      }
+      const user = db.prepare('SELECT is_superadmin FROM users WHERE id = ?').get(resolvedParams.id) as any;
+      if (!user) return NextResponse.json({ error: "User not found" }, { status: 404 });
+      
+      const newStatus = user.is_superadmin === 1 ? 0 : 1;
+      db.prepare('UPDATE users SET is_superadmin = ? WHERE id = ?').run(newStatus, resolvedParams.id);
+      return NextResponse.json({ success: true, is_superadmin: newStatus });
     }
 
     if (action === 'reset_password') {
@@ -44,8 +60,8 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
 export async function DELETE(req: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
     const session = await getServerSession(authOptions);
-    if (!session || !session.user || !(session.user as any).isAdmin) {
-      return NextResponse.json({ error: "Forbidden: Admins only" }, { status: 403 });
+    if (!session || !session.user || !(session.user as any).isSuperAdmin) {
+      return NextResponse.json({ error: "Forbidden: Only SuperAdmins can delete users" }, { status: 403 });
     }
     
     const resolvedParams = await params;
