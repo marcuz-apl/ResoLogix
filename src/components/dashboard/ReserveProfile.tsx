@@ -21,6 +21,8 @@ export default function ReserveProfile() {
     setActiveName,
     activeDescription,
     setActiveDescription,
+    activeFolder,
+    setActiveFolder,
     isProfileExpanded,
     setIsProfileExpanded,
     country,
@@ -53,6 +55,16 @@ export default function ReserveProfile() {
     <div className="glass-panel p-4 rounded-2xl flex flex-col gap-4 mb-6 border border-card-border/50">
       {/* Name, Description, and Reservoir Type Selector Row */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+        <div className="flex flex-col gap-1.5 flex-[2] min-w-0">
+          <label className="text-[10px] text-text-muted font-bold uppercase tracking-wider block">Folder</label>
+          <input
+            type="text"
+            value={activeFolder}
+            onChange={(e) => setActiveFolder(e.target.value)}
+            className="bg-transparent text-xs font-bold text-text-primary focus:outline-none border-b border-transparent focus:border-card-border/60 px-1 py-1 rounded transition-all duration-200 w-full truncate"
+            placeholder="e.g. Gulf Coast"
+          />
+        </div>
         <div className="flex flex-col gap-1.5 flex-[2] min-w-0">
           <label className="text-[10px] text-text-muted font-bold uppercase tracking-wider block">Scenario Name</label>
           <input

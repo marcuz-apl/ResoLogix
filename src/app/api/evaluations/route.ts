@@ -64,6 +64,7 @@ export async function GET() {
         terrain: ev.terrain || 'undefined',
         lahee_class: ev.lahee_class || 'undefined',
         type_well: ev.type_well || 'None',
+        folder: ev.folder || 'Uncategorized',
         created_at: ev.created_at,
         updated_at: ev.updated_at,
         parameters: formattedParams,
@@ -128,6 +129,7 @@ export async function POST(req: Request) {
       terrain,
       lahee_class,
       type_well,
+      folder,
       parameters, 
       risk_factors 
     } = body;
@@ -148,9 +150,9 @@ export async function POST(req: Request) {
         INSERT INTO evaluations (
           id, user_id, name, description, fluid_type, include_secondary, 
           country, geol_basin, play_type, reservoir_age, lithology, 
-          depo_env, exp_stage, terrain, lahee_class, type_well, updated_at
+          depo_env, exp_stage, terrain, lahee_class, type_well, folder, updated_at
         )
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
         ON CONFLICT(id) DO UPDATE SET
           name = excluded.name,
           description = excluded.description,
@@ -166,6 +168,7 @@ export async function POST(req: Request) {
           terrain = excluded.terrain,
           lahee_class = excluded.lahee_class,
           type_well = excluded.type_well,
+          folder = excluded.folder,
           updated_at = CURRENT_TIMESTAMP
       `).run(
         id, 
@@ -183,7 +186,8 @@ export async function POST(req: Request) {
         exp_stage || 'undefined',
         terrain || 'undefined',
         lahee_class || 'undefined',
-        type_well || 'None'
+        type_well || 'None',
+        folder || 'Uncategorized'
       );
 
       // 2. Delete existing parameters
@@ -248,6 +252,7 @@ export async function POST(req: Request) {
       terrain,
       lahee_class,
       type_well,
+      folder,
       parameters,
       risk_factors,
     });

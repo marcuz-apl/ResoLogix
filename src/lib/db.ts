@@ -36,6 +36,7 @@ export function initDb() {
       terrain TEXT DEFAULT 'undefined',
       lahee_class TEXT DEFAULT 'undefined',
       type_well TEXT DEFAULT 'None',
+      folder TEXT DEFAULT 'Uncategorized',
       include_secondary INTEGER DEFAULT 1,
       created_at TEXT DEFAULT CURRENT_TIMESTAMP,
       updated_at TEXT DEFAULT CURRENT_TIMESTAMP,
@@ -65,7 +66,7 @@ export function initDb() {
 
 
 
-  // Migration: add reserve profile fields to evaluations if not exists
+  // Migration: add reserve profile and folder fields to evaluations if not exists
   const reserveProfileColumns = [
     'country',
     'geol_basin',
@@ -76,11 +77,14 @@ export function initDb() {
     'exp_stage',
     'terrain',
     'lahee_class',
-    'type_well'
+    'type_well',
+    'folder'
   ];
   for (const col of reserveProfileColumns) {
     try {
-      const defaultValue = col === 'type_well' ? 'None' : 'undefined';
+      let defaultValue = 'undefined';
+      if (col === 'type_well') defaultValue = 'None';
+      if (col === 'folder') defaultValue = 'Uncategorized';
       db.exec(`ALTER TABLE evaluations ADD COLUMN ${col} TEXT DEFAULT '${defaultValue}';`);
     } catch (e) {
       // Column already exists, ignore error

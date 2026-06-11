@@ -1,7 +1,7 @@
 'use client';
 
-import React from 'react';
-import { Plus, Check, Save, FolderOpen, Trash2, Sliders, RefreshCw, Copy } from 'lucide-react';
+import React, { useState } from 'react';
+import { Plus, Check, Save, FolderOpen, Trash2, Sliders, RefreshCw, Copy, ChevronDown, ChevronRight } from 'lucide-react';
 import { useDashboard } from './DashboardContext';
 import { useSession } from 'next-auth/react';
 
@@ -36,6 +36,25 @@ export default function Sidebar() {
     }
     handleSaveScenario();
   };
+
+  const [expandedFolders, setExpandedFolders] = useState<Record<string, boolean>>({});
+
+  const toggleFolder = (folder: string) => {
+    setExpandedFolders(prev => ({ ...prev, [folder]: !prev[folder] }));
+  };
+
+  const groupedEvaluations = evaluations.reduce((acc, ev) => {
+    const folder = ev.folder || 'Uncategorized';
+    if (!acc[folder]) acc[folder] = [];
+    acc[folder].push(ev);
+    return acc;
+  }, {} as Record<string, typeof evaluations>);
+  
+  const folders = Object.keys(groupedEvaluations).sort((a, b) => {
+    if (a === 'Uncategorized') return 1;
+    if (b === 'Uncategorized') return -1;
+    return a.localeCompare(b);
+  });
 
   return (
     <>
@@ -136,43 +155,64 @@ export default function Sidebar() {
             ) : evaluations.length === 0 ? (
               <div className="text-text-muted text-xs text-center py-8">No saved scenarios. Create and save one!</div>
             ) : (
-              evaluations.map((ev) => {
-                const isActive = ev.id === activeId;
+              folders.map((folder) => {
+                const isExpanded = expandedFolders[folder] !== false; // Default expanded
+                const folderEvals = groupedEvaluations[folder];
                 return (
-                  <div
-                    key={ev.id}
-                    onClick={() => loadScenario(ev)}
-                    className={`group relative p-3 rounded-xl border text-left cursor-pointer transition-all duration-300 ${
-                      isActive
-                        ? 'bg-card border-cyan-500 shadow-md shadow-cyan-950/20'
-                        : 'bg-card/30 border-card-border hover:border-cyan-500/40 hover:bg-card/55'
-                    }`}
-                  >
-                    <div className="font-semibold text-sm pr-6 text-text-primary group-hover:text-cyan-400 transition-colors duration-200 truncate">
-                      {ev.name}
-                    </div>
-
-                    <div className="flex items-center gap-2 mt-2">
-                      <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded shrink-0 ${
-                        ev.fluid_type === 'OIL' ? 'bg-green-50 dark:bg-green-950/30 text-green-500' : 'bg-red-50 dark:bg-red-950/30 text-red-500'
-                      }`}>
-                        {ev.fluid_type}
-                      </span>
-                      <span className="text-[10px] text-text-muted truncate">
-                        {ev.updated_at ? (() => {
-                          const d = new Date(ev.updated_at);
-                          const pad = (n: number) => n.toString().padStart(2, '0');
-                          return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
-                        })() : ''}
-                      </span>
-                    </div>
-                    <button
-                      onClick={(e) => handleDeleteScenario(ev.id, e)}
-                      className="absolute top-3 right-3 text-text-muted hover:text-rose-400 p-1 rounded hover:bg-rose-950/20 opacity-0 group-hover:opacity-100 transition-all duration-200"
-                      title="Delete Scenario"
+                  <div key={folder} className="flex flex-col gap-1 mb-2">
+                    <div 
+                      className="flex items-center gap-2 cursor-pointer text-text-primary hover:text-cyan-400 font-bold text-xs p-1"
+                      onClick={() => toggleFolder(folder)}
                     >
-                      <Trash2 className="w-3.5 h-3.5" />
-                    </button>
+                      {isExpanded ? <ChevronDown className="w-3 h-3" /> : <ChevronRight className="w-3 h-3" />}
+                      <span className="truncate">{folder}</span>
+                      <span className="text-text-muted font-normal">({folderEvals.length})</span>
+                    </div>
+                    
+                    {isExpanded && (
+                      <div className="flex flex-col gap-2 pl-3 border-l-2 border-card-border/50 ml-1.5 mt-1">
+                        {folderEvals.map((ev) => {
+                          const isActive = ev.id === activeId;
+                          return (
+                            <div
+                              key={ev.id}
+                              onClick={() => loadScenario(ev)}
+                              className={`group relative p-3 rounded-xl border text-left cursor-pointer transition-all duration-300 ${
+                                isActive
+                                  ? 'bg-card border-cyan-500 shadow-md shadow-cyan-950/20'
+                                  : 'bg-card/30 border-card-border hover:border-cyan-500/40 hover:bg-card/55'
+                              }`}
+                            >
+                              <div className="font-semibold text-sm pr-6 text-text-primary group-hover:text-cyan-400 transition-colors duration-200 truncate">
+                                {ev.name}
+                              </div>
+
+                              <div className="flex items-center gap-2 mt-2">
+                                <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded shrink-0 ${
+                                  ev.fluid_type === 'OIL' ? 'bg-green-50 dark:bg-green-950/30 text-green-500' : 'bg-red-50 dark:bg-red-950/30 text-red-500'
+                                }`}>
+                                  {ev.fluid_type}
+                                </span>
+                                <span className="text-[10px] text-text-muted truncate">
+                                  {ev.updated_at ? (() => {
+                                    const d = new Date(ev.updated_at);
+                                    const pad = (n: number) => n.toString().padStart(2, '0');
+                                    return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
+                                  })() : ''}
+                                </span>
+                              </div>
+                              <button
+                                onClick={(e) => handleDeleteScenario(ev.id, e)}
+                                className="absolute top-3 right-3 text-text-muted hover:text-rose-400 p-1 rounded hover:bg-rose-950/20 opacity-0 group-hover:opacity-100 transition-all duration-200"
+                                title="Delete Scenario"
+                              >
+                                <Trash2 className="w-3.5 h-3.5" />
+                              </button>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    )}
                   </div>
                 );
               })

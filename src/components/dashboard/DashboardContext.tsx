@@ -27,6 +27,7 @@ export interface Evaluation {
   terrain?: string;
   lahee_class?: string;
   type_well?: string;
+  folder?: string;
   parameters: SimulationParams;
   risk_factors: RiskFactors;
   created_at?: string;
@@ -118,6 +119,8 @@ interface DashboardContextType {
   setActiveName: (val: string) => void;
   activeDescription: string;
   setActiveDescription: (val: string) => void;
+  activeFolder: string;
+  setActiveFolder: (val: string) => void;
   fluidType: 'OIL' | 'GAS';
   setFluidType: (val: 'OIL' | 'GAS') => void;
   includeSecondary: boolean;
@@ -229,6 +232,7 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
   const [activeId, setActiveId] = useState<string | null>(null);
   const [activeName, setActiveName] = useState('New Evaluation Scenario');
   const [activeDescription, setActiveDescription] = useState('Default evaluation scenario');
+  const [activeFolder, setActiveFolder] = useState('Uncategorized');
   const [fluidType, setFluidType] = useState<'OIL' | 'GAS'>('OIL');
   const [includeSecondary, setIncludeSecondary] = useState(true);
 
@@ -372,6 +376,7 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
     setActiveId(ev.id);
     setActiveName(ev.name);
     setActiveDescription(ev.description);
+    setActiveFolder(ev.folder || 'Uncategorized');
     setFluidType(ev.fluid_type);
     setIncludeSecondary(ev.include_secondary ?? true);
     setCountry(ev.country || 'undefined');
@@ -416,7 +421,8 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
   const handleNewScenario = () => {
     setActiveId(null);
     setActiveName('New Evaluation Scenario');
-    setActiveDescription('Default evaluation scenario');
+    setActiveDescription('');
+    setActiveFolder('Uncategorized');
     setFluidType('OIL');
     setIncludeSecondary(true);
     setCountry('undefined');
@@ -469,6 +475,7 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
       terrain,
       lahee_class: laheeClass,
       type_well: typeWell,
+      folder: activeFolder,
       parameters,
       risk_factors: riskFactors
     };
@@ -1010,6 +1017,8 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
     setActiveName,
     activeDescription,
     setActiveDescription,
+    activeFolder,
+    setActiveFolder,
     fluidType,
     setFluidType,
     includeSecondary,
