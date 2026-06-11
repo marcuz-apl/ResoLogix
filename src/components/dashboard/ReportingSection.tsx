@@ -37,11 +37,22 @@ export default function ReportingSection() {
 
   const [isGenerating, setIsGenerating] = useState(false);
   const [logs, setLogs] = useState<string[]>([]);
+  const [previewReady, setPreviewReady] = useState(false);
+  const [isDispatching, setIsDispatching] = useState(false);
   const [downloadReady, setDownloadReady] = useState(false);
   const [jobId, setJobId] = useState<string | null>(null);
+  const resetTimerRef = React.useRef<NodeJS.Timeout | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (resetTimerRef.current) clearTimeout(resetTimerRef.current);
+    };
+  }, []);
 
   const handleCreateReports = async () => {
+    if (resetTimerRef.current) clearTimeout(resetTimerRef.current);
     setIsGenerating(true);
+    setPreviewReady(false);
     setDownloadReady(false);
     setLogs([]);
     setJobId(null);
@@ -74,6 +85,7 @@ export default function ReportingSection() {
           formats,
           contents,
           activeName,
+          oldJobId: jobId, // Tell server to delete the previous one
           destination,
           destinationConfig: { email: emailAddress, cloud: cloudUrl },
           data: { 
@@ -117,10 +129,10 @@ export default function ReportingSection() {
                 setJobId(data.downloadId);
                 setLogs(prev => [
                   ...prev,
-                  'The reports will stay alive for 10 minutes, after that they will be deleted. Please download them.'
+                  'Reports are generated and ready to preview! Click Finalize & Download when done.'
                 ]);
                 setIsGenerating(false);
-                setDownloadReady(true);
+                setPreviewReady(true);
               }
               if (data.error) {
                 setLogs(prev => [...prev, `[Error] ${data.error}`]);
@@ -137,6 +149,46 @@ export default function ReportingSection() {
       setLogs(prev => [...prev, `[Error] Failed to communicate with server: ${error.message}`]);
       setIsGenerating(false);
     }
+  };
+
+  const handleDispatch = async () => {
+    if (!jobId) return;
+    setIsDispatching(true);
+    setLogs(prev => [...prev, '[Info] Packaging and preparing for delivery...']);
+    try {
+      const response = await fetch('/api/reports/dispatch', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          jobId,
+          destination,
+          destinationConfig: { email: emailAddress, cloud: cloudUrl },
+          activeName
+        })
+      });
+      const data = await response.json();
+      if (data.error) throw new Error(data.error);
+      
+      setLogs(prev => [
+        ...prev, 
+        `[Success] ${data.message}`, 
+        'The temporary files will be cleaned up in 10 minutes.',
+        'The "Create Reports" button will be available again in 2 minutes.'
+      ]);
+      setDownloadReady(true);
+      
+      resetTimerRef.current = setTimeout(() => {
+        setPreviewReady(false);
+        setLogs(prev => [...prev, '[Info] You can now create new reports. The previous ones will be overwritten.']);
+      }, 120000); // 2 minutes
+      
+      if (destination === 'local') {
+        window.location.href = `/api/reports/download?jobId=${jobId}`;
+      }
+    } catch (error: any) {
+      setLogs(prev => [...prev, `[Error] ${error.message}`]);
+    }
+    setIsDispatching(false);
   };
 
   const handleDownload = () => {
@@ -207,26 +259,41 @@ export default function ReportingSection() {
         {/* Output Formats */}
         <div className="flex flex-col gap-3">
           <h3 className="text-xs font-bold text-text-secondary uppercase tracking-wider mb-2">Output Formats</h3>
-          <label className="flex items-center gap-3 text-sm cursor-pointer hover:text-cyan-400 transition-colors">
-            <input type="checkbox" checked={formats.excel} onChange={(e) => setFormats({ ...formats, excel: e.target.checked })} className="accent-cyan-500 w-4 h-4 rounded" />
-            Excel Data Tables
-          </label>
-          <label className="flex items-center gap-3 text-sm cursor-pointer hover:text-cyan-400 transition-colors">
-            <input type="checkbox" checked={formats.images} onChange={(e) => setFormats({ ...formats, images: e.target.checked })} className="accent-cyan-500 w-4 h-4 rounded" />
-            PNG Image Snapshots
-          </label>
-          <label className="flex items-center gap-3 text-sm cursor-pointer hover:text-cyan-400 transition-colors">
-            <input type="checkbox" checked={formats.pptx} onChange={(e) => setFormats({ ...formats, pptx: e.target.checked })} className="accent-cyan-500 w-4 h-4 rounded" />
-            PPTX Slides
-          </label>
-          <label className="flex items-center gap-3 text-sm cursor-pointer hover:text-cyan-400 transition-colors">
-            <input type="checkbox" checked={formats.word} onChange={(e) => setFormats({ ...formats, word: e.target.checked })} className="accent-cyan-500 w-4 h-4 rounded" />
-            Word Report
-          </label>
-          <label className="flex items-center gap-3 text-sm cursor-pointer hover:text-cyan-400 transition-colors">
-            <input type="checkbox" checked={formats.pdf} onChange={(e) => setFormats({ ...formats, pdf: e.target.checked })} className="accent-cyan-500 w-4 h-4 rounded" />
-            PDF Report
-          </label>
+          <div className="flex items-center justify-between">
+            <label className="flex items-center gap-3 text-sm cursor-pointer hover:text-cyan-400 transition-colors">
+              <input type="checkbox" checked={formats.excel} onChange={(e) => setFormats({...formats, excel: e.target.checked})} disabled={isGenerating || previewReady} className="accent-cyan-500 w-4 h-4 rounded" />
+              Excel Data Tables
+            </label>
+          </div>
+          <div className="flex items-center justify-between">
+            <label className="flex items-center gap-3 text-sm cursor-pointer hover:text-cyan-400 transition-colors">
+              <input type="checkbox" checked={formats.images} onChange={(e) => setFormats({ ...formats, images: e.target.checked })} disabled={isGenerating || previewReady} className="accent-cyan-500 w-4 h-4 rounded" />
+              PNG Image Snapshots
+            </label>
+          </div>
+          <div className="flex items-center justify-between">
+            <label className="flex items-center gap-3 text-sm cursor-pointer hover:text-cyan-400 transition-colors">
+              <input type="checkbox" checked={formats.pptx} onChange={(e) => setFormats({...formats, pptx: e.target.checked})} disabled={isGenerating || previewReady} className="accent-cyan-500 w-4 h-4 rounded" />
+              PPTX Slides
+            </label>
+          </div>
+          <div className="flex items-center justify-between">
+            <label className="flex items-center gap-3 text-sm cursor-pointer hover:text-cyan-400 transition-colors">
+              <input type="checkbox" checked={formats.word} onChange={(e) => setFormats({...formats, word: e.target.checked})} disabled={isGenerating || previewReady} className="accent-cyan-500 w-4 h-4 rounded" />
+              Word Report
+            </label>
+          </div>
+          <div className="flex items-center justify-between">
+            <label className="flex items-center gap-3 text-sm cursor-pointer hover:text-cyan-400 transition-colors">
+              <input type="checkbox" checked={formats.pdf} onChange={(e) => setFormats({...formats, pdf: e.target.checked})} disabled={isGenerating || previewReady} className="accent-cyan-500 w-4 h-4 rounded" />
+              PDF Report
+            </label>
+            {previewReady && (
+              <a href={`/api/reports/preview?jobId=${jobId}&format=pdf`} target="_blank" rel="noreferrer" className="flex items-center gap-1.5 text-[10px] bg-cyan-950/40 text-cyan-400 px-2 py-1 rounded border border-cyan-500/30 hover:bg-cyan-500/20 transition cursor-pointer">
+                👁️ Preview
+              </a>
+            )}
+          </div>
         </div>
 
         {/* Content Included */}
@@ -285,9 +352,9 @@ export default function ReportingSection() {
         <div className="flex flex-col gap-3 lg:w-64 shrink-0">
           <button
             onClick={handleCreateReports}
-            disabled={isGenerating}
+            disabled={isGenerating || previewReady}
             className={`flex items-center justify-center gap-2 w-full py-3 rounded-xl font-bold text-sm transition-all shadow-lg ${
-              isGenerating
+              isGenerating || previewReady
                 ? 'bg-panel text-text-muted cursor-not-allowed border border-card-border'
                 : 'bg-cyan-600 hover:bg-cyan-500 text-white shadow-cyan-900/30 border border-cyan-500/50'
             }`}
@@ -306,16 +373,27 @@ export default function ReportingSection() {
           </button>
 
           <button
-            onClick={handleDownload}
-            disabled={!downloadReady}
+            onClick={downloadReady ? handleDownload : handleDispatch}
+            disabled={!previewReady && !downloadReady && !isDispatching}
             className={`flex items-center justify-center gap-2 w-full py-3 rounded-xl font-bold text-sm transition-all shadow-lg ${
-              !downloadReady
+              (!previewReady && !downloadReady && !isDispatching)
                 ? 'bg-panel text-text-muted cursor-not-allowed border border-card-border'
-                : 'bg-emerald-600 hover:bg-emerald-500 text-white shadow-emerald-900/30 border border-emerald-500/50 animate-pulse-subtle'
+                : downloadReady
+                ? 'bg-emerald-600 hover:bg-emerald-500 text-white shadow-emerald-900/30 border border-emerald-500/50 animate-pulse-subtle'
+                : 'bg-blue-600 hover:bg-blue-500 text-white shadow-blue-900/30 border border-blue-500/50 animate-pulse-subtle'
             }`}
           >
-            <Download className="w-4 h-4" />
-            Download Reports
+            {isDispatching ? (
+              <>
+                <div className="w-4 h-4 border-2 border-white/50 border-t-transparent rounded-full animate-spin" />
+                Packaging...
+              </>
+            ) : (
+              <>
+                <Download className="w-4 h-4" />
+                {downloadReady ? 'Download Again' : 'Finalize & Download'}
+              </>
+            )}
           </button>
         </div>
       </div>

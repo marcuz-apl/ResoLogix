@@ -32,7 +32,14 @@ export async function POST(req: NextRequest) {
 
       try {
         const body = await req.json();
-        const { formats, contents, activeName, destination, destinationConfig, data, images } = body;
+        const { formats, contents, activeName, destination, destinationConfig, data, images, oldJobId } = body;
+
+        if (oldJobId) {
+          const oldDir = path.join(process.cwd(), 'reports', oldJobId);
+          if (fs.existsSync(oldDir)) {
+            fs.rmSync(oldDir, { recursive: true, force: true });
+          }
+        }
 
         sendEvent(`Report Generation Started on ${new Date().toLocaleTimeString()}`);
         
@@ -77,26 +84,14 @@ export async function POST(req: NextRequest) {
           await generateWord(reportsDir, data, contents, images, activeName);
         }
 
-        if (formats.pdf) {
-          sendEvent('Generating PDF Report');
-          await generatePdf(reportsDir, data, contents, images, activeName);
-        }
-
-        sendEvent('Zipping and Compressing Reports');
-        const zipFile = await zipReports(reportsDir, jobId);
-
-        if (destination === 'email' && destinationConfig?.email) {
-          sendEvent(`Dispatching Email to ${destinationConfig.email}`);
-          const msg = await sendEmailWithZip(destinationConfig.email, zipFile, activeName || 'Project');
-          sendEvent(msg);
-        } else if (destination === 'cloud' && destinationConfig?.cloud) {
-          sendEvent('Uploading to Cloud Drive');
-          await uploadToCloudDrive(destinationConfig.cloud, zipFile, activeName || 'Project');
-        }
+        // Always generate PDF as it acts as the universal preview engine
+        sendEvent('Generating Universal Preview (PDF)');
+        await generatePdf(reportsDir, data, contents, images, activeName);
 
         sendEvent(`Report Generation Completed at ${new Date().toLocaleTimeString()}`);
+        sendEvent('Reports are ready for preview!');
         
-        // The zip is ready. Return the ID for download.
+        // The files are generated but not zipped yet. Return the ID for preview.
         sendComplete(jobId);
 
       } catch (error: any) {

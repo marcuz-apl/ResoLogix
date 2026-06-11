@@ -150,11 +150,11 @@ export const generatePdf = (reportsDir: string, data: any, contents: any, images
       }
 
       doc.end();
-
+      
       writeStream.on('finish', () => resolve());
       writeStream.on('error', reject);
-    } catch (e) {
-      reject(e);
+    } catch (error) {
+      reject(error);
     }
   });
 };

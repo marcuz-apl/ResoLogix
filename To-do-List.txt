@@ -27,10 +27,16 @@
         - Total Yield: MMBOE
     - When exporting PPTX Slides, make sure each image occupy a slide, such that to have a better resolution
     
-    
+- Reporting Function: v3 - Done at v2.1.6
+    - Let's tune the reprting worklow a bit:
+    - Step 1: Generate reports (Images+Excel/PPTX/Word)
+    - Step 2: add "Preview" buttons after the text of Excel/PPTX/Word Report, these buttons will be lit up once the reports are generated without issue report;
+    - Step 3: Clicking the preview button will open the corresponding report in a new browser tab to preview it.
+    - Step 4: Once the preview done, then the user will click "Download Reports" button to download the reports. At this time, the app will zip the reports, user download it;
+    - Step 5: Once the reports are zipped, the app will clean up the temp files in ./reports folder in 10 minutes as per a timer set up.
+    - Please select proper tech stack to support the previews.
 
-- Reporting Function:
-    - Preview of Excel/PPTX/Word Reports: Not started
+- Reporting Function:     
     - Send via Email: to be verified
 
 ## Tools (1)
