@@ -6,7 +6,8 @@ export const generatePdf = (reportsDir: string, data: any, contents: any, images
   return new Promise((resolve, reject) => {
     try {
       const doc = new PDFDocument({ margin: 50 });
-      const outputPath = path.join(reportsDir, 'Evaluation_Report.pdf');
+      const safeName = activeName ? activeName.replace(/[^a-zA-Z0-9-]/g, '_') : 'Evaluation';
+      const outputPath = path.join(reportsDir, `${safeName}_Report.pdf`);
       const writeStream = fs.createWriteStream(outputPath);
 
       doc.pipe(writeStream);

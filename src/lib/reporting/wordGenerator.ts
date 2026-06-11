@@ -4,6 +4,7 @@ import path from 'path';
 
 export const generateWord = async (reportsDir: string, data: any, contents: any, images: any, activeName: string) => {
   const children: any[] = [];
+  const safeName = activeName ? activeName.replace(/[^a-zA-Z0-9-]/g, '_') : 'Evaluation';
 
   // Title
   children.push(
@@ -200,5 +201,6 @@ export const generateWord = async (reportsDir: string, data: any, contents: any,
   });
 
   const buffer = await Packer.toBuffer(doc);
-  fs.writeFileSync(path.join(reportsDir, 'Evaluation_Report.docx'), buffer);
+  const outputPath = path.join(reportsDir, `${safeName}_Report.docx`);
+  fs.writeFileSync(outputPath, buffer);
 };

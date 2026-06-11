@@ -63,7 +63,7 @@ export async function POST(req: NextRequest) {
 
         if (formats.excel) {
           sendEvent('Generating Summary Data Tables (Excel)');
-          await generateExcel(reportsDir, data, contents);
+          await generateExcel(reportsDir, data, contents, activeName);
         }
 
         if (formats.pptx) {

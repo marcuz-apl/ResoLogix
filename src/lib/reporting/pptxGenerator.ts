@@ -3,6 +3,7 @@ import path from 'path';
 
 export const generatePptx = async (reportsDir: string, data: any, contents: any, images: any, activeName: string) => {
   const pptx = new pptxgen();
+  const safeName = activeName ? activeName.replace(/[^a-zA-Z0-9-]/g, '_') : 'Evaluation';
   pptx.layout = 'LAYOUT_16x9';
 
   // --- SLIDE 1: Title Page ---
@@ -142,6 +143,6 @@ export const generatePptx = async (reportsDir: string, data: any, contents: any,
     }
   }
 
-  const outputPath = path.join(reportsDir, 'Evaluation_Report.pptx');
+  const outputPath = path.join(reportsDir, `${safeName}_Report.pptx`);
   await pptx.writeFile({ fileName: outputPath });
 };

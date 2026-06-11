@@ -1,6 +1,6 @@
 {
   "name": "ResoLogix",
-  "version": "2.0.9",
+  "version": "2.1.0",
   "private": true,
   "scripts": {
     "clean": "rm -rf .next",
@@ -41,5 +41,5 @@
     "tailwindcss": "^4",
     "typescript": "^5"
   },
-  "buildTime": "build 2026-06-11-1148"
+  "buildTime": "build 2026-06-11-1150"
 }
