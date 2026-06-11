@@ -177,8 +177,21 @@ export default function ReportingSection() {
       ]);
       setDownloadReady(true);
       
-      resetTimerRef.current = setTimeout(() => {
+      // Set up the 2 minute reset timer
+      resetTimerRef.current = setTimeout(async () => {
+        // Ping server to clean up the leftovers
+        try {
+          await fetch('/api/reports/cleanup', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ jobId })
+          });
+        } catch (e) {
+          console.error('Failed to cleanup reports on server', e);
+        }
+
         setPreviewReady(false);
+        setJobId(null);
         setLogs(prev => [...prev, '[Info] You can now create new reports. The previous ones will be overwritten.']);
       }, 120000); // 2 minutes
       

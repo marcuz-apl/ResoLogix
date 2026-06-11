@@ -85,7 +85,7 @@ export const generatePdf = (reportsDir: string, data: any, contents: any, images
 
       // Geological Risk
       if (contents.risk && data.riskFactors) {
-        if (doc.y > 600) doc.addPage();
+        doc.addPage();
         doc.fontSize(14).font('Helvetica-Bold').fillColor('#000000').text('GEOLOGICAL RISK');
         doc.moveDown(1);
 
@@ -103,7 +103,7 @@ export const generatePdf = (reportsDir: string, data: any, contents: any, images
 
       // Resource Profile
       if (contents.profile && data.profileData) {
-        if (doc.y > 600) doc.addPage();
+        doc.addPage();
         doc.fontSize(14).font('Helvetica-Bold').fillColor('#000000').text('RESOURCE PROFILE');
         doc.moveDown(1);
 
@@ -125,28 +125,28 @@ export const generatePdf = (reportsDir: string, data: any, contents: any, images
 
       // Images
       if (contents.plots && images) {
-        doc.addPage();
-        doc.fontSize(14).font('Helvetica-Bold').fillColor('#000000').text('PROBABILITY DISTRIBUTIONS', { align: 'left' });
-        doc.moveDown(2);
-
         let imageCount = 0;
-        const addImage = (base64Str: string) => {
-          if (imageCount > 0 && imageCount % 2 === 0) {
+        const addImage = (base64Str: string, title: string) => {
+          if (imageCount === 0 || imageCount % 2 === 0) {
             doc.addPage();
+          }
+          if (imageCount === 0) {
+            doc.fontSize(14).font('Helvetica-Bold').fillColor('#000000').text('PROBABILITY DISTRIBUTIONS', { align: 'left' });
             doc.moveDown(2);
           }
+          doc.fontSize(12).font('Helvetica').fillColor('#333333').text(title, { align: 'center' });
+          doc.moveDown(1);
           const buffer = Buffer.from(base64Str.replace(/^data:image\/\w+;base64,/, ''), 'base64');
-          // Center the image manually by passing `x` if `align` doesn't work perfectly for images,
-          // but `align: center` usually works in pdfkit if width is specified.
-          doc.image(buffer, { fit: [450, 250], align: 'center' });
-          doc.moveDown(15); // Move down past image
+          // Scale image to full usable page width (512 points)
+          doc.image(buffer, { fit: [512, 280], align: 'center' });
+          doc.moveDown(2); // Add a blank line between images
           imageCount++;
         };
 
-        if (images.primaryCdf) addImage(images.primaryCdf);
-        if (images.primaryPdf) addImage(images.primaryPdf);
-        if (images.secondaryCdf) addImage(images.secondaryCdf);
-        if (images.secondaryPdf) addImage(images.secondaryPdf);
+        if (images.primaryCdf) addImage(images.primaryCdf, 'Primary CDF');
+        if (images.primaryPdf) addImage(images.primaryPdf, 'Primary PDF');
+        if (images.secondaryCdf) addImage(images.secondaryCdf, 'Secondary CDF');
+        if (images.secondaryPdf) addImage(images.secondaryPdf, 'Secondary PDF');
       }
 
       doc.end();

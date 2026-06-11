@@ -1,4 +1,4 @@
-import { Document, Packer, Paragraph, TextRun, Table, TableRow, TableCell, BorderStyle, WidthType, ImageRun } from 'docx';
+import { Document, Packer, Paragraph, TextRun, Table, TableRow, TableCell, BorderStyle, WidthType, ImageRun, AlignmentType } from 'docx';
 import fs from 'fs';
 import path from 'path';
 
@@ -171,8 +171,24 @@ export const generateWord = async (reportsDir: string, data: any, contents: any,
       })
     );
 
-    const addImage = (base64Str: string) => {
+    let imageCount = 0;
+    const addImage = (base64Str: string, title: string) => {
       const buffer = Buffer.from(base64Str.replace(/^data:image\/\w+;base64,/, ''), 'base64');
+      
+      if (imageCount > 0 && imageCount % 2 === 0) {
+        children.push(new Paragraph({ pageBreakBefore: true }));
+      }
+
+      // Image Title
+      children.push(
+        new Paragraph({
+          children: [new TextRun({ text: title, size: 24, bold: true })],
+          alignment: AlignmentType.CENTER,
+          spacing: { after: 100 }
+        })
+      );
+
+      // Image
       children.push(
         new Paragraph({
           children: [
@@ -182,15 +198,17 @@ export const generateWord = async (reportsDir: string, data: any, contents: any,
               type: 'png'
             } as any)
           ],
-          spacing: { after: 200 }
+          alignment: AlignmentType.CENTER,
+          spacing: { after: 400 } // Blank line equivalent separator
         })
       );
+      imageCount++;
     };
 
-    if (images.primaryCdf) addImage(images.primaryCdf);
-    if (images.primaryPdf) addImage(images.primaryPdf);
-    if (images.secondaryCdf) addImage(images.secondaryCdf);
-    if (images.secondaryPdf) addImage(images.secondaryPdf);
+    if (images.primaryCdf) addImage(images.primaryCdf, 'Primary CDF');
+    if (images.primaryPdf) addImage(images.primaryPdf, 'Primary PDF');
+    if (images.secondaryCdf) addImage(images.secondaryCdf, 'Secondary CDF');
+    if (images.secondaryPdf) addImage(images.secondaryPdf, 'Secondary PDF');
   }
 
   const doc = new Document({

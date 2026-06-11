@@ -160,6 +160,23 @@ export default function DocsPage() {
                   <strong className="text-text-primary">MEAN (Expected Value):</strong> The statistical average of all simulation trials. Used as the base case in economic calculations.
                 </li>
               </ul>
+
+              <h3 className="font-bold text-text-primary mt-4 text-xs uppercase tracking-wide">The Aggregation Paradox (Why A<sub>P90</sub> &times; B<sub>P90</sub> &ne; C<sub>P90</sub>)</h3>
+              <p>
+                When calculating reserves (A &times; B = C), it is a common observation that multiplying the deterministic P<sub>90</sub> of the inputs does <strong>not</strong> equal the P<sub>90</sub> of the output, yet the Means do.
+              </p>
+              <ul className="list-disc pl-5 flex flex-col gap-2">
+                <li>
+                  <strong className="text-text-primary">The Means are Linear:</strong> Statistically, the expected value (Mean) of the product of independent variables strictly equals the product of their individual means: 
+                  <code className="mx-2 font-mono bg-background/50 px-1 py-0.5 rounded text-cyan-400">Mean(A) &times; Mean(B) = Mean(C)</code>
+                </li>
+                <li>
+                  <strong className="text-text-primary">The Tails Shrink (P90 / P10):</strong> The P<sub>90</sub> represents a worst-case scenario (10% probability of being lower). The statistical likelihood of <em>both</em> Parameter A and Parameter B failing to their absolute worst-case P<sub>90</sub> values at the exact same time is extremely rare (10% &times; 10% = 1%).
+                </li>
+                <li>
+                  <strong className="text-text-primary">The Result:</strong> Because Monte Carlo correctly accounts for this independence, the resulting output distribution is narrower than deterministically multiplying the extremes. Therefore, the actual P<sub>90</sub> of the output is significantly <strong>higher</strong> (more optimistic) than A<sub>P90</sub> &times; B<sub>P90</sub>. Conversely, the P<sub>10</sub> of the output is significantly <strong>lower</strong> (more conservative) than A<sub>P10</sub> &times; B<sub>P10</sub>. This phenomenon prevents the calculation of unrealistic "phantom" reserves.
+                </li>
+              </ul>
             </section>
 
             {/* Section 3: Geological Risk (Pg) */}
