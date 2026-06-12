@@ -207,6 +207,14 @@ Currently we have pretty much all functions ready except a concern: After I crea
   - For Admin user, apaprt from user management function named currently as "Manager users and flatform roles" Sub-page, there will be an "Manage Database" sub-page for Admin users to manage the database, including the CRUD operations on the database.
   - Also another dashboard displaying system performance and resource utilizations if possible.
 
+### Example Scenarios
+- I have an idea to put one example scenario each for Monte Carlo Sim and DCA, 
+- such example scenarios shall be viewable by any registered users, and guest users
+- such example scenarios can be disable to show up by any user;
+- such example scenarios can be modified and tested on the fly, giving a feeling of how the web app works;
+- Once the user switches to another scenario, the changes on the example scenario will be restored to its original settings.
+- Only the SuperAdmin user can change the example scenarios.
+
 ## Completed Tasks (Merged from To-do-List.txt)
 
 - FVF/GEF Determinitor: Done at v1.0.20
@@ -244,25 +252,18 @@ Currently we have pretty much all functions ready except a concern: After I crea
 - FVF/GEF Determinator: Done v2.1.2
     - Oil (Bo): Please refer to https://pvtsolver.com/calculator/oil-formation-volume-factor-standing/ to create the tool as per Standing (1947).
     - Gas (Bg): Please refer to https://pvtsolver.com/calculator/gas-formation-volume-factor-dranchuk/ to create the tool as per Dranchuk-Abou-Kassem (1975).
-
-### Example Scenarios
-- I have an idea to put one example scenario each for Monte Carlo Sim and DCA, 
-- such example scenarios shall be viewable by any registered users, and guest users
-- such example scenarios can be disable to show up by any user;
-- such example scenarios can be modified and tested on the fly, giving a feeling of how the web app works;
-- Once the user switches to another scenario, the changes on the example scenario will be restored to its original settings.
-- Only the SuperAdmin user can change the example scenarios.
+- DCA Module     
+  - DCA module: Done 3.1.0
+- Disclaimer function: Done at v3.1.5
 
 
 ## To-Do List
 
-- **DCA Module**     
-  - DCA module: Done 3.1.0
-- **EMV Module**     
+- EMV Module     
   - EMV module: to be developed.
-- **Reporting Function**     
+- Reporting Function     
   - Send via Email: to be verified
-- **Module Development**
+- Module Development
   - Multi-Layer Reservoirs: Not started
-- **Misc**
+- Misc
   - Unsecure local web access: to be Developed

@@ -2,6 +2,8 @@ import React from 'react';
 import { Globe } from 'lucide-react';
 import { execSync } from 'child_process';
 
+import Disclaimer from './Disclaimer';
+
 export default function Footer() {
   let buildDate = '';
   try {
@@ -12,7 +14,9 @@ export default function Footer() {
 
   return (
     <footer className="w-full text-xs text-text-muted bg-transparent py-4 px-6 mt-auto flex items-center justify-between">
-      <div className="flex gap-1 items-center">
+      <div className="flex gap-3 items-center">
+        <Disclaimer />
+        <span className="text-text-muted/40">|</span>
         <a href="mailto:info@alfazen.org" className="hover:underline transition-colors hover:text-cyan-400">Get in Touch</a>
       </div>
       
