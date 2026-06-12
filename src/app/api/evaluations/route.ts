@@ -10,14 +10,19 @@ export const revalidate = 0;
 export async function GET() {
   try {
     const session = await getServerSession(authOptions);
+    let evaluations = [];
     if (!session || !session.user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      // Guest: fetch only examples
+      evaluations = db.prepare(`
+        SELECT * FROM evaluations WHERE is_example = 1 ORDER BY updated_at DESC
+      `).all() as any[];
+    } else {
+      const userId = (session.user as any).id;
+      // Authenticated: fetch user's scenarios + examples
+      evaluations = db.prepare(`
+        SELECT * FROM evaluations WHERE user_id = ? OR is_example = 1 ORDER BY is_example DESC, updated_at DESC
+      `).all(userId) as any[];
     }
-    const userId = (session.user as any).id;
-
-    const evaluations = db.prepare(`
-      SELECT * FROM evaluations WHERE user_id = ? ORDER BY updated_at DESC
-    `).all(userId) as any[];
 
     const results = evaluations.map((ev) => {
       // Fetch parameters
@@ -67,6 +72,7 @@ export async function GET() {
         folder: ev.folder || 'Uncategorized',
         created_at: ev.created_at,
         updated_at: ev.updated_at,
+        is_example: ev.is_example === 1,
         parameters: formattedParams,
         risk_factors: risk,
       };
@@ -95,7 +101,15 @@ export async function DELETE(req: Request) {
       return NextResponse.json({ error: "Missing ID parameter" }, { status: 400 });
     }
 
-    db.prepare('DELETE FROM evaluations WHERE id = ? AND user_id = ?').run(id, userId);
+    const isSuperAdmin = (session.user as any).isSuperAdmin === 1 || (session.user as any).isSuperAdmin === true;
+
+    // Check if it's an example
+    const existing = db.prepare('SELECT is_example FROM evaluations WHERE id = ?').get(id) as any;
+    if (existing && existing.is_example === 1 && !isSuperAdmin) {
+      return NextResponse.json({ error: "Unauthorized: Cannot delete example scenarios." }, { status: 403 });
+    }
+
+    db.prepare('DELETE FROM evaluations WHERE id = ? AND (user_id = ? OR ? = 1)').run(id, userId, isSuperAdmin ? 1 : 0);
 
     return NextResponse.json({ success: true });
   } catch (error: any) {
@@ -141,6 +155,13 @@ export async function POST(req: Request) {
 
     if (!id) {
       id = generateHumanId('eid');
+    } else {
+      // Check if trying to save an example scenario
+      const existing = db.prepare('SELECT is_example FROM evaluations WHERE id = ?').get(id) as any;
+      const isSuperAdmin = (session.user as any).isSuperAdmin === 1 || (session.user as any).isSuperAdmin === true;
+      if (existing && existing.is_example === 1 && !isSuperAdmin) {
+        return NextResponse.json({ error: "Cannot overwrite an example scenario. Please use 'Copy Scenario' to save your own version." }, { status: 403 });
+      }
     }
 
     // Run in a transaction

@@ -371,11 +371,8 @@ export const DashboardProvider = ({ children }: { children: ReactNode }) => {
   };
 
   useEffect(() => {
-    if (sessionStatus === 'authenticated') {
+    if (sessionStatus === 'authenticated' || sessionStatus === 'unauthenticated') {
       fetchEvaluations();
-    } else if (sessionStatus === 'unauthenticated') {
-      setEvaluations([]);
-      handleNewScenario();
     }
   }, [sessionStatus]);
 

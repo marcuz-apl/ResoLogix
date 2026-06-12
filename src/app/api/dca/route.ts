@@ -10,22 +10,28 @@ export const revalidate = 0;
 export async function GET(request: Request) {
   try {
     const session = await getServerSession(authOptions);
+    let scenarios = [];
     if (!session || !session.user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      scenarios = db.prepare(`
+        SELECT id, scenario_name, folder, description, qi, di, b, q_limit, historical_data, created_at, updated_at, is_example
+        FROM "dca-scenarios" 
+        WHERE is_example = 1 
+        ORDER BY updated_at DESC
+      `).all();
+    } else {
+      const userId = (session.user as any).id;
+      scenarios = db.prepare(`
+        SELECT id, scenario_name, folder, description, qi, di, b, q_limit, historical_data, created_at, updated_at, is_example
+        FROM "dca-scenarios" 
+        WHERE user_id = ? OR is_example = 1
+        ORDER BY is_example DESC, updated_at DESC
+      `).all(userId);
     }
-    const userId = (session.user as any).id;
-
-    // We fetch the full dataset so the client can load it entirely
-    const scenarios = db.prepare(`
-      SELECT id, scenario_name, folder, description, qi, di, b, q_limit, historical_data, created_at, updated_at 
-      FROM "dca-scenarios" 
-      WHERE user_id = ? 
-      ORDER BY updated_at DESC
-    `).all(userId);
 
     // Parse historical_data JSON strings back to objects
     const parsedScenarios = scenarios.map((s: any) => ({
       ...s,
+      is_example: s.is_example === 1,
       historical_data: s.historical_data ? JSON.parse(s.historical_data) : [],
       params: { qi: s.qi, di: s.di, b: s.b }
     }));
@@ -51,6 +57,13 @@ export async function POST(request: Request) {
 
     if (!id) {
       id = generateHumanId('dca');
+    } else {
+      // Check if trying to save an example scenario
+      const existing = db.prepare('SELECT is_example FROM "dca-scenarios" WHERE id = ?').get(id) as any;
+      const isSuperAdmin = (session.user as any).isSuperAdmin === 1 || (session.user as any).isSuperAdmin === true;
+      if (existing && existing.is_example === 1 && !isSuperAdmin) {
+        return NextResponse.json({ error: "Cannot overwrite an example scenario. Please use 'Copy Scenario' to save your own version." }, { status: 403 });
+      }
     }
 
     db.prepare(`
@@ -96,7 +109,15 @@ export async function DELETE(request: Request) {
       return NextResponse.json({ error: "Missing ID parameter" }, { status: 400 });
     }
 
-    db.prepare('DELETE FROM "dca-scenarios" WHERE id = ? AND user_id = ?').run(id, userId);
+    const isSuperAdmin = (session.user as any).isSuperAdmin === 1 || (session.user as any).isSuperAdmin === true;
+
+    // Check if it's an example
+    const existing = db.prepare('SELECT is_example FROM "dca-scenarios" WHERE id = ?').get(id) as any;
+    if (existing && existing.is_example === 1 && !isSuperAdmin) {
+      return NextResponse.json({ error: "Unauthorized: Cannot delete example scenarios." }, { status: 403 });
+    }
+
+    db.prepare('DELETE FROM "dca-scenarios" WHERE id = ? AND (user_id = ? OR ? = 1)').run(id, userId, isSuperAdmin ? 1 : 0);
 
     return NextResponse.json({ success: true });
   } catch (error: any) {

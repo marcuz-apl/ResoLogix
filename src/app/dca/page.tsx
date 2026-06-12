@@ -47,7 +47,6 @@ export default function DcaPage() {
 
   // Fetch scenarios
   const fetchScenarios = useCallback(async () => {
-    if (!session) return;
     try {
       setIsLoadingScenarios(true);
       const res = await fetch('/api/dca');
@@ -112,7 +111,13 @@ export default function DcaPage() {
     setEur(calculatedEur);
   }, [params, qLimit]);
 
+  const [showGuestDialog, setShowGuestDialog] = useState(false);
+
   const handleSaveScenario = async () => {
+    if (!session) {
+      setShowGuestDialog(true);
+      return;
+    }
     if (data.length === 0) {
       alert("No data to save!");
       return;
@@ -392,6 +397,30 @@ export default function DcaPage() {
 
         </main>
       </div>
+
+      {/* Guest Dialog */}
+      {showGuestDialog && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
+          <div className="bg-card border border-card-border p-8 rounded-2xl shadow-2xl max-w-md w-full relative">
+            <h2 className="text-xl font-bold text-cyan-400 mb-4">Guest Access Notice</h2>
+            <p className="text-text-primary mb-4 leading-relaxed">
+              As an unregistered guest, you cannot save your scenarios, but you are welcome to create new scenarios on the fly to conduct analysis and export the results.
+            </p>
+            <p className="text-text-muted italic mb-8">
+              ResoLogix Resource Evaluation suite v3.1.0
+            </p>
+            <div className="flex justify-end gap-3">
+              <button
+                onClick={() => setShowGuestDialog(false)}
+                className="px-6 py-2.5 bg-card-border hover:bg-card-border/80 text-text-primary rounded-xl font-semibold transition-colors"
+              >
+                Understood
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
     </div>
   );
 }

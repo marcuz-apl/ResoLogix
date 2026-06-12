@@ -167,6 +167,21 @@ export function initDb() {
   } catch (e) {
     // Column likely already exists
   }
+
+  // Migration: add is_example to evaluations and "dca-scenarios"
+  try {
+    db.exec(`ALTER TABLE evaluations ADD COLUMN is_example INTEGER DEFAULT 0;`);
+    console.log('Added is_example column to evaluations');
+  } catch (e) {
+    // Column likely already exists
+  }
+  
+  try {
+    db.exec(`ALTER TABLE "dca-scenarios" ADD COLUMN is_example INTEGER DEFAULT 0;`);
+    console.log('Added is_example column to "dca-scenarios"');
+  } catch (e) {
+    // Column likely already exists
+  }
 }
 
 // Ensure database is initialized

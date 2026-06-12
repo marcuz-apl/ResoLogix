@@ -245,10 +245,19 @@ Currently we have pretty much all functions ready except a concern: After I crea
     - Oil (Bo): Please refer to https://pvtsolver.com/calculator/oil-formation-volume-factor-standing/ to create the tool as per Standing (1947).
     - Gas (Bg): Please refer to https://pvtsolver.com/calculator/gas-formation-volume-factor-dranchuk/ to create the tool as per Dranchuk-Abou-Kassem (1975).
 
+### Example Scenarios
+- I have an idea to put one example scenario each for Monte Carlo Sim and DCA, 
+- such example scenarios shall be viewable by any registered users, and guest users
+- such example scenarios can be disable to show up by any user;
+- such example scenarios can be modified and tested on the fly, giving a feeling of how the web app works;
+- Once the user switches to another scenario, the changes on the example scenario will be restored to its original settings.
+- Only the SuperAdmin user can change the example scenarios.
+
+
 ## To-Do List
 
 - **DCA Module**     
-  - DCA module: to be developed.
+  - DCA module: Done 3.1.0
 - **EMV Module**     
   - EMV module: to be developed.
 - **Reporting Function**     

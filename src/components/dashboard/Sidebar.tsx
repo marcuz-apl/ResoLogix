@@ -1,9 +1,10 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Plus, Check, Save, FolderOpen, Trash2, Sliders, RefreshCw, Copy, ChevronDown, ChevronRight } from 'lucide-react';
+import { Plus, Check, Save, FolderOpen, Trash2, Sliders, RefreshCw, Copy, ChevronDown, ChevronRight, Eye, EyeOff } from 'lucide-react';
 import { useDashboard } from './DashboardContext';
 import { useSession } from 'next-auth/react';
+import { useEffect } from 'react';
 
 export default function Sidebar() {
   const {
@@ -38,19 +39,37 @@ export default function Sidebar() {
   };
 
   const [expandedFolders, setExpandedFolders] = useState<Record<string, boolean>>({});
+  const [showExamples, setShowExamples] = useState(true);
+
+  useEffect(() => {
+    const saved = localStorage.getItem('resologix-show-examples');
+    if (saved !== null) {
+      setShowExamples(saved === 'true');
+    }
+  }, []);
+
+  const toggleShowExamples = () => {
+    const nextState = !showExamples;
+    setShowExamples(nextState);
+    localStorage.setItem('resologix-show-examples', String(nextState));
+  };
 
   const toggleFolder = (folder: string) => {
     setExpandedFolders(prev => ({ ...prev, [folder]: !prev[folder] }));
   };
 
   const groupedEvaluations = evaluations.reduce((acc, ev) => {
-    const folder = ev.folder || 'Uncategorized';
+    if ((ev as any).is_example && !showExamples) return acc;
+    
+    // Group examples in their own folder
+    const folder = (ev as any).is_example ? 'Example Scenarios' : (ev.folder || 'Uncategorized');
     if (!acc[folder]) acc[folder] = [];
     acc[folder].push(ev);
     return acc;
   }, {} as Record<string, typeof evaluations>);
   
   const folders = Object.keys(groupedEvaluations).sort((a, b) => {
+    if (a === 'Example Scenarios') return -1; // Examples always top
     if (a === 'Uncategorized') return 1;
     if (b === 'Uncategorized') return -1;
     return a.localeCompare(b);
@@ -146,7 +165,18 @@ export default function Sidebar() {
               <FolderOpen className="w-3.5 h-3.5 shrink-0" />
               <span className="truncate">Saved Evaluations</span>
             </span>
-            <span className="shrink-0">({evaluations.length})</span>
+            <div className="flex items-center gap-2">
+              {session && (
+                <button 
+                  onClick={toggleShowExamples}
+                  className="hover:text-cyan-400 transition-colors p-1"
+                  title={showExamples ? "Hide Examples" : "Show Examples"}
+                >
+                  {showExamples ? <Eye className="w-3.5 h-3.5" /> : <EyeOff className="w-3.5 h-3.5" />}
+                </button>
+              )}
+              <span className="shrink-0">({evaluations.filter(e => showExamples || !(e as any).is_example).length})</span>
+            </div>
           </div>
 
           <div className="flex-1 overflow-y-auto pr-1 flex flex-col gap-2">
@@ -188,6 +218,11 @@ export default function Sidebar() {
                               </div>
 
                               <div className="flex items-center gap-2 mt-2">
+                                {(ev as any).is_example && (
+                                  <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-cyan-950/40 text-cyan-400 border border-cyan-800/50">
+                                    EXAMPLE
+                                  </span>
+                                )}
                                 <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded shrink-0 ${
                                   ev.fluid_type === 'OIL' ? 'bg-green-50 dark:bg-green-950/30 text-green-500' : 'bg-red-50 dark:bg-red-950/30 text-red-500'
                                 }`}>
@@ -202,13 +237,15 @@ export default function Sidebar() {
                                   })() : ''}
                                 </span>
                               </div>
-                              <button
-                                onClick={(e) => handleDeleteScenario(ev.id, e)}
-                                className="absolute top-3 right-3 text-text-muted hover:text-rose-400 p-1 rounded hover:bg-rose-950/20 opacity-0 group-hover:opacity-100 transition-all duration-200"
-                                title="Delete Scenario"
-                              >
-                                <Trash2 className="w-3.5 h-3.5" />
-                              </button>
+                              {(!(ev as any).is_example || (session?.user as any)?.isSuperAdmin) && (
+                                <button
+                                  onClick={(e) => handleDeleteScenario(ev.id, e)}
+                                  className="absolute top-3 right-3 text-text-muted hover:text-rose-400 p-1 rounded hover:bg-rose-950/20 opacity-0 group-hover:opacity-100 transition-all duration-200"
+                                  title="Delete Scenario"
+                                >
+                                  <Trash2 className="w-3.5 h-3.5" />
+                                </button>
+                              )}
                             </div>
                           );
                         })}

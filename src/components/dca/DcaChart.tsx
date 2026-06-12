@@ -47,8 +47,8 @@ export default function DcaChart({ data, params, forecastMonths }: DcaChartProps
       }
     }
 
-    // Convert historical data
-    const scatterPoints = data.map(d => ({ x: d.t, y: d.q }));
+    // Convert historical data, filter out tiny/zero values for log scale
+    const scatterPoints = data.filter(d => d.q > 0.1).map(d => ({ x: d.t, y: d.q }));
 
     return {
       datasets: [

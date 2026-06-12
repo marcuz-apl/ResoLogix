@@ -1,7 +1,7 @@
 'use client';
 
-import React, { useState } from 'react';
-import { Plus, Check, Save, FolderOpen, Trash2, ChevronDown, ChevronRight, Calculator } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Plus, Check, Save, FolderOpen, Trash2, ChevronDown, ChevronRight, Calculator, Eye, EyeOff } from 'lucide-react';
 import { useSession } from 'next-auth/react';
 
 interface DcaSidebarProps {
@@ -27,19 +27,37 @@ export default function DcaSidebar({
 }: DcaSidebarProps) {
   const { data: session } = useSession();
   const [expandedFolders, setExpandedFolders] = useState<Record<string, boolean>>({});
+  const [showExamples, setShowExamples] = useState(true);
+
+  useEffect(() => {
+    const saved = localStorage.getItem('resologix-show-examples');
+    if (saved !== null) {
+      setShowExamples(saved === 'true');
+    }
+  }, []);
+
+  const toggleShowExamples = () => {
+    const nextState = !showExamples;
+    setShowExamples(nextState);
+    localStorage.setItem('resologix-show-examples', String(nextState));
+  };
 
   const toggleFolder = (folder: string) => {
     setExpandedFolders(prev => ({ ...prev, [folder]: !prev[folder] }));
   };
 
   const groupedScenarios = scenarios.reduce((acc, s) => {
-    const folder = s.folder || 'Uncategorized';
+    if (s.is_example && !showExamples) return acc;
+    
+    // Group examples in their own folder
+    const folder = s.is_example ? 'Example Scenarios' : (s.folder || 'Uncategorized');
     if (!acc[folder]) acc[folder] = [];
     acc[folder].push(s);
     return acc;
   }, {} as Record<string, typeof scenarios>);
   
   const folders = Object.keys(groupedScenarios).sort((a, b) => {
+    if (a === 'Example Scenarios') return -1;
     if (a === 'Uncategorized') return 1;
     if (b === 'Uncategorized') return -1;
     return a.localeCompare(b);
@@ -70,7 +88,18 @@ export default function DcaSidebar({
               <FolderOpen className="w-3.5 h-3.5 shrink-0" />
               <span className="truncate">Saved Scenarios</span>
             </span>
-            <span className="shrink-0">({scenarios.length})</span>
+            <div className="flex items-center gap-2">
+              {session && (
+                <button 
+                  onClick={toggleShowExamples}
+                  className="hover:text-cyan-400 transition-colors p-1"
+                  title={showExamples ? "Hide Examples" : "Show Examples"}
+                >
+                  {showExamples ? <Eye className="w-3.5 h-3.5" /> : <EyeOff className="w-3.5 h-3.5" />}
+                </button>
+              )}
+              <span className="shrink-0">({scenarios.filter(s => showExamples || !s.is_example).length})</span>
+            </div>
           </div>
 
           <div className="flex-1 overflow-y-auto pr-1 flex flex-col gap-2">
@@ -95,7 +124,7 @@ export default function DcaSidebar({
                     
                     {isExpanded && (
                       <div className="flex flex-col gap-2 pl-3 border-l-2 border-card-border/50 ml-1.5 mt-1">
-                        {folderScenarios.map((scenario) => {
+                        {folderScenarios.map((scenario: any) => {
                           const isActive = scenario.id === activeId;
                           return (
                             <div
@@ -112,6 +141,11 @@ export default function DcaSidebar({
                               </div>
 
                               <div className="flex items-center gap-2 mt-2">
+                                {scenario.is_example && (
+                                  <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-cyan-950/40 text-cyan-400 border border-cyan-800/50">
+                                    EXAMPLE
+                                  </span>
+                                )}
                                 <span className="text-[10px] text-text-muted truncate">
                                   {scenario.updated_at ? (() => {
                                     const d = new Date(scenario.updated_at.replace(' ', 'T') + 'Z');
@@ -120,13 +154,15 @@ export default function DcaSidebar({
                                   })() : ''}
                                 </span>
                               </div>
-                              <button
-                                onClick={(e) => onDelete(scenario.id, e)}
-                                className="absolute top-3 right-3 text-text-muted hover:text-rose-400 p-1 rounded hover:bg-rose-950/20 opacity-0 group-hover:opacity-100 transition-all duration-200"
-                                title="Delete Scenario"
-                              >
-                                <Trash2 className="w-3.5 h-3.5" />
-                              </button>
+                              {(!scenario.is_example || (session?.user as any)?.isSuperAdmin) && (
+                                <button
+                                  onClick={(e) => onDelete(scenario.id, e)}
+                                  className="absolute top-3 right-3 text-text-muted hover:text-rose-400 p-1 rounded hover:bg-rose-950/20 opacity-0 group-hover:opacity-100 transition-all duration-200"
+                                  title="Delete Scenario"
+                                >
+                                  <Trash2 className="w-3.5 h-3.5" />
+                                </button>
+                              )}
                             </div>
                           );
                         })}
