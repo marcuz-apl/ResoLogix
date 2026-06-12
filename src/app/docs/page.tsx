@@ -21,20 +21,12 @@ export default function DocsPage() {
 
       <div className="relative z-10 max-w-5xl mx-auto px-6 py-12">
         
-        {/* Navigation Link back */}
-        <div className="mb-8 flex justify-end">
-          <Link 
-            href="/"
-            className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-text-muted hover:text-cyan-400 transition-colors duration-250 cursor-pointer"
-          >
-            <ArrowLeft className="w-4 h-4" />
-            Return to main App
-          </Link>
-        </div>
-
         {/* Documentation Header */}
         <header className="border-b border-card-border pb-8 mb-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
           <div className="flex items-center gap-4">
+            <Link href="/" className="p-2 hover:bg-card-border/50 rounded-lg transition-colors cursor-pointer group shrink-0">
+              <ArrowLeft className="w-6 h-6 text-text-muted group-hover:text-cyan-400" />
+            </Link>
             <img src="/logo.png" alt="ResoLogix Logo" className="w-14 h-14 rounded-2xl shadow-lg shadow-cyan-500/10 object-contain animate-pulse" />
             <div>
               <h1 className="text-3xl font-black tracking-tight text-text-primary">

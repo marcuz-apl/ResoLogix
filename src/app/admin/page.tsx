@@ -266,7 +266,12 @@ export default function AdminPage() {
           
           {/* Sidebar */}
           <aside className="w-64 shrink-0 flex flex-col gap-2">
-            <h2 className="text-xs font-bold text-text-muted uppercase tracking-wider mb-2 px-3">Admin Panel</h2>
+            <div className="flex items-center gap-2 mb-2 px-3">
+              <Link href="/" className="p-1 hover:bg-card-border/50 rounded-lg transition-colors cursor-pointer group shrink-0">
+                <ArrowLeft className="w-4 h-4 text-text-muted group-hover:text-cyan-400" />
+              </Link>
+              <h2 className="text-xs font-bold text-text-muted uppercase tracking-wider m-0">Admin Panel</h2>
+            </div>
             <button
               onClick={() => setActiveTab('users')}
               className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all font-semibold text-sm ${activeTab === 'users' ? 'bg-cyan-950/40 text-cyan-400 border border-cyan-800/50' : 'text-text-secondary hover:bg-card-border/30 hover:text-text-primary'}`}
@@ -287,13 +292,6 @@ export default function AdminPage() {
             </button>
 
             <div className="h-px bg-card-border my-2 mx-3"></div>
-            
-            <Link 
-              href="/"
-              className="flex items-center gap-3 px-4 py-3 rounded-xl transition-all font-semibold text-sm text-text-muted hover:bg-card-border/30 hover:text-cyan-400"
-            >
-              <ArrowLeft className="w-5 h-5" /> Return to main App
-            </Link>
           </aside>
 
           {/* Content Area */}

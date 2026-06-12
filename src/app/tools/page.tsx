@@ -201,17 +201,15 @@ export default function ToolsPage() {
   return (
     <div className="flex-1 p-6 lg:p-8 animate-fade-in w-full max-w-5xl mx-auto">
       <div className="flex items-center justify-between mb-8">
-        <div className="flex items-center gap-3">
-          <Wrench className="w-6 h-6 text-cyan-400" />
-          <h1 className="text-2xl font-bold text-text-primary tracking-tight">Tools & Calculators</h1>
+        <div className="flex items-center gap-4">
+          <Link href="/" className="p-2 hover:bg-card-border/50 rounded-lg transition-colors cursor-pointer group shrink-0">
+            <ArrowLeft className="w-6 h-6 text-text-muted group-hover:text-cyan-400" />
+          </Link>
+          <div className="flex items-center gap-3">
+            <Wrench className="w-6 h-6 text-cyan-400" />
+            <h1 className="text-2xl font-bold text-text-primary tracking-tight">Tools & Calculators</h1>
+          </div>
         </div>
-        <Link 
-          href="/"
-          className="flex items-center gap-2 py-2 px-4 rounded-xl bg-card border border-card-border text-text-secondary hover:text-cyan-400 hover:border-cyan-500/40 hover:bg-cyan-950/10 transition-all duration-200 text-sm font-bold cursor-pointer"
-        >
-          <ArrowLeft className="w-4 h-4" />
-          Return to main App
-        </Link>
       </div>
 
       <div className="flex flex-col gap-6">
