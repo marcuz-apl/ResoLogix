@@ -13,14 +13,14 @@ export default function DataIngestion({ onDataLoaded }: DataIngestionProps) {
 
   const parseData = (rawText: string) => {
     try {
-      const lines = rawText.trim().split('\\n');
+      const lines = rawText.trim().split(/\r?\n/);
       if (lines.length < 2) throw new Error('Not enough rows. Please include a header and at least one data row.');
 
       const parsed: Point[] = [];
       // Assuming columns are Time (days or months) and Rate
       // We will try to parse line by line
       for (let i = 1; i < lines.length; i++) {
-        const parts = lines[i].split(/[\\t,;]+/); // Handles CSV and TSV (Excel copy-paste)
+        const parts = lines[i].split(/[\t,;]+/); // Handles CSV and TSV (Excel copy-paste)
         if (parts.length >= 2) {
           const t = parseFloat(parts[0]);
           const q = parseFloat(parts[1]);
@@ -80,7 +80,7 @@ export default function DataIngestion({ onDataLoaded }: DataIngestionProps) {
           </label>
           <textarea 
             className="w-full h-32 bg-background border border-card-border rounded-xl p-3 text-sm focus:border-cyan-500/50 focus:ring-1 focus:ring-cyan-500/50 outline-none text-text-primary resize-none placeholder-text-muted/50"
-            placeholder="Time\\tRate\\n1\\t500\\n2\\t480\\n..."
+            placeholder={"Time\tRate\n1\t500\n2\t480\n..."}
             value={pasteData}
             onChange={(e) => setPasteData(e.target.value)}
           />
