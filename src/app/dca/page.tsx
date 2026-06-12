@@ -1,12 +1,13 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import Link from 'next/link';
-import { ArrowLeft, Dices, Save, RefreshCw, Calculator, Database } from 'lucide-react';
+import { ArrowLeft, Save, RefreshCw, Calculator } from 'lucide-react';
 import { useSession } from 'next-auth/react';
 
 import DataIngestion from '@/components/dca/DataIngestion';
 import DcaChart from '@/components/dca/DcaChart';
+import DcaSidebar from '@/components/dca/DcaSidebar';
 import { Point, ArpsParams, fitDeclineCurve, arpsCumulative } from '@/lib/dca-engine';
 
 export default function DcaPage() {
@@ -16,6 +17,17 @@ export default function DcaPage() {
   const [forecastMonths, setForecastMonths] = useState<number>(120);
   const [qLimit, setQLimit] = useState<number>(50); // Economic limit rate
   
+  // Scenario Management State
+  const [scenarioName, setScenarioName] = useState<string>('New DCA Scenario');
+  const [folder, setFolder] = useState<string>('Uncategorized');
+  const [activeScenarioId, setActiveScenarioId] = useState<string | null>(null);
+  const [scenarios, setScenarios] = useState<any[]>([]);
+  const [isLoadingScenarios, setIsLoadingScenarios] = useState(true);
+
+  // Sidebar resizer state
+  const [sidebarWidth, setSidebarWidth] = useState('280px');
+  const isResizing = useRef(false);
+
   // EUR Calculation
   const [eur, setEur] = useState<number>(0);
 
@@ -32,6 +44,47 @@ export default function DcaPage() {
       alert("Failed to auto-fit: " + err.message);
     }
   };
+
+  // Fetch scenarios
+  const fetchScenarios = useCallback(async () => {
+    if (!session) return;
+    try {
+      setIsLoadingScenarios(true);
+      const res = await fetch('/api/dca');
+      if (!res.ok) throw new Error('Failed to load scenarios');
+      const data = await res.json();
+      setScenarios(data);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setIsLoadingScenarios(false);
+    }
+  }, [session]);
+
+  useEffect(() => {
+    fetchScenarios();
+  }, [fetchScenarios]);
+
+  // Sidebar Resize Logic
+  const handleSidebarMouseDown = (e: React.MouseEvent) => {
+    isResizing.current = true;
+    document.addEventListener('mousemove', handleMouseMove);
+    document.addEventListener('mouseup', handleMouseUp);
+    document.body.style.userSelect = 'none';
+  };
+
+  const handleMouseMove = useCallback((e: MouseEvent) => {
+    if (!isResizing.current) return;
+    const newWidth = Math.max(200, Math.min(e.clientX, 600));
+    setSidebarWidth(`${newWidth}px`);
+  }, []);
+
+  const handleMouseUp = useCallback(() => {
+    isResizing.current = false;
+    document.removeEventListener('mousemove', handleMouseMove);
+    document.removeEventListener('mouseup', handleMouseUp);
+    document.body.style.userSelect = '';
+  }, [handleMouseMove]);
 
   // Update EUR whenever params, qLimit, or data changes
   useEffect(() => {
@@ -64,15 +117,19 @@ export default function DcaPage() {
       alert("No data to save!");
       return;
     }
-    const name = prompt("Enter a name for this DCA Scenario:");
-    if (!name) return;
+    if (!scenarioName.trim()) {
+      alert("Please enter a scenario name.");
+      return;
+    }
 
     try {
       const res = await fetch('/api/dca', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          scenario_name: name,
+          id: activeScenarioId,
+          scenario_name: scenarioName,
+          folder: folder,
           description: '',
           params,
           q_limit: qLimit,
@@ -81,17 +138,58 @@ export default function DcaPage() {
       });
       const resData = await res.json();
       if (!res.ok) throw new Error(resData.error);
-      alert("Scenario saved successfully! ID: " + resData.id);
+      
+      setActiveScenarioId(resData.id);
+      fetchScenarios();
+      // alert("Scenario saved successfully!");
     } catch (err: any) {
       alert("Save failed: " + err.message);
     }
   };
 
+  const handleLoadScenario = (scenario: any) => {
+    setActiveScenarioId(scenario.id);
+    setScenarioName(scenario.scenario_name);
+    setFolder(scenario.folder || 'Uncategorized');
+    setParams({
+      qi: scenario.qi,
+      di: scenario.di,
+      b: scenario.b
+    });
+    setQLimit(scenario.q_limit || 50);
+    setData(scenario.historical_data || []);
+  };
+
+  const handleDeleteScenario = async (id: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (!confirm("Are you sure you want to delete this scenario?")) return;
+    try {
+      const res = await fetch(`/api/dca?id=${id}`, { method: 'DELETE' });
+      if (!res.ok) throw new Error("Failed to delete");
+      if (activeScenarioId === id) {
+        handleNewScenario();
+      }
+      fetchScenarios();
+    } catch (err) {
+      console.error(err);
+      alert("Error deleting scenario");
+    }
+  };
+
+  const handleNewScenario = () => {
+    setActiveScenarioId(null);
+    setScenarioName('New DCA Scenario');
+    setFolder('Uncategorized');
+    setParams({ qi: 1000, di: 0.1, b: 0.5 });
+    setQLimit(50);
+    setData([]);
+  };
+
   return (
-    <div className="min-h-screen bg-[#070a13] text-[#f8fafc] font-sans selection:bg-cyan-500/30 selection:text-cyan-200 flex flex-col">
+    <div className="h-screen bg-[#070a13] text-[#f8fafc] font-sans selection:bg-cyan-500/30 selection:text-cyan-200 flex flex-col overflow-hidden">
       
       {/* Header */}
-      <header className="sticky top-0 z-40 bg-background/80 backdrop-blur-xl border-b border-card-border/50">
+      <header className="shrink-0 bg-background/80 backdrop-blur-xl border-b border-card-border/50 z-40">
         <div className="w-full px-6 h-16 flex items-center justify-between">
           <div className="flex items-center gap-4">
             <Link href="/" className="p-2 hover:bg-card-border/50 rounded-lg transition-colors cursor-pointer group">
@@ -106,9 +204,27 @@ export default function DcaPage() {
           </div>
           
           <div className="flex items-center gap-3">
-            <button className="py-2 px-4 rounded-xl font-bold border border-card-border bg-card/50 hover:bg-card-border transition-colors flex items-center gap-2 text-sm text-text-secondary">
-              <Database className="w-4 h-4" /> Load Scenario
-            </button>
+            <div className="flex flex-col relative">
+              <span className="text-[10px] text-text-muted font-bold absolute -top-2 left-2 bg-background px-1">Folder</span>
+              <input 
+                type="text" 
+                value={folder} 
+                onChange={(e) => setFolder(e.target.value)} 
+                placeholder="Folder"
+                className="bg-background text-text-primary text-sm font-bold border border-card-border focus:border-cyan-500 outline-none px-3 py-2 rounded-xl transition-colors w-40"
+              />
+            </div>
+            <div className="flex flex-col relative">
+              <span className="text-[10px] text-text-muted font-bold absolute -top-2 left-2 bg-background px-1">Scenario Name</span>
+              <input 
+                type="text" 
+                value={scenarioName} 
+                onChange={(e) => setScenarioName(e.target.value)} 
+                placeholder="Scenario Name"
+                className="bg-background text-text-primary text-sm font-bold border border-card-border focus:border-cyan-500 outline-none px-3 py-2 rounded-xl transition-colors w-72"
+              />
+            </div>
+            
             <button 
               onClick={handleSaveScenario}
               className="py-2 px-4 rounded-xl font-bold bg-gradient-to-r from-orange-600 to-amber-600 hover:from-orange-500 hover:to-amber-500 text-white shadow-[0_0_15px_rgba(249,115,22,0.3)] transition-all flex items-center gap-2 text-sm border border-orange-500/50"
@@ -119,128 +235,163 @@ export default function DcaPage() {
         </div>
       </header>
 
-      {/* Main Content */}
-      <main className="flex-1 w-full p-6 flex flex-col lg:flex-row gap-6">
+      {/* Main Layout Area */}
+      <div className="flex-1 flex overflow-hidden">
         
-        {/* Left Column: Input & Controls */}
-        <div className="w-full lg:w-[400px] flex flex-col gap-6 shrink-0">
-          <DataIngestion onDataLoaded={(loaded) => { setData(loaded); }} />
+        {/* Sidebar */}
+        <DcaSidebar 
+          scenarios={scenarios}
+          activeId={activeScenarioId}
+          isLoading={isLoadingScenarios}
+          onLoad={handleLoadScenario}
+          onDelete={handleDeleteScenario}
+          onNew={handleNewScenario}
+          sidebarWidth={sidebarWidth}
+          onMouseDown={handleSidebarMouseDown}
+        />
 
-          {/* Arps Parameters Panel */}
-          <div className="bg-card/40 border border-card-border p-6 rounded-2xl shadow-xl flex flex-col gap-5">
-            <div className="flex items-center justify-between border-b border-card-border/50 pb-3">
-              <h2 className="text-lg font-bold text-text-primary flex items-center gap-2">
-                <Calculator className="w-5 h-5 text-orange-400" /> Arps Parameters
-              </h2>
-              <button 
-                onClick={handleAutoFit}
-                className="py-1 px-3 bg-cyan-900/40 hover:bg-cyan-800/60 text-cyan-400 border border-cyan-800/50 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5"
-              >
-                <RefreshCw className="w-3.5 h-3.5" /> Auto-Fit
-              </button>
-            </div>
-
-            <div className="flex flex-col gap-4">
-              {/* qi */}
-              <div className="flex flex-col gap-1.5">
-                <div className="flex justify-between text-xs font-bold text-text-secondary">
-                  <span>Initial Rate (qi)</span>
-                  <span className="text-cyan-400">{params.qi.toFixed(2)}</span>
-                </div>
-                <input 
-                  type="range" min="0" max="10000" step="10" 
-                  value={params.qi} 
-                  onChange={(e) => setParams({...params, qi: parseFloat(e.target.value)})}
-                  className="w-full accent-cyan-500"
-                />
-              </div>
-
-              {/* di */}
-              <div className="flex flex-col gap-1.5">
-                <div className="flex justify-between text-xs font-bold text-text-secondary">
-                  <span>Initial Decline (Di)</span>
-                  <span className="text-cyan-400">{params.di.toFixed(4)}</span>
-                </div>
-                <input 
-                  type="range" min="0.001" max="1" step="0.001" 
-                  value={params.di} 
-                  onChange={(e) => setParams({...params, di: parseFloat(e.target.value)})}
-                  className="w-full accent-cyan-500"
-                />
-              </div>
-
-              {/* b */}
-              <div className="flex flex-col gap-1.5">
-                <div className="flex justify-between text-xs font-bold text-text-secondary">
-                  <span>Decline Exponent (b)</span>
-                  <span className="text-cyan-400">{params.b.toFixed(3)}</span>
-                </div>
-                <input 
-                  type="range" min="0" max="2" step="0.01" 
-                  value={params.b} 
-                  onChange={(e) => setParams({...params, b: parseFloat(e.target.value)})}
-                  className="w-full accent-cyan-500"
-                />
-              </div>
-              
-              <hr className="border-card-border my-2" />
-
-              {/* Forecast Controls */}
-              <div className="flex flex-col gap-1.5">
-                <div className="flex justify-between text-xs font-bold text-text-secondary">
-                  <span>Forecast Horizon (Time Units)</span>
-                  <span className="text-orange-400">{forecastMonths}</span>
-                </div>
-                <input 
-                  type="range" min="12" max="600" step="12" 
-                  value={forecastMonths} 
-                  onChange={(e) => setForecastMonths(parseInt(e.target.value))}
-                  className="w-full accent-orange-500"
-                />
-              </div>
-
-              <div className="flex flex-col gap-1.5">
-                <div className="flex justify-between text-xs font-bold text-text-secondary">
-                  <span>Economic Limit Rate (q_limit)</span>
-                  <span className="text-orange-400">{qLimit}</span>
-                </div>
-                <input 
-                  type="range" min="1" max="500" step="1" 
-                  value={qLimit} 
-                  onChange={(e) => setQLimit(parseFloat(e.target.value))}
-                  className="w-full accent-orange-500"
-                />
-              </div>
-
-            </div>
-          </div>
-        </div>
-
-        {/* Right Column: Chart & Results */}
-        <div className="flex-1 flex flex-col gap-6">
+        {/* Content Area */}
+        <main className="flex-1 p-6 flex flex-col xl:flex-row gap-6 overflow-y-auto">
           
-          {/* EUR Summary Card */}
-          <div className="bg-gradient-to-br from-cyan-950/40 to-blue-900/20 border border-cyan-800/50 p-6 rounded-2xl shadow-xl flex items-center justify-between">
-            <div className="flex flex-col">
-              <span className="text-xs font-bold uppercase tracking-wider text-cyan-400/80 mb-1">Estimated Ultimate Recovery</span>
-              <span className="text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 to-blue-400">
-                {eur > 0 ? eur.toLocaleString(undefined, { maximumFractionDigits: 0 }) : '---'} <span className="text-lg text-text-muted font-bold">Units</span>
-              </span>
-            </div>
-            <div className="flex flex-col items-end gap-1 text-right">
-              <div className="text-sm font-semibold text-text-secondary">Data Points: <span className="text-text-primary">{data.length}</span></div>
-              <div className="text-sm font-semibold text-text-secondary">Curve Type: <span className="text-text-primary">{params.b === 0 ? 'Exponential' : Math.abs(params.b - 1) < 1e-5 ? 'Harmonic' : 'Hyperbolic'}</span></div>
+          {/* Left Column: Input & Controls */}
+          <div className="w-full xl:w-[400px] flex flex-col gap-6 shrink-0">
+            <DataIngestion onDataLoaded={(loaded) => { setData(loaded); }} />
+
+            {/* Arps Parameters Panel */}
+            <div className="bg-card/40 border border-card-border p-6 rounded-2xl shadow-xl flex flex-col gap-5">
+              <div className="flex items-center justify-between border-b border-card-border/50 pb-3">
+                <h2 className="text-lg font-bold text-text-primary flex items-center gap-2">
+                  <Calculator className="w-5 h-5 text-orange-400" /> Arps Parameters
+                </h2>
+                <button 
+                  onClick={handleAutoFit}
+                  className="py-1 px-3 bg-cyan-900/40 hover:bg-cyan-800/60 text-cyan-400 border border-cyan-800/50 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5"
+                >
+                  <RefreshCw className="w-3.5 h-3.5" /> Auto-Fit
+                </button>
+              </div>
+
+              <div className="flex flex-col gap-4">
+                {/* Manual Fit Group */}
+                <fieldset className="border border-card-border/80 rounded-xl p-4 flex flex-col gap-4">
+                  <legend className="text-[10px] font-bold text-cyan-500/80 uppercase tracking-widest px-2">Manual Fit Controls</legend>
+                {/* qi */}
+                <div className="flex flex-col gap-1.5">
+                  <div className="flex justify-between text-xs font-bold text-text-secondary items-center">
+                    <span>Initial Rate (qi)</span>
+                    <input 
+                      type="number" 
+                      value={params.qi} 
+                      onChange={(e) => setParams({...params, qi: parseFloat(e.target.value) || 0})}
+                      className="bg-background border border-card-border text-cyan-400 rounded px-2 py-0.5 w-24 text-right outline-none focus:border-cyan-500"
+                    />
+                  </div>
+                  <input 
+                    type="range" min="0" max="10000" step="10" 
+                    value={params.qi} 
+                    onChange={(e) => setParams({...params, qi: parseFloat(e.target.value)})}
+                    className="w-full accent-cyan-500"
+                  />
+                </div>
+
+                {/* di */}
+                <div className="flex flex-col gap-1.5">
+                  <div className="flex justify-between text-xs font-bold text-text-secondary items-center">
+                    <span>Initial Decline (Di)</span>
+                    <input 
+                      type="number" step="0.001"
+                      value={params.di} 
+                      onChange={(e) => setParams({...params, di: parseFloat(e.target.value) || 0})}
+                      className="bg-background border border-card-border text-cyan-400 rounded px-2 py-0.5 w-24 text-right outline-none focus:border-cyan-500"
+                    />
+                  </div>
+                  <input 
+                    type="range" min="0.001" max="1" step="0.001" 
+                    value={params.di} 
+                    onChange={(e) => setParams({...params, di: parseFloat(e.target.value)})}
+                    className="w-full accent-cyan-500"
+                  />
+                </div>
+
+                {/* b */}
+                <div className="flex flex-col gap-1.5">
+                  <div className="flex justify-between text-xs font-bold text-text-secondary items-center">
+                    <span>Decline Exponent (b)</span>
+                    <input 
+                      type="number" step="0.01"
+                      value={params.b} 
+                      onChange={(e) => setParams({...params, b: parseFloat(e.target.value) || 0})}
+                      className="bg-background border border-card-border text-cyan-400 rounded px-2 py-0.5 w-24 text-right outline-none focus:border-cyan-500"
+                    />
+                  </div>
+                  <input 
+                    type="range" min="0" max="2" step="0.01" 
+                    value={params.b} 
+                    onChange={(e) => setParams({...params, b: parseFloat(e.target.value)})}
+                    className="w-full accent-cyan-500"
+                  />
+                </div>
+                </fieldset>
+                
+                <hr className="border-card-border my-2" />
+
+                {/* Forecast Controls */}
+                <div className="flex flex-col gap-1.5">
+                  <div className="flex justify-between text-xs font-bold text-text-secondary">
+                    <span>Forecast Horizon (Time Units)</span>
+                    <span className="text-orange-400">{forecastMonths}</span>
+                  </div>
+                  <input 
+                    type="range" min="12" max="600" step="12" 
+                    value={forecastMonths} 
+                    onChange={(e) => setForecastMonths(parseInt(e.target.value))}
+                    className="w-full accent-orange-500"
+                  />
+                </div>
+
+                <div className="flex flex-col gap-1.5">
+                  <div className="flex justify-between text-xs font-bold text-text-secondary">
+                    <span>Economic Limit Rate (q_limit)</span>
+                    <span className="text-orange-400">{qLimit}</span>
+                  </div>
+                  <input 
+                    type="range" min="1" max="500" step="1" 
+                    value={qLimit} 
+                    onChange={(e) => setQLimit(parseFloat(e.target.value))}
+                    className="w-full accent-orange-500"
+                  />
+                </div>
+
+              </div>
             </div>
           </div>
 
-          {/* Chart */}
-          <div className="bg-card/40 border border-card-border p-6 rounded-2xl shadow-xl flex-1 min-h-[500px]">
-             <DcaChart data={data} params={params} forecastMonths={forecastMonths} />
+          {/* Right Column: Chart & Results */}
+          <div className="flex-1 flex flex-col gap-6">
+            
+            {/* EUR Summary Card */}
+            <div className="bg-gradient-to-br from-cyan-950/40 to-blue-900/20 border border-cyan-800/50 p-6 rounded-2xl shadow-xl flex items-center justify-between">
+              <div className="flex flex-col">
+                <span className="text-xs font-bold uppercase tracking-wider text-cyan-400/80 mb-1">Estimated Ultimate Recovery</span>
+                <span className="text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 to-blue-400">
+                  {eur > 0 ? eur.toLocaleString(undefined, { maximumFractionDigits: 0 }) : '---'} <span className="text-lg text-text-muted font-bold">Units</span>
+                </span>
+              </div>
+              <div className="flex flex-col items-end gap-1 text-right">
+                <div className="text-sm font-semibold text-text-secondary">Data Points: <span className="text-text-primary">{data.length}</span></div>
+                <div className="text-sm font-semibold text-text-secondary">Curve Type: <span className="text-text-primary">{params.b === 0 ? 'Exponential' : Math.abs(params.b - 1) < 1e-5 ? 'Harmonic' : 'Hyperbolic'}</span></div>
+              </div>
+            </div>
+
+            {/* Chart */}
+            <div className="bg-card/40 border border-card-border p-6 rounded-2xl shadow-xl flex-1 min-h-[500px]">
+               <DcaChart data={data} params={params} forecastMonths={forecastMonths} />
+            </div>
+
           </div>
 
-        </div>
-
-      </main>
+        </main>
+      </div>
     </div>
   );
 }

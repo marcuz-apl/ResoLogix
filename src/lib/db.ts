@@ -72,10 +72,11 @@ export function initDb() {
       FOREIGN KEY (evaluation_id) REFERENCES evaluations(id) ON DELETE CASCADE
     );
 
-    CREATE TABLE IF NOT EXISTS dca_scenarios (
+    CREATE TABLE IF NOT EXISTS "dca-scenarios" (
       id TEXT PRIMARY KEY,
       user_id TEXT NOT NULL,
       scenario_name TEXT NOT NULL,
+      folder TEXT DEFAULT 'Uncategorized',
       description TEXT,
       created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
       updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
@@ -139,13 +140,32 @@ export function initDb() {
     const dcaDbPath = path.join(DATA_DIR, 'resologix-dca.db');
     if (fs.existsSync(dcaDbPath)) {
       db.exec(`ATTACH DATABASE '${dcaDbPath}' AS dca_db;`);
-      db.exec(`INSERT OR IGNORE INTO dca_scenarios SELECT * FROM dca_db.dca_scenarios;`);
+      db.exec(`INSERT OR IGNORE INTO "dca-scenarios" SELECT * FROM dca_db.dca_scenarios;`);
       db.exec(`DETACH DATABASE dca_db;`);
       // Rename the old file so we don't migrate again
       fs.renameSync(dcaDbPath, path.join(DATA_DIR, 'resologix-dca.db.bak'));
     }
   } catch (e) {
     console.error("DCA migration error:", e);
+  }
+
+  // Migration: rename dca_scenarios to "dca-scenarios" if it exists
+  try {
+    const tableExists = db.prepare(`SELECT name FROM sqlite_master WHERE type='table' AND name='dca_scenarios';`).get();
+    if (tableExists) {
+      db.exec(`ALTER TABLE dca_scenarios RENAME TO "dca-scenarios";`);
+      console.log('Migrated dca_scenarios to "dca-scenarios"');
+    }
+  } catch (e) {
+    console.error("Failed to rename dca_scenarios:", e);
+  }
+
+  // Migration: add folder to "dca-scenarios"
+  try {
+    db.exec(`ALTER TABLE "dca-scenarios" ADD COLUMN folder TEXT DEFAULT 'Uncategorized';`);
+    console.log('Added folder column to "dca-scenarios"');
+  } catch (e) {
+    // Column likely already exists
   }
 }
 

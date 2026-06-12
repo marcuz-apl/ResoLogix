@@ -216,6 +216,29 @@ export default function DocsPage() {
                 <li><strong className="text-text-primary">Harmonic (b = 1):</strong> A special case of hyperbolic decline where the decline rate drops inversely proportional to production rate.</li>
               </ul>
 
+              <h4 className="font-bold text-text-primary mt-3 text-[10px] uppercase tracking-wide">Arps Rate Equations</h4>
+              <div className="bg-background/40 p-4 rounded-xl border border-card-border text-xs font-mono space-y-4">
+                <div>
+                  <div className="text-cyan-400 mb-1 font-bold tracking-wide uppercase">Hyperbolic (0 &lt; b &lt; 1)</div>
+                  <div className="text-text-muted">q(t) = q_i / (1 + b &times; D_i &times; t)^(1/b)</div>
+                </div>
+                <div>
+                  <div className="text-cyan-400 mb-1 font-bold tracking-wide uppercase">Exponential (b = 0)</div>
+                  <div className="text-text-muted">q(t) = q_i &times; exp(-D_i &times; t)</div>
+                </div>
+                <div>
+                  <div className="text-cyan-400 mb-1 font-bold tracking-wide uppercase">Harmonic (b = 1)</div>
+                  <div className="text-text-muted">q(t) = q_i / (1 + D_i &times; t)</div>
+                </div>
+                <div className="mt-3 pt-3 border-t border-card-border/50">
+                  <div className="text-text-muted">Where:</div>
+                  <div className="text-text-muted pl-4">q(t) = Production rate at time t</div>
+                  <div className="text-text-muted pl-4">q_i = Initial production rate</div>
+                  <div className="text-text-muted pl-4">D_i = Initial decline rate</div>
+                  <div className="text-text-muted pl-4">b = Decline exponent</div>
+                </div>
+              </div>
+
               <h3 className="font-bold text-text-primary mt-4 text-xs uppercase tracking-wide">2. Modern Advanced DCA Methods</h3>
               <p>
                 With the rise of unconventional shale and tight oil/gas, standard Arps models often fail because these wells exhibit multi-year transient flow. A standard hyperbolic curve with a high <em>b-factor</em> (&gt;1) can mathematically project infinite unrealistic reserves.
