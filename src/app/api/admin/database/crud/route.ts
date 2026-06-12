@@ -20,7 +20,7 @@ export async function POST(req: NextRequest) {
     const { action, table, data, id } = await req.json();
 
     // Whitelist tables to prevent arbitrary SQLite injection
-    const allowedTables = ['users', 'evaluations', 'parameters', 'risk_factors'];
+    const allowedTables = ['users', 'evaluations', 'parameters', 'risk_factors', 'dca-scenarios'];
     if (!allowedTables.includes(table)) {
       return NextResponse.json({ error: 'Invalid table' }, { status: 400 });
     }
@@ -28,7 +28,7 @@ export async function POST(req: NextRequest) {
     const pk = getPrimaryKey(table);
 
     if (action === 'SELECT') {
-      const rows = db.prepare(`SELECT * FROM ${table} ORDER BY ${pk} DESC LIMIT 50`).all();
+      const rows = db.prepare(`SELECT * FROM "${table}" ORDER BY ${pk} DESC LIMIT 50`).all();
       return NextResponse.json({ rows });
     }
 
@@ -42,7 +42,7 @@ export async function POST(req: NextRequest) {
       const setClause = fields.map(f => `${f} = ?`).join(', ');
       const values = fields.map(f => data[f]);
       
-      const stmt = db.prepare(`UPDATE ${table} SET ${setClause} WHERE ${pk} = ?`);
+      const stmt = db.prepare(`UPDATE "${table}" SET ${setClause} WHERE ${pk} = ?`);
       const info = stmt.run(...values, id);
       
       return NextResponse.json({ success: true, changes: info.changes });
@@ -51,7 +51,7 @@ export async function POST(req: NextRequest) {
     if (action === 'DELETE') {
       if (!id) return NextResponse.json({ error: 'Missing id for DELETE' }, { status: 400 });
       
-      const stmt = db.prepare(`DELETE FROM ${table} WHERE ${pk} = ?`);
+      const stmt = db.prepare(`DELETE FROM "${table}" WHERE ${pk} = ?`);
       const info = stmt.run(id);
       
       return NextResponse.json({ success: true, changes: info.changes });
