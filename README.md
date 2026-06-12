@@ -56,7 +56,7 @@ Instead of unreadable UUIDs, the database employs customized, human-readable, mi
 npm install
 ```
 
-2. Boot the development server. The local SQLite database (`resologix.db`) will auto-initialize upon startup.
+2. Boot the development server. The local SQLite databases (`resologix.db` and `resologix-dca.db`) will auto-initialize upon startup.
 ```bash
 npm run dev
 ```
