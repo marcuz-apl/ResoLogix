@@ -71,6 +71,26 @@ export function initDb() {
       containment REAL DEFAULT 1.0,
       FOREIGN KEY (evaluation_id) REFERENCES evaluations(id) ON DELETE CASCADE
     );
+
+    CREATE TABLE IF NOT EXISTS dca_scenarios (
+      id TEXT PRIMARY KEY,
+      user_id TEXT NOT NULL,
+      scenario_name TEXT NOT NULL,
+      description TEXT,
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      
+      -- Parameters
+      qi REAL,
+      di REAL,
+      b REAL,
+      q_limit REAL,
+      
+      -- Historical data stored as JSON string
+      historical_data TEXT,
+      
+      FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+    );
   `);
 
 
@@ -112,6 +132,20 @@ export function initDb() {
     } catch (e) {
       // Column already exists
     }
+  }
+
+  // Migrate DCA data if the old database exists
+  try {
+    const dcaDbPath = path.join(DATA_DIR, 'resologix-dca.db');
+    if (fs.existsSync(dcaDbPath)) {
+      db.exec(`ATTACH DATABASE '${dcaDbPath}' AS dca_db;`);
+      db.exec(`INSERT OR IGNORE INTO dca_scenarios SELECT * FROM dca_db.dca_scenarios;`);
+      db.exec(`DETACH DATABASE dca_db;`);
+      // Rename the old file so we don't migrate again
+      fs.renameSync(dcaDbPath, path.join(DATA_DIR, 'resologix-dca.db.bak'));
+    }
+  } catch (e) {
+    console.error("DCA migration error:", e);
   }
 }
 

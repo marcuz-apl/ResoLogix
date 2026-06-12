@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth/next';
 import { authOptions } from '../auth/[...nextauth]/route';
-import db from '@/lib/db-dca';
+import db from '@/lib/db';
 import { generateHumanId } from '@/lib/utils';
 
 export const dynamic = 'force-dynamic';

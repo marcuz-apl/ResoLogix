@@ -101,7 +101,7 @@ export default function DcaPage() {
               <div className="p-1.5 bg-gradient-to-br from-orange-500 to-amber-600 rounded-lg shadow-lg">
                 <TrendingDownIcon className="w-5 h-5 text-white" />
               </div>
-              <h1 className="text-xl font-black tracking-wide text-text-primary">ResoLogix <span className="text-text-muted font-normal">| DCA</span></h1>
+              <h1 className="text-xl font-black tracking-wide text-text-primary">DCA <span className="text-text-muted font-normal">| ResoLogix</span></h1>
             </div>
           </div>
           
