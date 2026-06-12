@@ -107,7 +107,7 @@ export default function Header({ activeEngine = 'monte-carlo' }: { activeEngine?
               Resource Evaluation
             </span>
           </div>
-          <span className="text-[9px] bg-card-border/50 text-text-primary px-2 py-0.5 rounded-md font-mono shrink-0 select-none ml-1">
+          <span className="text-xs bg-card-border/50 text-text-primary px-2.5 py-1 rounded-md font-mono shrink-0 select-none ml-1 font-semibold">
             v{pkg.version}
           </span>
         </div>

@@ -66,7 +66,7 @@ export default function DataIngestion({ onDataLoaded }: DataIngestionProps) {
   return (
     <div className="bg-card/40 border border-card-border p-6 rounded-2xl shadow-xl flex flex-col gap-4">
       <div className="flex items-center gap-2 mb-2">
-        <FileSpreadsheet className="w-5 h-5 text-cyan-400" />
+        <FileSpreadsheet className="w-5 h-5 text-cyan-500" />
         <h2 className="text-lg font-bold text-text-primary">Historical Data Ingestion</h2>
       </div>
 
@@ -87,7 +87,7 @@ export default function DataIngestion({ onDataLoaded }: DataIngestionProps) {
           <button 
             onClick={handlePasteSubmit}
             disabled={!pasteData.trim()}
-            className="py-2 px-4 bg-cyan-900/40 hover:bg-cyan-800/60 text-cyan-400 border border-cyan-800/50 rounded-lg text-sm font-bold transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+            className="py-2 px-4 bg-card border border-card-border hover:border-cyan-500/50 hover:bg-cyan-500/10 text-cyan-500 rounded-lg text-sm font-bold transition-all disabled:opacity-50 disabled:cursor-not-allowed"
           >
             Load Pasted Data
           </button>

@@ -113,6 +113,16 @@ body {
   -webkit-text-fill-color: transparent;
 }
 
+.eur-card {
+  background: linear-gradient(to bottom right, rgba(8, 51, 68, 0.4), rgba(30, 58, 138, 0.2));
+  border-color: rgba(21, 94, 117, 0.5);
+}
+
+.light-theme .eur-card {
+  background: linear-gradient(to bottom right, rgba(236, 254, 255, 0.8), rgba(239, 246, 255, 0.8));
+  border-color: rgba(165, 243, 252, 1);
+}
+
 .text-gradient-gas {
   background: linear-gradient(135deg, #ea580c 0%, #e11d48 100%);
   -webkit-background-clip: text;

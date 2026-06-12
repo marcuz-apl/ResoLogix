@@ -4,14 +4,25 @@ import React from 'react';
 import Link from 'next/link';
 import { ArrowLeft, BookOpen, Layers, Cpu, HelpCircle, FileText, Compass, Activity, Droplets, ShieldAlert, Database } from 'lucide-react';
 import { useSession } from 'next-auth/react';
-import pkg from '../../../package.json';
+import PageHeader from '../../components/layout/PageHeader';
+import Header from '@/components/dashboard/Header';
+import { DashboardProvider } from '@/components/dashboard/DashboardContext';
 
 export default function DocsPage() {
+  return (
+    <DashboardProvider>
+      <DocsPageContent />
+    </DashboardProvider>
+  );
+}
+
+function DocsPageContent() {
   const { data: session } = useSession();
   const isAdmin = (session?.user as any)?.isAdmin;
 
   return (
-    <div className="min-h-screen bg-[#070a13] text-[#f8fafc] font-sans selection:bg-cyan-500/30 selection:text-cyan-200">
+    <div className="min-h-screen bg-background text-foreground font-sans selection:bg-cyan-500/30 selection:text-cyan-200 flex flex-col">
+      <Header />
       
       {/* Background radial glow */}
       <div className="fixed inset-0 pointer-events-none overflow-hidden z-0">
@@ -22,25 +33,10 @@ export default function DocsPage() {
       <div className="relative z-10 max-w-5xl mx-auto px-6 py-12">
         
         {/* Documentation Header */}
-        <header className="border-b border-card-border pb-8 mb-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
-          <div className="flex items-center gap-4">
-            <Link href="/" className="p-2 hover:bg-card-border/50 rounded-lg transition-colors cursor-pointer group shrink-0">
-              <ArrowLeft className="w-6 h-6 text-text-muted group-hover:text-cyan-400" />
-            </Link>
-            <img src="/logo.png" alt="ResoLogix Logo" className="w-14 h-14 rounded-2xl shadow-lg shadow-cyan-500/10 object-contain animate-pulse" />
-            <div>
-              <h1 className="text-3xl font-black tracking-tight text-text-primary">
-                ResoLogix&trade; Knowledge Base
-              </h1>
-              <p className="text-xs text-text-secondary mt-1 font-semibold uppercase tracking-wider">
-                Scientific documentation, formulae & industry insights
-              </p>
-            </div>
-          </div>
-          <span className="text-xs bg-cyan-950/40 border border-cyan-800/40 text-cyan-400 px-3 py-1.5 rounded-lg font-bold select-none shrink-0 self-start md:self-auto">
-            Documentation Version {pkg.version}
-          </span>
-        </header>
+        <PageHeader 
+          title={<>ResoLogix&trade; Knowledge Base</>}
+          subtitle="Scientific documentation, formulae & industry insights"
+        />
 
         {/* Dynamic Sidebar / Content Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">

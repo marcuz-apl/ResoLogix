@@ -220,7 +220,7 @@ function DcaPageContent() {
   };
 
   return (
-    <div className="h-screen bg-[#070a13] text-[#f8fafc] font-sans selection:bg-cyan-500/30 selection:text-cyan-200 flex flex-col overflow-hidden">
+    <div className="h-screen bg-background text-foreground font-sans selection:bg-cyan-500/30 selection:text-cyan-200 flex flex-col overflow-hidden">
       
       {/* Header */}
       <Header activeEngine="dca" />
@@ -256,11 +256,11 @@ function DcaPageContent() {
             <div className="bg-card/40 border border-card-border p-6 rounded-2xl shadow-xl flex flex-col gap-5">
               <div className="flex items-center justify-between border-b border-card-border/50 pb-3">
                 <h2 className="text-lg font-bold text-text-primary flex items-center gap-2">
-                  <Calculator className="w-5 h-5 text-orange-400" /> Arps Parameters
+                  <Calculator className="w-5 h-5 text-orange-500" /> Arps Parameters
                 </h2>
                 <button 
                   onClick={handleAutoFit}
-                  className="py-1 px-3 bg-cyan-900/40 hover:bg-cyan-800/60 text-cyan-400 border border-cyan-800/50 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5"
+                  className="py-1 px-3 bg-card border border-card-border hover:border-cyan-500/50 hover:bg-cyan-500/10 text-cyan-500 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5"
                 >
                   <RefreshCw className="w-3.5 h-3.5" /> Auto-Fit
                 </button>
@@ -365,10 +365,10 @@ function DcaPageContent() {
           <div className="flex-1 flex flex-col gap-6">
             
             {/* EUR Summary Card */}
-            <div className="bg-gradient-to-br from-cyan-950/40 to-blue-900/20 border border-cyan-800/50 p-6 rounded-2xl shadow-xl flex items-center justify-between">
+            <div className="eur-card border p-6 rounded-2xl shadow-xl flex items-center justify-between">
               <div className="flex flex-col">
-                <span className="text-xs font-bold uppercase tracking-wider text-cyan-400/80 mb-1">Estimated Ultimate Recovery</span>
-                <span className="text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 to-blue-400">
+                <span className="text-xs font-bold uppercase tracking-wider text-cyan-600 mb-1">Estimated Ultimate Recovery</span>
+                <span className="text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-cyan-500 to-blue-500">
                   {eur > 0 ? eur.toLocaleString(undefined, { maximumFractionDigits: 0 }) : '---'} <span className="text-lg text-text-muted font-bold">Units</span>
                 </span>
               </div>

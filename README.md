@@ -15,7 +15,7 @@ ResoLogix is a premium, full-range Resource Evaluation and Analytics Platform fo
 - **Reporting Suite**: Instantly generate highly-formatted PDF, Word (docx), PowerPoint (pptx), and Excel workbooks containing generated charts and volumetric tables, complete with browser previewing.
 - **Geological Risk Assessment**: Fully integrated risk matrices for trap, reservoir, charge, and seal.
 - **Example Scenarios**: Guest access enables viewing and interacting with real-world seeded production data (e.g. from GitHub/Kaggle datasets) and Monte Carlo examples on the fly.
-- **Premium Interface**: A customized Next.js App Router UI featuring sleek animations, a responsive dark mode layout, and intuitive data visualizations via Chart.js.
+- **Premium Interface**: A customized Next.js App Router UI featuring sleek animations, a responsive Light/Dark mode layout unified across all modules (DCA, Tools, Docs), and intuitive data visualizations via Chart.js.
 
 ## Advanced Security & User Management
 
@@ -32,7 +32,7 @@ Instead of unreadable UUIDs, the database employs customized, human-readable, mi
 ### Frameworks & UI
 - **Framework**: [Next.js v15](https://nextjs.org/) (App Router & Server Components)
 - **Language**: [TypeScript](https://www.typescript.org/) (Strict typings)
-- **Styling**: [Tailwind CSS v4](https://tailwindcss.com/) (Custom UI/UX and dark mode handling)
+- **Styling**: [Tailwind CSS v4](https://tailwindcss.com/) (Custom UI/UX with full Light/Dark theme support via CSS variables)
 - **Icons**: [Lucide React](https://lucide.dev/)
 
 ### State, Data & Engine

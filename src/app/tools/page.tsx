@@ -3,8 +3,19 @@
 import React, { useState } from 'react';
 import { ChevronDown, ChevronUp, Wrench, Calculator, ArrowRightLeft, ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
+import PageHeader from '../../components/layout/PageHeader';
+import Header from '@/components/dashboard/Header';
+import { DashboardProvider } from '@/components/dashboard/DashboardContext';
 
 export default function ToolsPage() {
+  return (
+    <DashboardProvider>
+      <ToolsPageContent />
+    </DashboardProvider>
+  );
+}
+
+function ToolsPageContent() {
   const [ffExpanded, setFfExpanded] = useState(true);
   const [ucExpanded, setUcExpanded] = useState(false);
 
@@ -199,18 +210,13 @@ export default function ToolsPage() {
   };
 
   return (
-    <div className="flex-1 p-6 lg:p-8 animate-fade-in w-full max-w-5xl mx-auto">
-      <div className="flex items-center justify-between mb-8">
-        <div className="flex items-center gap-4">
-          <Link href="/" className="p-2 hover:bg-card-border/50 rounded-lg transition-colors cursor-pointer group shrink-0">
-            <ArrowLeft className="w-6 h-6 text-text-muted group-hover:text-cyan-400" />
-          </Link>
-          <div className="flex items-center gap-3">
-            <Wrench className="w-6 h-6 text-cyan-400" />
-            <h1 className="text-2xl font-bold text-text-primary tracking-tight">Tools & Calculators</h1>
-          </div>
-        </div>
-      </div>
+    <div className="min-h-screen bg-background text-foreground font-sans selection:bg-cyan-500/30 selection:text-cyan-200 flex flex-col">
+      <Header />
+      <div className="flex-1 p-6 lg:p-8 animate-fade-in w-full max-w-5xl mx-auto">
+        <PageHeader 
+        title="Tools & Calculators"
+        subtitle="Engineering utilities & unit conversions"
+      />
 
       <div className="flex flex-col gap-6">
         
@@ -329,6 +335,7 @@ export default function ToolsPage() {
         </div>
 
       </div>
+    </div>
     </div>
   );
 }

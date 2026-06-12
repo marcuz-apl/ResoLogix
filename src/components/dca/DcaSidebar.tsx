@@ -76,14 +76,14 @@ export default function DcaSidebar({
   return (
     <>
       <aside 
-        className="shrink-0 border-r border-card-border bg-[#070a13] p-5 flex flex-col gap-6"
+        className="shrink-0 border-r border-card-border bg-sidebar p-5 flex flex-col gap-6"
         style={{ width: sidebarWidth }}
       >
         {/* Action Buttons */}
         <div className="flex flex-col gap-4 shrink-0">
           <button
             onClick={onNew}
-            className="w-full flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl font-bold text-xs border-2 border-dashed border-cyan-800/50 text-cyan-400 hover:text-cyan-300 hover:border-cyan-500 hover:bg-cyan-950/30 transition-all duration-300 truncate cursor-pointer"
+            className="w-full flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl font-bold text-xs border-2 border-dashed border-cyan-500/50 text-cyan-500 hover:text-cyan-400 hover:border-cyan-500 hover:bg-cyan-500/10 transition-all duration-300 truncate cursor-pointer"
             title="New DCA Scenario"
           >
             <Plus className="w-4 h-4 shrink-0" />
@@ -182,7 +182,7 @@ export default function DcaSidebar({
 
                               <div className="flex items-center gap-2 mt-2">
                                 {scenario.is_example && (
-                                  <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-cyan-950/40 text-cyan-400 border border-cyan-800/50">
+                                  <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-cyan-500/10 text-cyan-500 border border-cyan-500/30">
                                     EXAMPLE
                                   </span>
                                 )}
