@@ -10,7 +10,7 @@ import ForcePasswordChangeModal from '../auth/ForcePasswordChangeModal';
 import UserProfileModal from '../auth/UserProfileModal';
 import pkg from '../../../package.json';
 
-export default function Header() {
+export default function Header({ activeEngine = 'monte-carlo' }: { activeEngine?: 'monte-carlo' | 'dca' }) {
   const { toggleTheme, theme, setShowAuthModal } = useDashboard();
   const [showToast, setShowToast] = React.useState(false);
   const { data: session } = useSession();
@@ -41,24 +41,49 @@ export default function Header() {
         {/* Left Side: Engine Selection */}
         <div className="flex items-center gap-4">
           <div className="flex bg-background border border-card-border rounded-xl p-0.5 text-xs font-semibold shrink-0">
-            <button
-              onClick={handleEngineClick}
-              className={`py-1.5 px-3.5 rounded-lg font-bold shadow border cursor-pointer flex items-center gap-1.5 ${
-                theme === 'dark'
-                  ? 'bg-cyan-900/35 border-cyan-800/40 text-cyan-400'
-                  : 'bg-cyan-100 border-cyan-300 text-cyan-800'
-              }`}
-            >
-              <Dices className="w-3.5 h-3.5" />
-              Monte Carlo Sim
-            </button>
-            <Link
-              href="/dca"
-              className="py-1.5 px-3.5 rounded-lg text-text-secondary hover:text-text-primary cursor-pointer flex items-center justify-center gap-1.5"
-            >
-              <TrendingDown className="w-3.5 h-3.5" />
-              DCA
-            </Link>
+            {activeEngine === 'monte-carlo' ? (
+              <button
+                onClick={handleEngineClick}
+                className={`py-1.5 px-3.5 rounded-lg font-bold shadow border cursor-pointer flex items-center gap-1.5 ${
+                  theme === 'dark'
+                    ? 'bg-cyan-900/35 border-cyan-800/40 text-cyan-400'
+                    : 'bg-cyan-100 border-cyan-300 text-cyan-800'
+                }`}
+              >
+                <Dices className="w-3.5 h-3.5" />
+                Monte Carlo Sim
+              </button>
+            ) : (
+              <Link
+                href="/"
+                className="py-1.5 px-3.5 rounded-lg text-text-secondary hover:text-text-primary cursor-pointer flex items-center justify-center gap-1.5"
+              >
+                <Dices className="w-3.5 h-3.5" />
+                Monte Carlo Sim
+              </Link>
+            )}
+
+            {activeEngine === 'dca' ? (
+              <button
+                onClick={handleEngineClick}
+                className={`py-1.5 px-3.5 rounded-lg font-bold shadow border cursor-pointer flex items-center gap-1.5 ${
+                  theme === 'dark'
+                    ? 'bg-orange-900/35 border-orange-800/40 text-orange-400'
+                    : 'bg-orange-100 border-orange-300 text-orange-800'
+                }`}
+              >
+                <TrendingDown className="w-3.5 h-3.5" />
+                DCA
+              </button>
+            ) : (
+              <Link
+                href="/dca"
+                className="py-1.5 px-3.5 rounded-lg text-text-secondary hover:text-text-primary cursor-pointer flex items-center justify-center gap-1.5"
+              >
+                <TrendingDown className="w-3.5 h-3.5" />
+                DCA
+              </Link>
+            )}
           </div>
           
           {/* Tools Page Link */}
@@ -207,10 +232,17 @@ export default function Header() {
           showToast ? 'opacity-100 translate-y-0 scale-100' : 'opacity-0 -translate-y-4 scale-95'
         }`}
       >
-        <div className="bg-cyan-950/90 border border-cyan-500/50 text-cyan-100 px-4 py-2.5 rounded-xl shadow-[0_0_20px_rgba(6,182,212,0.3)] backdrop-blur-md flex items-center gap-2.5">
-          <Dices className="w-4 h-4 text-cyan-400 animate-spin-slow" />
-          <span className="text-xs font-bold tracking-wide">Current computing engine: Monte Carlo Simulation (active)</span>
-        </div>
+        {activeEngine === 'monte-carlo' ? (
+          <div className="bg-cyan-950/90 border border-cyan-500/50 text-cyan-100 px-4 py-2.5 rounded-xl shadow-[0_0_20px_rgba(6,182,212,0.3)] backdrop-blur-md flex items-center gap-2.5">
+            <Dices className="w-4 h-4 text-cyan-400 animate-spin-slow" />
+            <span className="text-xs font-bold tracking-wide">Current computing engine: Monte Carlo Simulation (active)</span>
+          </div>
+        ) : (
+          <div className="bg-orange-950/90 border border-orange-500/50 text-orange-100 px-4 py-2.5 rounded-xl shadow-[0_0_20px_rgba(249,115,22,0.3)] backdrop-blur-md flex items-center gap-2.5">
+            <TrendingDown className="w-4 h-4 text-orange-400 animate-pulse" />
+            <span className="text-xs font-bold tracking-wide">Current computing engine: Decline Curve Analysis (active)</span>
+          </div>
+        )}
       </div>
 
       {/* Render Auth Modals Here */}

@@ -9,8 +9,18 @@ import DataIngestion from '@/components/dca/DataIngestion';
 import DcaChart from '@/components/dca/DcaChart';
 import DcaSidebar from '@/components/dca/DcaSidebar';
 import { Point, ArpsParams, fitDeclineCurve, arpsCumulative } from '@/lib/dca-engine';
+import { DashboardProvider } from '@/components/dashboard/DashboardContext';
+import Header from '@/components/dashboard/Header';
 
 export default function DcaPage() {
+  return (
+    <DashboardProvider>
+      <DcaPageContent />
+    </DashboardProvider>
+  );
+}
+
+function DcaPageContent() {
   const { data: session } = useSession();
   const [data, setData] = useState<Point[]>([]);
   const [params, setParams] = useState<ArpsParams>({ qi: 1000, di: 0.1, b: 0.5 });
@@ -45,14 +55,33 @@ export default function DcaPage() {
     }
   };
 
+  const isFirstLoad = useRef(true);
+
   // Fetch scenarios
   const fetchScenarios = useCallback(async () => {
     try {
       setIsLoadingScenarios(true);
       const res = await fetch('/api/dca');
       if (!res.ok) throw new Error('Failed to load scenarios');
-      const data = await res.json();
-      setScenarios(data);
+      const fetchedData = await res.json();
+      setScenarios(fetchedData);
+
+      if (isFirstLoad.current) {
+        isFirstLoad.current = false;
+        const example = fetchedData.find((s: any) => s.is_example);
+        if (example) {
+          setActiveScenarioId(example.id);
+          setScenarioName(example.scenario_name);
+          setFolder(example.folder || 'Uncategorized');
+          setParams({
+            qi: example.qi,
+            di: example.di,
+            b: example.b
+          });
+          setQLimit(example.q_limit || 50);
+          setData(example.historical_data || []);
+        }
+      }
     } catch (err) {
       console.error(err);
     } finally {
@@ -194,51 +223,7 @@ export default function DcaPage() {
     <div className="h-screen bg-[#070a13] text-[#f8fafc] font-sans selection:bg-cyan-500/30 selection:text-cyan-200 flex flex-col overflow-hidden">
       
       {/* Header */}
-      <header className="shrink-0 bg-background/80 backdrop-blur-xl border-b border-card-border/50 z-40">
-        <div className="w-full px-6 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <Link href="/" className="p-2 hover:bg-card-border/50 rounded-lg transition-colors cursor-pointer group">
-              <ArrowLeft className="w-5 h-5 text-text-muted group-hover:text-cyan-400" />
-            </Link>
-            <div className="flex items-center gap-2">
-              <div className="p-1.5 bg-gradient-to-br from-orange-500 to-amber-600 rounded-lg shadow-lg">
-                <TrendingDownIcon className="w-5 h-5 text-white" />
-              </div>
-              <h1 className="text-xl font-black tracking-wide text-text-primary">DCA <span className="text-text-muted font-normal">| ResoLogix</span></h1>
-            </div>
-          </div>
-          
-          <div className="flex items-center gap-3">
-            <div className="flex flex-col relative">
-              <span className="text-[10px] text-text-muted font-bold absolute -top-2 left-2 bg-background px-1">Folder</span>
-              <input 
-                type="text" 
-                value={folder} 
-                onChange={(e) => setFolder(e.target.value)} 
-                placeholder="Folder"
-                className="bg-background text-text-primary text-sm font-bold border border-card-border focus:border-cyan-500 outline-none px-3 py-2 rounded-xl transition-colors w-40"
-              />
-            </div>
-            <div className="flex flex-col relative">
-              <span className="text-[10px] text-text-muted font-bold absolute -top-2 left-2 bg-background px-1">Scenario Name</span>
-              <input 
-                type="text" 
-                value={scenarioName} 
-                onChange={(e) => setScenarioName(e.target.value)} 
-                placeholder="Scenario Name"
-                className="bg-background text-text-primary text-sm font-bold border border-card-border focus:border-cyan-500 outline-none px-3 py-2 rounded-xl transition-colors w-72"
-              />
-            </div>
-            
-            <button 
-              onClick={handleSaveScenario}
-              className="py-2 px-4 rounded-xl font-bold bg-gradient-to-r from-orange-600 to-amber-600 hover:from-orange-500 hover:to-amber-500 text-white shadow-[0_0_15px_rgba(249,115,22,0.3)] transition-all flex items-center gap-2 text-sm border border-orange-500/50"
-            >
-              <Save className="w-4 h-4" /> Save Scenario
-            </button>
-          </div>
-        </div>
-      </header>
+      <Header activeEngine="dca" />
 
       {/* Main Layout Area */}
       <div className="flex-1 flex overflow-hidden">
@@ -253,6 +238,11 @@ export default function DcaPage() {
           onNew={handleNewScenario}
           sidebarWidth={sidebarWidth}
           onMouseDown={handleSidebarMouseDown}
+          folder={folder}
+          setFolder={setFolder}
+          scenarioName={scenarioName}
+          setScenarioName={setScenarioName}
+          onSave={handleSaveScenario}
         />
 
         {/* Content Area */}

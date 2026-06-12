@@ -13,6 +13,11 @@ interface DcaSidebarProps {
   onNew: () => void;
   sidebarWidth: string;
   onMouseDown: (e: React.MouseEvent) => void;
+  folder: string;
+  setFolder: (f: string) => void;
+  scenarioName: string;
+  setScenarioName: (n: string) => void;
+  onSave: () => void;
 }
 
 export default function DcaSidebar({
@@ -23,7 +28,12 @@ export default function DcaSidebar({
   onDelete,
   onNew,
   sidebarWidth,
-  onMouseDown
+  onMouseDown,
+  folder,
+  setFolder,
+  scenarioName,
+  setScenarioName,
+  onSave
 }: DcaSidebarProps) {
   const { data: session } = useSession();
   const [expandedFolders, setExpandedFolders] = useState<Record<string, boolean>>({});
@@ -70,7 +80,7 @@ export default function DcaSidebar({
         style={{ width: sidebarWidth }}
       >
         {/* Action Buttons */}
-        <div className="flex flex-col gap-2 shrink-0">
+        <div className="flex flex-col gap-4 shrink-0">
           <button
             onClick={onNew}
             className="w-full flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl font-bold text-xs border-2 border-dashed border-cyan-800/50 text-cyan-400 hover:text-cyan-300 hover:border-cyan-500 hover:bg-cyan-950/30 transition-all duration-300 truncate cursor-pointer"
@@ -79,6 +89,36 @@ export default function DcaSidebar({
             <Plus className="w-4 h-4 shrink-0" />
             <span className="truncate">New DCA Scenario</span>
           </button>
+
+          <div className="flex flex-col gap-3 p-3 bg-card/30 border border-card-border rounded-xl">
+            <div className="flex flex-col gap-1.5">
+              <span className="text-[10px] text-text-muted font-bold uppercase tracking-wider">Folder</span>
+              <input 
+                type="text" 
+                value={folder} 
+                onChange={(e) => setFolder(e.target.value)} 
+                placeholder="Folder"
+                className="bg-background text-text-primary text-xs font-bold border border-card-border focus:border-cyan-500 outline-none px-2.5 py-1.5 rounded-lg transition-colors w-full"
+              />
+            </div>
+            <div className="flex flex-col gap-1.5">
+              <span className="text-[10px] text-text-muted font-bold uppercase tracking-wider">Scenario Name</span>
+              <input 
+                type="text" 
+                value={scenarioName} 
+                onChange={(e) => setScenarioName(e.target.value)} 
+                placeholder="Scenario Name"
+                className="bg-background text-text-primary text-xs font-bold border border-card-border focus:border-cyan-500 outline-none px-2.5 py-1.5 rounded-lg transition-colors w-full"
+              />
+            </div>
+            
+            <button 
+              onClick={onSave}
+              className="mt-1 py-2 px-4 rounded-lg font-bold bg-gradient-to-r from-orange-600 to-amber-600 hover:from-orange-500 hover:to-amber-500 text-white shadow-[0_0_15px_rgba(249,115,22,0.3)] transition-all flex items-center justify-center gap-2 text-xs border border-orange-500/50"
+            >
+              <Save className="w-3.5 h-3.5" /> Save Scenario
+            </button>
+          </div>
         </div>
 
         {/* Scenario List */}
