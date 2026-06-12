@@ -23,7 +23,7 @@ export default function Footer() {
       <div className="flex items-center gap-3 text-center text-text-secondary">
         <span>ResoLogix&trade; Resource Evaluation</span>
         <span className="text-text-muted/40">|</span>
-        <span>Copyright &copy; 2026 by Marcus Zou & Alfazen Inc.</span>
+        <span>Copyright &copy; 2026 by Alfazen Inc.</span>
         <span className="text-text-muted/40">|</span>
         <span>Last Updated on {buildDate}</span>
       </div>
