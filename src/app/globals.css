@@ -1,18 +1,18 @@
 @import "tailwindcss";
 
 :root {
-  --background: #070a13;
+  --background: #0b192c;
   --foreground: #f8fafc;
-  --card-bg: rgba(15, 23, 42, 0.6);
-  --card-border: rgba(51, 65, 85, 0.4);
-  --sidebar-bg: #070a13;
-  --panel-bg: rgba(15, 23, 42, 0.2);
+  --card-bg: rgba(22, 33, 62, 0.6);
+  --card-border: rgba(30, 58, 138, 0.4);
+  --sidebar-bg: #0b192c;
+  --panel-bg: rgba(22, 33, 62, 0.3);
   --text-primary: #f8fafc;
   --text-secondary: #94a3b8;
   --text-muted: #64748b;
-  --input-bg: #030712;
-  --input-border: #1e293b;
-  --table-hover: rgba(30, 41, 59, 0.3);
+  --input-bg: #060e1a;
+  --input-border: #1e3a8a;
+  --table-hover: rgba(30, 58, 138, 0.3);
   --accent-cyan: #06b6d4;
   --accent-blue: #3b82f6;
   --accent-gas: #f97316;
