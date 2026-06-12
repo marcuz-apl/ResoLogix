@@ -10,10 +10,11 @@ ResoLogix is a premium, full-range Resource Evaluation and Analytics Platform fo
 
 ## Core Features
 
-- **Monte Carlo Engine**: Advanced, localized probabilistic simulations for reserve estimations.
-- **Decline Curve Analysis (DCA)**: Deep analytical tools for active production wells.
-- **Reporting Suite**: Instantly generate highly-formatted PDF, Word (docx), PowerPoint (pptx), and Excel workbooks containing generated charts and volumetric tables.
+- **Monte Carlo Engine**: Advanced, localized probabilistic simulations for reserve estimations with customizable iterations (up to 50k).
+- **Decline Curve Analysis (DCA)**: Deep analytical tools for active production wells, featuring Levenberg-Marquardt auto-fitting for Arps decline equations.
+- **Reporting Suite**: Instantly generate highly-formatted PDF, Word (docx), PowerPoint (pptx), and Excel workbooks containing generated charts and volumetric tables, complete with browser previewing.
 - **Geological Risk Assessment**: Fully integrated risk matrices for trap, reservoir, charge, and seal.
+- **Example Scenarios**: Guest access enables viewing and interacting with real-world seeded production data (e.g. from GitHub/Kaggle datasets) and Monte Carlo examples on the fly.
 - **Premium Interface**: A customized Next.js App Router UI featuring sleek animations, a responsive dark mode layout, and intuitive data visualizations via Chart.js.
 
 ## Advanced Security & User Management
@@ -37,7 +38,7 @@ Instead of unreadable UUIDs, the database employs customized, human-readable, mi
 ### State, Data & Engine
 - **Database**: Native [SQLite](https://www.sqlite.org/) via `better-sqlite3`
 - **Charts**: [Chart.js](https://www.chartjs.org/) & `react-chartjs-2`
-- **Engine**: Custom TypeScript Monte Carlo engine (Local Execution)
+- **Math Engine**: Custom TypeScript Monte Carlo engine & `ml-levenberg-marquardt` for DCA fitting
 - **Authentication**: `next-auth` (Credentials Provider, strictly typed JWT sessions)
 - **Encryption**: `bcryptjs` for secure password hashing
 

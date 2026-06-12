@@ -7,6 +7,8 @@ services:
     volumes:
       # Mount the entire data directory so SQLite WAL files and the DB persist properly
       - ./data:/app/data
+      # Mount reports directory for persistent external storage if needed
+      - ./reports:/app/reports
     environment:
       # Required for NextAuth security
       - NEXTAUTH_SECRET=your_super_secret_key_change_me
