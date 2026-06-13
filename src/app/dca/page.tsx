@@ -76,21 +76,17 @@ function DcaPageContent() {
 
       if (isFirstLoad.current) {
         isFirstLoad.current = false;
-        const example = fetchedData.find((s: any) => s.is_example);
-        if (example) {
-          setActiveScenarioId(example.id);
-          setScenarioName(example.scenario_name);
-          setFolder(example.folder || 'Uncategorized');
-          setParams({
-            qi: example.qi,
-            di: example.di,
-            b: example.b
-          });
-          setQLimit(example.q_limit || 50);
-          setData(example.historical_data || []);
-          setEnableEconomics(example.enable_economics || false);
-          setEmvParams(example.emv_params || DEFAULT_EMV);
-          setEconParams(example.econ_params || DEFAULT_ECON);
+        
+        const lastId = localStorage.getItem('resologix-last-dca-scenario');
+        let initialScenario = lastId ? fetchedData.find((s: any) => s.id === lastId) : null;
+        
+        if (!initialScenario) {
+          const latestUserScenario = fetchedData.find((s: any) => s.is_example === 0 || s.is_example === false);
+          initialScenario = latestUserScenario || fetchedData.find((s: any) => s.is_example);
+        }
+
+        if (initialScenario) {
+          handleLoadScenario(initialScenario);
         }
       }
     } catch (err) {
@@ -205,6 +201,7 @@ function DcaPageContent() {
   };
 
   const handleLoadScenario = (scenario: any) => {
+    localStorage.setItem('resologix-last-dca-scenario', scenario.id);
     setActiveScenarioId(scenario.id);
     setScenarioName(scenario.scenario_name);
     setFolder(scenario.folder || 'Uncategorized');
