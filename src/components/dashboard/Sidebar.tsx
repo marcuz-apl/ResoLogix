@@ -1,9 +1,10 @@
 'use client';
 
 import React, { useState, useRef, useEffect, useCallback } from 'react';
-import { Plus, Check, Save, FolderOpen, Trash2, Sliders, RefreshCw, Copy, ChevronDown, ChevronRight, Eye, EyeOff, Pencil } from 'lucide-react';
+import { Plus, Check, Save, FolderOpen, Trash2, Sliders, RefreshCw, Copy, ChevronDown, ChevronRight, Eye, EyeOff, Pencil, X, Wrench, BookOpen, Info, Sun, Moon, TrendingDown, Dices } from 'lucide-react';
 import { useDashboard } from './DashboardContext';
 import { useSession } from 'next-auth/react';
+import Link from 'next/link';
 
 export default function Sidebar() {
   const {
@@ -25,7 +26,11 @@ export default function Sidebar() {
     setIterations,
     setSimResults,
     handleRunSimulation,
-    isSimulating
+    isSimulating,
+    isMobileMenuOpen,
+    setIsMobileMenuOpen,
+    toggleTheme,
+    theme
   } = useDashboard();
 
   const { data: session } = useSession();
@@ -170,11 +175,32 @@ export default function Sidebar() {
 
   return (
     <>
+      {/* Mobile Drawer Overlay */}
+      {isMobileMenuOpen && (
+        <div 
+          className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 md:hidden"
+          onClick={() => setIsMobileMenuOpen(false)}
+        />
+      )}
+
       {/* Sidebar - Scenario Manager */}
       <aside 
-        className="shrink-0 border-r border-card-border bg-sidebar p-5 flex flex-col gap-6"
-        style={{ width: sidebarWidth }}
+        className={`fixed md:relative inset-y-0 left-0 z-50 md:z-auto bg-sidebar border-r border-card-border p-4 md:p-5 flex flex-col gap-4 md:gap-6 w-[80%] max-w-[320px] md:w-[var(--sidebar-width)] transition-transform duration-300 shrink-0 ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}`}
+        style={{ '--sidebar-width': `${sidebarWidth}px` } as any}
       >
+        {/* Mobile close button & App Name */}
+        <div className="flex md:hidden items-center justify-between pb-2 border-b border-card-border/50">
+          <div className="flex items-center gap-2">
+            <img src="/logo.png" alt="Logo" className="w-6 h-6" />
+            <span className="font-extrabold text-sm text-text-primary">ResoLogix</span>
+          </div>
+          <button 
+            onClick={() => setIsMobileMenuOpen(false)}
+            className="p-1 rounded-lg text-text-muted hover:bg-card-border/30 hover:text-text-primary"
+          >
+            <X className="w-5 h-5" />
+          </button>
+        </div>
         {/* MC Runs Dropdown and Run Sim Button */}
         <div className="flex flex-col gap-2.5 bg-card/45 border border-card-border/70 p-3.5 rounded-xl shrink-0">
           <div className="flex items-center justify-between text-xs text-text-secondary">
@@ -367,6 +393,27 @@ export default function Sidebar() {
             )}
           </div>
         </div>
+
+        {/* Mobile Navigation Links (Hidden on Desktop) */}
+        <div className="md:hidden flex flex-col gap-2 pt-4 border-t border-card-border mt-auto shrink-0">
+          <div className="text-[10px] text-text-muted font-bold uppercase tracking-wider mb-1">Tools & Links</div>
+          <Link href="/" className="flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-bold text-text-secondary hover:bg-cyan-950/20 hover:text-cyan-400">
+            <Dices className="w-4 h-4" /> Monte Carlo Sim
+          </Link>
+          <Link href="/dca" className="flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-bold text-text-secondary hover:bg-orange-950/20 hover:text-orange-400">
+            <TrendingDown className="w-4 h-4" /> Decline Curve (DCA)
+          </Link>
+          <Link href="/tools" className="flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-bold text-text-secondary hover:bg-cyan-950/20 hover:text-cyan-400">
+            <Wrench className="w-4 h-4" /> Tools
+          </Link>
+          <Link href="/docs" className="flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-bold text-text-secondary hover:bg-cyan-950/20 hover:text-cyan-400">
+            <BookOpen className="w-4 h-4" /> Docs
+          </Link>
+          <button onClick={toggleTheme} className="flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-bold text-text-secondary hover:bg-card-border/30 text-left">
+            {theme === 'dark' ? <Sun className="w-4 h-4 text-yellow-500" /> : <Moon className="w-4 h-4 text-indigo-600" />}
+            Toggle Theme
+          </button>
+        </div>
       </aside>
 
       {/* Right-click context menu for folders */}
@@ -386,9 +433,9 @@ export default function Sidebar() {
         </div>
       )}
 
-      {/* Sidebar Resizer Handle Line */}
+      {/* Sidebar Resizer Handle Line - Hidden on Mobile */}
       <div 
-        className="w-[3px] hover:w-[6px] cursor-col-resize bg-card-border/30 hover:bg-cyan-500/70 transition-all shrink-0 select-none z-20"
+        className="hidden md:block w-[3px] hover:w-[6px] cursor-col-resize bg-card-border/30 hover:bg-cyan-500/70 transition-all shrink-0 select-none z-20"
         onMouseDown={handleSidebarMouseDown}
       />
     </>

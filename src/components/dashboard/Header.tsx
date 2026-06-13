@@ -2,7 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { Sun, Moon, BookOpen, Info, X, Wrench, User, LogOut, ShieldAlert, TrendingDown, Dices, Activity } from 'lucide-react';
+import { Sun, Moon, BookOpen, Info, X, Wrench, User, LogOut, ShieldAlert, TrendingDown, Dices, Activity, Menu } from 'lucide-react';
 import { useDashboard } from './DashboardContext';
 import { useSession, signOut } from 'next-auth/react';
 import AuthModal from '../auth/AuthModal';
@@ -11,7 +11,7 @@ import UserProfileModal from '../auth/UserProfileModal';
 import pkg from '../../../package.json';
 
 export default function Header({ activeEngine = 'monte-carlo' }: { activeEngine?: 'monte-carlo' | 'dca' }) {
-  const { toggleTheme, theme, setShowAuthModal } = useDashboard();
+  const { toggleTheme, theme, setShowAuthModal, isMobileMenuOpen, setIsMobileMenuOpen } = useDashboard();
   const [showToast, setShowToast] = React.useState(false);
   const { data: session } = useSession();
   const [showAbout, setShowAbout] = React.useState(false);
@@ -36,11 +36,20 @@ export default function Header({ activeEngine = 'monte-carlo' }: { activeEngine?
 
   return (
     <>
-      <header className="h-16 shrink-0 border-b border-card-border bg-card px-6 flex items-center justify-between z-30">
+      <header className="h-16 shrink-0 border-b border-card-border bg-card px-4 md:px-6 flex items-center justify-between z-30 overflow-x-auto no-scrollbar gap-4">
         
         {/* Left Side: Engine Selection */}
-        <div className="flex items-center gap-4">
-          <div className="flex bg-background border border-card-border rounded-xl p-0.5 text-xs font-semibold shrink-0">
+        <div className="flex items-center gap-2 md:gap-4">
+          {/* Hamburger Menu (Mobile Only) */}
+          <button
+            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            className="md:hidden p-2 rounded-xl bg-background border border-card-border text-text-secondary hover:text-cyan-400 hover:border-cyan-500/40 hover:bg-cyan-950/10 transition-all duration-200 cursor-pointer shrink-0"
+            title="Toggle Sidebar"
+          >
+            <Menu className="w-4 h-4" />
+          </button>
+
+          <div className="hidden md:flex bg-background border border-card-border rounded-xl p-0.5 text-xs font-semibold shrink-0">
             {activeEngine === 'monte-carlo' ? (
               <button
                 onClick={handleEngineClick}
@@ -51,7 +60,7 @@ export default function Header({ activeEngine = 'monte-carlo' }: { activeEngine?
                 }`}
               >
                 <Dices className="w-3.5 h-3.5" />
-                Monte Carlo Sim
+                <span className="hidden sm:inline">Monte Carlo Sim</span>
               </button>
             ) : (
               <Link
@@ -59,7 +68,7 @@ export default function Header({ activeEngine = 'monte-carlo' }: { activeEngine?
                 className="py-1.5 px-3.5 rounded-lg text-text-secondary hover:text-text-primary cursor-pointer flex items-center justify-center gap-1.5"
               >
                 <Dices className="w-3.5 h-3.5" />
-                Monte Carlo Sim
+                <span className="hidden sm:inline">Monte Carlo Sim</span>
               </Link>
             )}
 
@@ -73,7 +82,7 @@ export default function Header({ activeEngine = 'monte-carlo' }: { activeEngine?
                 }`}
               >
                 <TrendingDown className="w-3.5 h-3.5" />
-                DCA
+                <span className="hidden sm:inline">DCA</span>
               </button>
             ) : (
               <Link
@@ -81,7 +90,7 @@ export default function Header({ activeEngine = 'monte-carlo' }: { activeEngine?
                 className="py-1.5 px-3.5 rounded-lg text-text-secondary hover:text-text-primary cursor-pointer flex items-center justify-center gap-1.5"
               >
                 <TrendingDown className="w-3.5 h-3.5" />
-                DCA
+                <span className="hidden sm:inline">DCA</span>
               </Link>
             )}
           </div>
@@ -89,17 +98,17 @@ export default function Header({ activeEngine = 'monte-carlo' }: { activeEngine?
           {/* Tools Page Link */}
           <Link
             href="/tools"
-            className="flex items-center gap-1.5 py-1.5 px-3.5 rounded-xl bg-card border border-card-border text-text-secondary hover:text-cyan-400 hover:border-cyan-500/40 hover:bg-cyan-950/10 transition-all duration-200 text-xs font-bold cursor-pointer shrink-0"
+            className="hidden md:flex items-center gap-1.5 py-1.5 px-3.5 rounded-xl bg-card border border-card-border text-text-secondary hover:text-cyan-400 hover:border-cyan-500/40 hover:bg-cyan-950/10 transition-all duration-200 text-xs font-bold cursor-pointer shrink-0"
           >
             <Wrench className="w-3.5 h-3.5 text-cyan-400 shrink-0" />
-            <span>Tools</span>
+            <span className="hidden sm:inline">Tools</span>
           </Link>
         </div>
 
         {/* Center Side: Logo, App Name & Version */}
         <div className="flex items-center gap-3 justify-center">
           <img src="/logo.png" alt="ResoLogix Logo" className="w-8 h-8 rounded-lg shadow shadow-cyan-500/20 object-contain animate-pulse" />
-          <div className="flex flex-col justify-center select-none text-left">
+          <div className="hidden sm:flex flex-col justify-center select-none text-left">
             <span className="font-extrabold text-[22px] leading-none tracking-[0.025em] text-text-primary">
               ResoLogix&trade;
             </span>
@@ -195,25 +204,25 @@ export default function Header({ activeEngine = 'monte-carlo' }: { activeEngine?
           {/* Docs Page Link */}
           <Link
             href="/docs"
-            className="flex items-center gap-1.5 py-1.5 px-3.5 rounded-xl bg-card border border-card-border text-text-secondary hover:text-cyan-400 hover:border-cyan-500/40 hover:bg-cyan-950/10 transition-all duration-200 text-xs font-bold cursor-pointer shrink-0"
+            className="hidden md:flex items-center gap-1.5 py-1.5 px-3.5 rounded-xl bg-card border border-card-border text-text-secondary hover:text-cyan-400 hover:border-cyan-500/40 hover:bg-cyan-950/10 transition-all duration-200 text-xs font-bold cursor-pointer shrink-0"
           >
             <BookOpen className="w-3.5 h-3.5 text-cyan-400 shrink-0" />
-            <span>Docs</span>
+            <span className="hidden sm:inline">Docs</span>
           </Link>
 
           {/* About Dialog Button */}
           <button
             onClick={() => setShowAbout(true)}
-            className="flex items-center gap-1.5 py-1.5 px-3.5 rounded-xl bg-card border border-card-border text-text-secondary hover:text-cyan-400 hover:border-cyan-500/40 hover:bg-cyan-950/10 transition-all duration-200 text-xs font-bold cursor-pointer shrink-0"
+            className="hidden md:flex items-center gap-1.5 py-1.5 px-3.5 rounded-xl bg-card border border-card-border text-text-secondary hover:text-cyan-400 hover:border-cyan-500/40 hover:bg-cyan-950/10 transition-all duration-200 text-xs font-bold cursor-pointer shrink-0"
           >
             <Info className="w-3.5 h-3.5 text-cyan-400 shrink-0" />
-            <span>About</span>
+            <span className="hidden sm:inline">About</span>
           </button>
 
           {/* Theme Toggle Button */}
           <button
             onClick={toggleTheme}
-            className="p-2 rounded-xl bg-background border border-card-border text-text-secondary hover:text-primary hover:border-card-border/80 transition-all duration-200 cursor-pointer shrink-0"
+            className="hidden md:flex p-2 rounded-xl bg-background border border-card-border text-text-secondary hover:text-primary hover:border-card-border/80 transition-all duration-200 cursor-pointer shrink-0"
             title={theme === 'dark' ? 'Switch to Light Theme' : 'Switch to Dark Theme'}
           >
             {theme === 'dark' ? (

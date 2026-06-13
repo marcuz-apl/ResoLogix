@@ -15,8 +15,8 @@ export default function SummaryStatsTable() {
 
   return (
     <section 
-      className="shrink-0 glass-panel p-6 rounded-2xl flex flex-col gap-4"
-      style={{ width: rightPaneWidth }}
+      className="shrink-0 glass-panel p-4 md:p-6 rounded-2xl flex flex-col gap-4 w-full md:w-[var(--right-pane-width)]"
+      style={{ '--right-pane-width': typeof rightPaneWidth === 'number' ? `${rightPaneWidth}px` : rightPaneWidth } as any}
     >
       <div className="pb-3 border-b border-card-border flex items-center gap-2">
         <Activity className="w-5 h-5 text-yellow-500" />
@@ -32,7 +32,8 @@ export default function SummaryStatsTable() {
               <span className="w-1.5 h-1.5 rounded-full bg-cyan-500"></span>
               Primary: {fluidType === 'OIL' ? 'Oil' : 'Gas'} ({fluidType === 'OIL' ? 'MMSTB' : 'BCF'})
             </h3>
-            <table className="w-full text-[11px] text-left text-text-secondary">
+            <div className="overflow-x-auto">
+              <table className="w-full text-[11px] text-left text-text-secondary min-w-[300px]">
               <thead>
                 <tr className="text-[9px] text-text-muted border-b border-card-border">
                   <th className="py-1">Percentile</th>
@@ -67,7 +68,8 @@ export default function SummaryStatsTable() {
                   <td className="py-1.5 text-right">{formatVolume(simResults.riskedRecoverableStats.mean)}</td>
                 </tr>
               </tbody>
-            </table>
+              </table>
+            </div>
           </div>
 
           {/* Section B: Secondary Associated Product stats */}
@@ -81,7 +83,8 @@ export default function SummaryStatsTable() {
                 Secondary Product Disabled
               </div>
             ) : (
-              <table className="w-full text-[11px] text-left text-text-secondary">
+              <div className="overflow-x-auto">
+                <table className="w-full text-[11px] text-left text-text-secondary min-w-[300px]">
                 <thead>
                   <tr className="text-[9px] text-text-muted border-b border-card-border">
                     <th className="py-1">Percentile</th>
@@ -117,6 +120,7 @@ export default function SummaryStatsTable() {
                   </tr>
                 </tbody>
               </table>
+              </div>
             )}
           </div>
 

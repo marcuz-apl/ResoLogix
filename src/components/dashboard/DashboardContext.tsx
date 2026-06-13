@@ -149,6 +149,8 @@ interface DashboardContextType {
   setTypeWell: (val: string) => void;
   isProfileExpanded: boolean;
   setIsProfileExpanded: (val: boolean) => void;
+  isMobileMenuOpen: boolean;
+  setIsMobileMenuOpen: (val: boolean) => void;
   isSettingsExpanded: boolean;
   setIsSettingsExpanded: (val: boolean) => void;
 
@@ -223,6 +225,9 @@ export const DashboardProvider = ({ children }: { children: ReactNode }) => {
   // Pane dragging widths
   const [sidebarWidth, setSidebarWidth] = useState(256);
   const [rightPaneWidth, setRightPaneWidth] = useState(320);
+
+  // Mobile Menu State
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   // Auth Modal State
   const [showAuthModal, setShowAuthModal] = useState(false);
@@ -1052,6 +1057,8 @@ export const DashboardProvider = ({ children }: { children: ReactNode }) => {
     setTypeWell,
     isProfileExpanded,
     setIsProfileExpanded,
+    isMobileMenuOpen,
+    setIsMobileMenuOpen,
     isSettingsExpanded,
     setIsSettingsExpanded,
 

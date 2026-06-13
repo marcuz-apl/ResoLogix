@@ -23,13 +23,13 @@ function DashboardContent() {
       <Header />
 
       {/* Main Container below the header row */}
-      <div className="flex flex-1 min-h-0 w-full overflow-hidden">
+      <div className="flex flex-col md:flex-row flex-1 min-h-0 w-full overflow-hidden">
         
         {/* Sidebar - Scenario Manager */}
         <Sidebar />
 
         {/* Main Content Area */}
-        <main className="flex-1 flex flex-col min-w-0 overflow-y-auto bg-background p-6">
+        <main className="flex-1 flex flex-col min-w-0 overflow-y-auto bg-background p-4 md:p-6 w-full">
           
           {/* Scenario Details & Reserve Profile sub-panel */}
           <ReserveProfile />
