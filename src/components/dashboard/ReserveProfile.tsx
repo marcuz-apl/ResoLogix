@@ -98,7 +98,7 @@ export default function ReserveProfile() {
                   : 'text-text-secondary hover:text-text-primary'
               }`}
             >
-              Oil Reservoir
+              Oil
             </button>
             <button
               onClick={() => {
@@ -116,7 +116,7 @@ export default function ReserveProfile() {
                   : 'text-text-secondary hover:text-text-primary'
               }`}
             >
-              Gas Reservoir
+              Gas
             </button>
           </div>
         </div>
