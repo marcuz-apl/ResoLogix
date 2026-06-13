@@ -1,36 +1,36 @@
 @import "tailwindcss";
 
 :root {
-  --background: #15141a;
-  --foreground: #ffffff;
-  --card-bg: rgba(43, 42, 51, 0.6);
-  --card-border: rgba(74, 74, 85, 0.4);
-  --sidebar-bg: #15141a;
-  --panel-bg: rgba(43, 42, 51, 0.2);
-  --text-primary: #ffffff;
-  --text-secondary: #cfcfd8;
-  --text-muted: #8b8b96;
-  --input-bg: #1e1d24;
-  --input-border: #3a3a44;
-  --table-hover: rgba(43, 42, 51, 0.3);
-  --accent-cyan: #865be9;
-  --accent-blue: #7542e5;
+  --background: #070a13;
+  --foreground: #f8fafc;
+  --card-bg: rgba(15, 23, 42, 0.6);
+  --card-border: rgba(51, 65, 85, 0.4);
+  --sidebar-bg: #070a13;
+  --panel-bg: rgba(15, 23, 42, 0.2);
+  --text-primary: #f8fafc;
+  --text-secondary: #94a3b8;
+  --text-muted: #64748b;
+  --input-bg: #030712;
+  --input-border: #1e293b;
+  --table-hover: rgba(30, 41, 59, 0.3);
+  --accent-cyan: #06b6d4;
+  --accent-blue: #3b82f6;
   --accent-gas: #f97316;
 }
 
 .light-theme {
-  --background: #ffffff;
-  --foreground: #15141a;
-  --card-bg: rgba(240, 240, 244, 0.85);
-  --card-border: rgba(207, 207, 216, 0.8);
-  --sidebar-bg: #f0f0f4;
-  --panel-bg: rgba(240, 240, 244, 0.5);
-  --text-primary: #15141a;
-  --text-secondary: #5b5b66;
-  --text-muted: #8b8b96;
+  --background: #f8fafc;
+  --foreground: #0f172a;
+  --card-bg: rgba(255, 255, 255, 0.85);
+  --card-border: rgba(226, 232, 240, 0.8);
+  --sidebar-bg: #e2e8f0;
+  --panel-bg: rgba(241, 245, 249, 0.5);
+  --text-primary: #0f172a;
+  --text-secondary: #334155;
+  --text-muted: #64748b;
   --input-bg: #ffffff;
-  --input-border: #cfcfd8;
-  --table-hover: rgba(240, 240, 244, 0.6);
+  --input-border: #cbd5e1;
+  --table-hover: rgba(241, 245, 249, 0.6);
 }
 
 @theme {
@@ -65,11 +65,11 @@ body {
 }
 
 ::-webkit-scrollbar-track {
-  background: rgba(43, 42, 51, 0.05);
+  background: rgba(15, 23, 42, 0.05);
 }
 
 .light-theme ::-webkit-scrollbar-track {
-  background: rgba(240, 240, 244, 0.5);
+  background: rgba(241, 245, 249, 0.5);
 }
 
 ::-webkit-scrollbar-thumb {
@@ -91,36 +91,36 @@ body {
 }
 
 .glass-panel-hover:hover {
-  background: rgba(43, 42, 51, 0.85);
-  border-color: rgba(134, 91, 233, 0.4);
-  box-shadow: 0 0 20px rgba(134, 91, 233, 0.05);
+  background: rgba(15, 23, 42, 0.85);
+  border-color: rgba(56, 189, 248, 0.4);
+  box-shadow: 0 0 20px rgba(56, 189, 248, 0.05);
 }
 
 .light-theme .glass-panel-hover:hover {
   background: rgba(255, 255, 255, 0.95);
-  border-color: rgba(117, 66, 229, 0.4);
+  border-color: rgba(56, 189, 248, 0.4);
 }
 
 .text-gradient {
-  background: linear-gradient(135deg, #865be9 0%, #e22850 100%);
+  background: linear-gradient(135deg, #0284c7 0%, #4f46e5 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 
-.light-theme .text-gradient {
-  background: linear-gradient(135deg, #7542e5 0%, #592acb 100%);
+.dark-theme .text-gradient {
+  background: linear-gradient(135deg, #38bdf8 0%, #818cf8 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 
 .eur-card {
-  background: linear-gradient(to bottom right, rgba(117, 66, 229, 0.15), rgba(134, 91, 233, 0.1));
-  border-color: rgba(134, 91, 233, 0.3);
+  background: linear-gradient(to bottom right, rgba(8, 51, 68, 0.4), rgba(30, 58, 138, 0.2));
+  border-color: rgba(21, 94, 117, 0.5);
 }
 
 .light-theme .eur-card {
-  background: linear-gradient(to bottom right, rgba(117, 66, 229, 0.08), rgba(134, 91, 233, 0.05));
-  border-color: rgba(117, 66, 229, 0.25);
+  background: linear-gradient(to bottom right, rgba(236, 254, 255, 0.8), rgba(239, 246, 255, 0.8));
+  border-color: rgba(165, 243, 252, 1);
 }
 
 .text-gradient-gas {
@@ -131,7 +131,7 @@ body {
 
 /* Slider Custom Styling */
 input[type="range"] {
-  accent-color: #865be9;
+  accent-color: var(--accent-cyan);
 }
 
 .slider-gas input[type="range"] {
