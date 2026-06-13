@@ -212,7 +212,7 @@ function ToolsPageContent() {
   return (
     <div className="min-h-screen bg-background text-foreground font-sans selection:bg-cyan-500/30 selection:text-cyan-200 flex flex-col">
       <Header />
-      <div className="flex-1 p-6 lg:p-8 animate-fade-in w-full max-w-5xl mx-auto">
+      <div className="flex-1 p-6 lg:p-8 animate-fade-in w-full max-w-6xl mx-auto">
         <PageHeader 
         title="Tools & Calculators"
         subtitle="Engineering utilities & unit conversions"

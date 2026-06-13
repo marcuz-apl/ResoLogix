@@ -30,7 +30,7 @@ function DocsPageContent() {
         <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-[#4f46e5]/10 rounded-full blur-[150px]" />
       </div>
 
-      <div className="relative z-10 max-w-5xl mx-auto px-6 py-12">
+      <div className="relative z-10 max-w-6xl mx-auto px-6 py-12">
         
         {/* Documentation Header */}
         <PageHeader 
