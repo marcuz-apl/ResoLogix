@@ -36,7 +36,7 @@ export default function Header({ activeEngine = 'monte-carlo' }: { activeEngine?
 
   return (
     <>
-      <header className="h-16 shrink-0 border-b border-card-border bg-card px-4 md:px-6 flex items-center justify-between z-30 overflow-x-auto no-scrollbar gap-4">
+      <header className="h-16 shrink-0 border-b border-card-border bg-card px-4 md:px-6 flex items-center justify-between z-30 gap-4">
         
         {/* Left Side: Engine Selection */}
         <div className="flex items-center gap-2 md:gap-4">
