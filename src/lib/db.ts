@@ -183,6 +183,30 @@ export function initDb() {
     // Column likely already exists
   }
 
+  // Migration: add enable_economics to evaluations
+  try {
+    db.exec(`ALTER TABLE evaluations ADD COLUMN enable_economics INTEGER DEFAULT 0;`);
+    console.log('Added enable_economics column to evaluations');
+  } catch (e) {
+    // Column likely already exists
+  }
+
+  // Migrations for DCA Economics
+  try {
+    db.exec(`ALTER TABLE "dca-scenarios" ADD COLUMN enable_economics INTEGER DEFAULT 0;`);
+    console.log('Added enable_economics column to "dca-scenarios"');
+  } catch (e) {}
+
+  try {
+    db.exec(`ALTER TABLE "dca-scenarios" ADD COLUMN emv_params TEXT;`);
+    console.log('Added emv_params column to "dca-scenarios"');
+  } catch (e) {}
+
+  try {
+    db.exec(`ALTER TABLE "dca-scenarios" ADD COLUMN econ_params TEXT;`);
+    console.log('Added econ_params column to "dca-scenarios"');
+  } catch (e) {}
+
   // Migration: add emv_params to evaluations
   try {
     db.exec(`ALTER TABLE evaluations ADD COLUMN emv_params TEXT;`);

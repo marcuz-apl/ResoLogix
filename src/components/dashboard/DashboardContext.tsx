@@ -197,8 +197,10 @@ interface DashboardContextType {
   enableEconomics: boolean;
   setEnableEconomics: (val: boolean) => void;
   emvParams: EmvParams;
+  setEmvParams: React.Dispatch<React.SetStateAction<EmvParams>>;
   handleEmvChange: (key: keyof EmvParams, value: number) => void;
   econParams: EconParams;
+  setEconParams: React.Dispatch<React.SetStateAction<EconParams>>;
   handleEconChange: (key: keyof EconParams, value: number) => void;
 
   iterations: number;
@@ -1141,8 +1143,10 @@ export const DashboardProvider = ({ children }: { children: ReactNode }) => {
     enableEconomics,
     setEnableEconomics,
     emvParams,
+    setEmvParams,
     handleEmvChange,
     econParams,
+    setEconParams,
     handleEconChange,
 
     iterations,

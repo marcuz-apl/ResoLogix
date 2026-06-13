@@ -27,7 +27,7 @@ ChartJS.register(
   Legend
 );
 
-export default function EmvAnalysis() {
+export default function EmvAnalysis({ isDcaMode = false }: { isDcaMode?: boolean }) {
   const {
     enableEconomics, 
     emvParams, handleEmvChange, 
@@ -141,7 +141,7 @@ export default function EmvAnalysis() {
     (0.3 * emvParams.npv10);
 
   // Calculate EMV
-  const emv = (pvSuccess * calculatedPg) - (emvParams.dryHoleCost * (1 - calculatedPg));
+  const emv = isDcaMode ? emvParams.npv50 : (pvSuccess * calculatedPg) - (emvParams.dryHoleCost * (1 - calculatedPg));
 
   const formatCurrency = (val: number) => {
     return new Intl.NumberFormat('en-US', {
@@ -168,7 +168,7 @@ export default function EmvAnalysis() {
               Economics & EMV Analysis
             </h2>
             <p className="text-[10px] text-text-muted mt-0.5">
-              Automated Petroleum Economics engine based on recoverable yields
+              {isDcaMode ? 'Automated Petroleum Economics engine based on DCA EUR' : 'Automated Petroleum Economics engine based on recoverable yields'}
             </p>
           </div>
         </div>
@@ -281,25 +281,27 @@ export default function EmvAnalysis() {
                   className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-card-border bg-background hover:bg-card-border/30 text-[10px] font-bold text-text-primary transition-all"
                 >
                   <BarChart2 className="w-3.5 h-3.5 text-cyan-400" />
-                  {showChart ? 'Hide P50 Cash Flow Chart' : 'Show P50 Cash Flow Chart'}
+                  {showChart ? 'Hide Cash Flow Chart' : 'Show Cash Flow Chart'}
                 </button>
               </div>
               
-              <div className="grid grid-cols-3 gap-3">
-                <div className="flex flex-col gap-1">
-                  <label className="text-[10px] text-text-muted">P90 (Low Case)</label>
-                  <div className="relative">
-                    <span className="absolute left-2 top-1/2 -translate-y-1/2 text-text-muted text-xs">$</span>
-                    <input 
-                      type="number"
-                      readOnly
-                      value={emvParams.npv90.toFixed(1)}
-                      className="w-full bg-background/50 border border-card-border rounded-md pl-5 pr-2 py-1.5 text-xs text-text-muted outline-none cursor-not-allowed"
-                    />
+              <div className={`grid ${isDcaMode ? 'grid-cols-1' : 'grid-cols-3'} gap-3`}>
+                {!isDcaMode && (
+                  <div className="flex flex-col gap-1">
+                    <label className="text-[10px] text-text-muted">P90 (Low Case)</label>
+                    <div className="relative">
+                      <span className="absolute left-2 top-1/2 -translate-y-1/2 text-text-muted text-xs">$</span>
+                      <input 
+                        type="number"
+                        readOnly
+                        value={emvParams.npv90.toFixed(1)}
+                        className="w-full bg-background/50 border border-card-border rounded-md pl-5 pr-2 py-1.5 text-xs text-text-muted outline-none cursor-not-allowed"
+                      />
+                    </div>
                   </div>
-                </div>
+                )}
                 <div className="flex flex-col gap-1">
-                  <label className="text-[10px] text-text-muted">P50 (Best Case)</label>
+                  <label className="text-[10px] text-text-muted">{isDcaMode ? 'Calculated NPV' : 'P50 (Best Case)'}</label>
                   <div className="relative">
                     <span className="absolute left-2 top-1/2 -translate-y-1/2 text-text-muted text-xs">$</span>
                     <input 
@@ -310,18 +312,20 @@ export default function EmvAnalysis() {
                     />
                   </div>
                 </div>
-                <div className="flex flex-col gap-1">
-                  <label className="text-[10px] text-text-muted">P10 (High Case)</label>
-                  <div className="relative">
-                    <span className="absolute left-2 top-1/2 -translate-y-1/2 text-text-muted text-xs">$</span>
-                    <input 
-                      type="number"
-                      readOnly
-                      value={emvParams.npv10.toFixed(1)}
-                      className="w-full bg-background/50 border border-card-border rounded-md pl-5 pr-2 py-1.5 text-xs text-text-muted outline-none cursor-not-allowed"
-                    />
+                {!isDcaMode && (
+                  <div className="flex flex-col gap-1">
+                    <label className="text-[10px] text-text-muted">P10 (High Case)</label>
+                    <div className="relative">
+                      <span className="absolute left-2 top-1/2 -translate-y-1/2 text-text-muted text-xs">$</span>
+                      <input 
+                        type="number"
+                        readOnly
+                        value={emvParams.npv10.toFixed(1)}
+                        className="w-full bg-background/50 border border-card-border rounded-md pl-5 pr-2 py-1.5 text-xs text-text-muted outline-none cursor-not-allowed"
+                      />
+                    </div>
                   </div>
-                </div>
+                )}
               </div>
             </div>
           </div>
@@ -334,30 +338,34 @@ export default function EmvAnalysis() {
             
             <div className="flex flex-col gap-4 bg-background/50 rounded-xl p-4 border border-card-border/50">
               
-              <div className="flex justify-between items-center pb-3 border-b border-card-border/40">
-                <div>
-                  <span className="text-sm text-text-secondary">Geological Chance of Success (Pg)</span>
+              {!isDcaMode && (
+                <div className="flex justify-between items-center pb-3 border-b border-card-border/40">
+                  <div>
+                    <span className="text-sm text-text-secondary">Geological Chance of Success (Pg)</span>
+                  </div>
+                  <span className="font-mono text-cyan-400 font-bold">{(calculatedPg * 100).toFixed(1)}%</span>
                 </div>
-                <span className="font-mono text-cyan-400 font-bold">{(calculatedPg * 100).toFixed(1)}%</span>
-              </div>
+              )}
 
               <div className="flex justify-between items-center pb-3 border-b border-card-border/40">
                 <div>
-                  <span className="text-sm text-text-secondary">Mean PV of Success</span>
-                  <p className="text-[10px] text-text-muted mt-0.5">Weighted avg of P90, P50, P10 NPVs</p>
+                  <span className="text-sm text-text-secondary">{isDcaMode ? 'Net Present Value' : 'Mean PV of Success'}</span>
+                  {!isDcaMode && <p className="text-[10px] text-text-muted mt-0.5">Weighted avg of P90, P50, P10 NPVs</p>}
                 </div>
-                <span className="font-mono text-text-primary font-bold">{formatCurrency(pvSuccess)}M</span>
+                <span className="font-mono text-text-primary font-bold">{formatCurrency(isDcaMode ? emvParams.npv50 : pvSuccess)}M</span>
               </div>
 
-              <div className="flex justify-between items-center pt-2">
-                <div>
-                  <span className="text-base font-extrabold text-text-primary">Expected Monetary Value</span>
-                  <p className="text-xs text-text-muted mt-0.5">Risk-adjusted project value</p>
+              {!isDcaMode && (
+                <div className="flex justify-between items-center pt-2">
+                  <div>
+                    <span className="text-base font-extrabold text-text-primary">Expected Monetary Value</span>
+                    <p className="text-xs text-text-muted mt-0.5">Risk-adjusted project value</p>
+                  </div>
+                  <span className={`text-xl font-mono font-black ${emv >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>
+                    {formatCurrency(emv)}M
+                  </span>
                 </div>
-                <span className={`text-xl font-mono font-black ${emv >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>
-                  {formatCurrency(emv)}M
-                </span>
-              </div>
+              )}
             </div>
 
             {/* Decision Rule Banner */}
@@ -385,7 +393,7 @@ export default function EmvAnalysis() {
       {isExpanded && showChart && p50Profile && (
         <div className="mt-6 border-t border-card-border/50 pt-6">
           <h3 className="text-sm font-bold text-text-secondary uppercase tracking-wider mb-4">
-            P50 (Best Case) Cash Flow & Production Profile
+            {isDcaMode ? 'Cash Flow & Production Profile' : 'P50 (Best Case) Cash Flow & Production Profile'}
           </h3>
           <div className="h-64">
             <ReactChart 

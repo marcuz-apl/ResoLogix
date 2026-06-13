@@ -9,8 +9,9 @@ import DataIngestion from '@/components/dca/DataIngestion';
 import DcaChart from '@/components/dca/DcaChart';
 import DcaSidebar from '@/components/dca/DcaSidebar';
 import { Point, ArpsParams, fitDeclineCurve, arpsCumulative } from '@/lib/dca-engine';
-import { DashboardProvider } from '@/components/dashboard/DashboardContext';
+import { DashboardProvider, useDashboard, DEFAULT_EMV, DEFAULT_ECON } from '@/components/dashboard/DashboardContext';
 import Header from '@/components/dashboard/Header';
+import EmvAnalysis from '@/components/dashboard/EmvAnalysis';
 
 export default function DcaPage() {
   return (
@@ -21,6 +22,13 @@ export default function DcaPage() {
 }
 
 function DcaPageContent() {
+  const { 
+    enableEconomics, setEnableEconomics,
+    emvParams, setEmvParams,
+    econParams, setEconParams,
+    setSimResults, setCalculatedPg
+  } = useDashboard();
+
   const { data: session } = useSession();
   const [data, setData] = useState<Point[]>([]);
   const [params, setParams] = useState<ArpsParams>({ qi: 1000, di: 0.1, b: 0.5 });
@@ -80,6 +88,9 @@ function DcaPageContent() {
           });
           setQLimit(example.q_limit || 50);
           setData(example.historical_data || []);
+          setEnableEconomics(example.enable_economics || false);
+          setEmvParams(example.emv_params || DEFAULT_EMV);
+          setEconParams(example.econ_params || DEFAULT_ECON);
         }
       }
     } catch (err) {
@@ -138,7 +149,17 @@ function DcaPageContent() {
 
     const calculatedEur = arpsCumulative(tLimit, params);
     setEur(calculatedEur);
-  }, [params, qLimit]);
+
+    // Feed EUR into DashboardContext simResults for EmvAnalysis
+    setSimResults({
+      recoverableStats: {
+        p90: calculatedEur,
+        p50: calculatedEur,
+        p10: calculatedEur,
+      }
+    } as any);
+    setCalculatedPg(1.0); // DCA is deterministic, Pg = 100%
+  }, [params, qLimit, setSimResults, setCalculatedPg]);
 
   const [showGuestDialog, setShowGuestDialog] = useState(false);
 
@@ -167,7 +188,10 @@ function DcaPageContent() {
           description: '',
           params,
           q_limit: qLimit,
-          historical_data: data
+          historical_data: data,
+          enable_economics: enableEconomics,
+          emv_params: emvParams,
+          econ_params: econParams
         })
       });
       const resData = await res.json();
@@ -192,6 +216,9 @@ function DcaPageContent() {
     });
     setQLimit(scenario.q_limit || 50);
     setData(scenario.historical_data || []);
+    setEnableEconomics(scenario.enable_economics || false);
+    setEmvParams(scenario.emv_params || DEFAULT_EMV);
+    setEconParams(scenario.econ_params || DEFAULT_ECON);
   };
 
   const handleDeleteScenario = async (id: string, e: React.MouseEvent) => {
@@ -217,6 +244,9 @@ function DcaPageContent() {
     setParams({ qi: 1000, di: 0.1, b: 0.5 });
     setQLimit(50);
     setData([]);
+    setEnableEconomics(false);
+    setEmvParams(DEFAULT_EMV);
+    setEconParams(DEFAULT_ECON);
   };
 
   return (
@@ -377,6 +407,34 @@ function DcaPageContent() {
                 <div className="text-sm font-semibold text-text-secondary">Curve Type: <span className="text-text-primary">{params.b === 0 ? 'Exponential' : Math.abs(params.b - 1) < 1e-5 ? 'Harmonic' : 'Hyperbolic'}</span></div>
               </div>
             </div>
+
+            {/* Economics Toggle for DCA */}
+            <div className="flex items-center justify-between bg-card/20 border border-card-border p-4 rounded-xl">
+              <div>
+                <h3 className="text-sm font-bold text-text-primary">Economics & EMV Analysis</h3>
+                <p className="text-xs text-text-muted mt-0.5">Toggle to evaluate the deterministic financial viability of this decline curve.</p>
+              </div>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => setEnableEconomics(!enableEconomics)}
+                  className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none ${
+                    enableEconomics ? 'bg-emerald-500' : 'bg-card border border-card-border'
+                  }`}
+                >
+                  <span
+                    className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                      enableEconomics ? 'translate-x-6' : 'translate-x-1'
+                    }`}
+                  />
+                </button>
+                <span className={`text-xs font-bold ${enableEconomics ? 'text-emerald-400' : 'text-text-muted'}`}>
+                  {enableEconomics ? 'ON' : 'OFF'}
+                </span>
+              </div>
+            </div>
+
+            {/* Economics Module */}
+            <EmvAnalysis isDcaMode={true} />
 
             {/* Chart */}
             <div className="bg-card/40 border border-card-border p-6 rounded-2xl shadow-xl flex-1 min-h-[500px]">
