@@ -127,17 +127,6 @@ export default function Header({ activeEngine = 'monte-carlo' }: { activeEngine?
           {/* Auth Button */}
           {session ? (
             <div className="flex items-center gap-2 relative profile-dropdown-container">
-              {(session.user as any).isAdmin && (
-                <Link
-                  href="/admin"
-                  className="flex items-center gap-1.5 py-1.5 px-3.5 rounded-xl bg-purple-950/20 border border-purple-500/30 text-purple-400 hover:bg-purple-500/20 hover:border-purple-500/50 transition-all duration-200 text-xs font-bold cursor-pointer shrink-0"
-                  title="Admin Dashboard"
-                >
-                  <ShieldAlert className="w-3.5 h-3.5" />
-                  Admin Panel
-                </Link>
-              )}
-              
               {/* Profile Avatar Button */}
               <button
                 onClick={() => setShowProfileDropdown(!showProfileDropdown)}
@@ -181,6 +170,15 @@ export default function Header({ activeEngine = 'monte-carlo' }: { activeEngine?
                     >
                       <User className="w-4 h-4" /> User Profile
                     </button>
+                    {(session.user as any)?.isAdmin && (
+                      <Link
+                        href="/admin"
+                        onClick={() => setShowProfileDropdown(false)}
+                        className="w-full text-left px-3 py-2 text-xs font-semibold text-purple-400 hover:bg-purple-950/20 rounded-lg transition-colors flex items-center gap-2"
+                      >
+                        <ShieldAlert className="w-4 h-4" /> Admin Panel
+                      </Link>
+                    )}
                     <button
                       onClick={() => signOut({ redirect: false })}
                       className="w-full text-left px-3 py-2 text-xs font-semibold text-text-secondary hover:text-rose-400 hover:bg-rose-950/20 rounded-lg transition-colors flex items-center gap-2"

@@ -67,7 +67,7 @@ export default function ReserveProfile() {
             placeholder="e.g. Gulf Coast"
           />
         </div>
-        <div className="flex flex-col gap-1.5 flex-[2] min-w-0">
+        <div className="flex flex-col gap-1.5 flex-[2] min-w-0 ml-[100px]">
           <label className="text-[10px] text-text-muted font-bold uppercase tracking-wider block">Scenario Name</label>
           <input
             type="text"
@@ -75,16 +75,6 @@ export default function ReserveProfile() {
             onChange={(e) => setActiveName(e.target.value)}
             className="bg-transparent text-sm font-bold text-text-primary focus:outline-none border-b border-transparent focus:border-card-border hover:border-card-border/60 px-1 py-0.5 rounded transition-all duration-200 w-full truncate"
             placeholder="Scenario Name"
-          />
-        </div>
-        <div className="flex flex-col gap-1.5 flex-[3] min-w-0">
-          <label className="text-[10px] text-text-muted font-bold uppercase tracking-wider block">Description</label>
-          <input
-            type="text"
-            value={activeDescription}
-            onChange={(e) => setActiveDescription(e.target.value)}
-            className="bg-transparent text-xs text-text-secondary focus:outline-none border-b border-transparent focus:border-card-border/60 px-1 py-1 rounded transition-all duration-200 w-full truncate"
-            placeholder="Add description..."
           />
         </div>
 
