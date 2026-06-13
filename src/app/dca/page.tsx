@@ -143,7 +143,9 @@ function DcaPageContent() {
       tLimit = (Math.pow(qi / qLimit, b) - 1) / (b * di);
     }
 
-    const calculatedEur = arpsCumulative(tLimit, params);
+    // Multiply by days in month since rate is daily (bbl/day) but time is in months
+    const DAYS_IN_MONTH = 365.25 / 12;
+    const calculatedEur = arpsCumulative(tLimit, params) * DAYS_IN_MONTH;
     setEur(calculatedEur);
 
     // Feed EUR into DashboardContext simResults for EmvAnalysis
