@@ -416,9 +416,17 @@ export const DashboardProvider = ({ children }: { children: ReactNode }) => {
         const data = await res.json();
         setEvaluations(data);
 
-        // Auto-select first evaluation if available and activeId is not set
+        // Auto-select last worked on evaluation or the latest user scenario
         if (data.length > 0 && !activeId) {
-          loadScenario(data[0]);
+          const lastId = localStorage.getItem('resologix-last-scenario');
+          const savedScenario = lastId ? data.find((ev: any) => ev.id === lastId) : null;
+          
+          if (savedScenario) {
+            loadScenario(savedScenario);
+          } else {
+            const latestUserScenario = data.find((ev: any) => ev.is_example === 0 || ev.is_example === false);
+            loadScenario(latestUserScenario || data[0]);
+          }
         }
       }
     } catch (err) {
@@ -436,6 +444,7 @@ export const DashboardProvider = ({ children }: { children: ReactNode }) => {
 
   // Load a scenario into state
   const loadScenario = (ev: Evaluation) => {
+    localStorage.setItem('resologix-last-scenario', ev.id);
     setActiveId(ev.id);
     setActiveName(ev.name);
     setActiveDescription(ev.description);
