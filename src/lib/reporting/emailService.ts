@@ -5,15 +5,21 @@ import path from 'path';
 export const sendEmailWithZip = async (emailAddress: string, zipPath: string, projectName: string): Promise<string> => {
   let transporter;
 
+  const smtpUser = process.env.SMTP_USER || process.env.EMAIL_USER;
+  const smtpPass = process.env.SMTP_PASS || process.env.EMAIL_PASS;
+  const smtpHost = process.env.SMTP_HOST || 'smtp.gmail.com';
+  const smtpPort = Number(process.env.SMTP_PORT) || 587;
+  const fromEmail = process.env.EMAIL_FROM || '"ResoLogix System" <noreply@resologix.com>';
+
   // Use environment variables if provided
-  if (process.env.SMTP_HOST && process.env.SMTP_USER) {
+  if (smtpUser && smtpPass) {
     transporter = nodemailer.createTransport({
-      host: process.env.SMTP_HOST,
-      port: Number(process.env.SMTP_PORT) || 587,
-      secure: Number(process.env.SMTP_PORT) === 465,
+      host: smtpHost,
+      port: smtpPort,
+      secure: smtpPort === 465,
       auth: {
-        user: process.env.SMTP_USER,
-        pass: process.env.SMTP_PASS,
+        user: smtpUser,
+        pass: smtpPass,
       },
     });
   } else {
@@ -31,7 +37,7 @@ export const sendEmailWithZip = async (emailAddress: string, zipPath: string, pr
   }
 
   const info = await transporter.sendMail({
-    from: '"ResoLogix System" <noreply@resologix.com>',
+    from: fromEmail,
     to: emailAddress,
     subject: `Evaluation Reports for ${projectName}`,
     text: `Please find the generated ResoLogix evaluation reports for project '${projectName}' attached as a ZIP file.`,

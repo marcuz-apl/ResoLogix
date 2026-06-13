@@ -240,19 +240,7 @@ export default function ReportingSection() {
               <input type="radio" name="destination" checked={destination === 'local'} onChange={() => setDestination('local')} className="accent-cyan-500 w-4 h-4" />
               Save Locally (ZIP Download)
             </label>
-            <label className="flex items-center gap-3 text-sm cursor-pointer hover:text-cyan-400 transition-colors">
-              <input type="radio" name="destination" checked={destination === 'cloud'} onChange={() => setDestination('cloud')} className="accent-cyan-500 w-4 h-4" />
-              Save to Cloud Drive
-            </label>
-            {destination === 'cloud' && (
-              <input 
-                type="text" 
-                placeholder="Folder URL or API Link" 
-                value={cloudUrl}
-                onChange={e => setCloudUrl(e.target.value)}
-                className="ml-7 bg-background border border-card-border rounded-md px-2 py-1 text-xs text-text-primary focus:border-cyan-500 outline-none"
-              />
-            )}
+
             <label className="flex items-center gap-3 text-sm cursor-pointer hover:text-cyan-400 transition-colors">
               <input type="radio" name="destination" checked={destination === 'email'} onChange={() => setDestination('email')} className="accent-cyan-500 w-4 h-4" />
               Send via Email
@@ -354,12 +342,6 @@ export default function ReportingSection() {
               </div>
             )}
           </div>
-          {destination !== 'local' && (
-            <div className="text-xs text-orange-400 flex items-center gap-1.5 bg-orange-500/10 p-2 rounded border border-orange-500/20">
-              <Clock className="w-3.5 h-3.5" />
-              Cloud/Email options are currently set to generate the files locally until API credentials are provided.
-            </div>
-          )}
         </div>
 
         <div className="flex flex-col gap-3 lg:w-64 shrink-0">
@@ -386,7 +368,7 @@ export default function ReportingSection() {
           </button>
 
           <button
-            onClick={downloadReady ? handleDownload : handleDispatch}
+            onClick={downloadReady && destination === 'local' ? handleDownload : handleDispatch}
             disabled={!previewReady && !downloadReady && !isDispatching}
             className={`flex items-center justify-center gap-2 w-full py-3 rounded-xl font-bold text-sm transition-all shadow-lg ${
               (!previewReady && !downloadReady && !isDispatching)
@@ -404,7 +386,7 @@ export default function ReportingSection() {
             ) : (
               <>
                 <Download className="w-4 h-4" />
-                {downloadReady ? 'Download Again' : 'Finalize & Download'}
+                {downloadReady ? 'Deliver Again' : 'Finalize & Deliver'}
               </>
             )}
           </button>
