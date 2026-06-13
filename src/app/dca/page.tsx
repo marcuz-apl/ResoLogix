@@ -26,7 +26,7 @@ function DcaPageContent() {
     enableEconomics, setEnableEconomics,
     emvParams, setEmvParams,
     econParams, setEconParams,
-    setSimResults, setCalculatedPg
+    setSimResults
   } = useDashboard();
 
   const { data: session } = useSession();
@@ -158,8 +158,7 @@ function DcaPageContent() {
         p10: calculatedEur,
       }
     } as any);
-    setCalculatedPg(1.0); // DCA is deterministic, Pg = 100%
-  }, [params, qLimit, setSimResults, setCalculatedPg]);
+  }, [params, qLimit, setSimResults]);
 
   const [showGuestDialog, setShowGuestDialog] = useState(false);
 
