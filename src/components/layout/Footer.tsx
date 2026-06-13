@@ -1,5 +1,5 @@
 import React from 'react';
-import { Globe } from 'lucide-react';
+import { Globe, Mail } from 'lucide-react';
 import { execSync } from 'child_process';
 
 import Disclaimer from './Disclaimer';
@@ -16,8 +16,6 @@ export default function Footer() {
     <footer className="w-full text-xs text-text-muted bg-transparent py-4 px-6 mt-auto flex items-center justify-between">
       <div className="flex gap-3 items-center">
         <Disclaimer />
-        <span className="text-text-muted/40">|</span>
-        <a href="mailto:info@alfazen.org" className="hover:underline transition-colors hover:text-cyan-400">Get in Touch</a>
       </div>
       
       <div className="flex items-center gap-3 text-center text-text-secondary">
@@ -29,6 +27,9 @@ export default function Footer() {
       </div>
 
       <div className="flex gap-4 items-center">
+        <a href="mailto:info@alfazen.org" className="transition-colors hover:text-cyan-400" title="Get in Touch">
+          <Mail className="w-3.5 h-3.5" />
+        </a>
         <a href="https://alfazen.org" target="_blank" rel="noopener noreferrer" className="transition-colors hover:text-cyan-400">
           <Globe className="w-3.5 h-3.5" />
         </a>
