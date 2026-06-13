@@ -407,6 +407,11 @@ function DcaPageContent() {
               </div>
             </div>
 
+            {/* Chart */}
+            <div className="bg-card/40 border border-card-border p-6 rounded-2xl shadow-xl flex-1 min-h-[500px]">
+               <DcaChart data={data} params={params} forecastMonths={forecastMonths} />
+            </div>
+
             {/* Economics Toggle for DCA */}
             <div className="flex items-center justify-between bg-card/20 border border-card-border p-4 rounded-xl">
               <div>
@@ -434,11 +439,6 @@ function DcaPageContent() {
 
             {/* Economics Module */}
             <EmvAnalysis isDcaMode={true} />
-
-            {/* Chart */}
-            <div className="bg-card/40 border border-card-border p-6 rounded-2xl shadow-xl flex-1 min-h-[500px]">
-               <DcaChart data={data} params={params} forecastMonths={forecastMonths} />
-            </div>
 
           </div>
 
