@@ -1,10 +1,9 @@
 'use client';
 
-import React, { useState } from 'react';
-import { Plus, Check, Save, FolderOpen, Trash2, Sliders, RefreshCw, Copy, ChevronDown, ChevronRight, Eye, EyeOff } from 'lucide-react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
+import { Plus, Check, Save, FolderOpen, Trash2, Sliders, RefreshCw, Copy, ChevronDown, ChevronRight, Eye, EyeOff, Pencil } from 'lucide-react';
 import { useDashboard } from './DashboardContext';
 import { useSession } from 'next-auth/react';
-import { useEffect } from 'react';
 
 export default function Sidebar() {
   const {
@@ -21,6 +20,7 @@ export default function Sidebar() {
     activeId,
     loadScenario,
     handleDeleteScenario,
+    fetchEvaluations,
     iterations,
     setIterations,
     setSimResults,
@@ -41,6 +41,15 @@ export default function Sidebar() {
   const [expandedFolders, setExpandedFolders] = useState<Record<string, boolean>>({});
   const [showExamples, setShowExamples] = useState(true);
 
+  // Context menu state
+  const [contextMenu, setContextMenu] = useState<{ x: number; y: number; folder: string } | null>(null);
+  const contextMenuRef = useRef<HTMLDivElement>(null);
+
+  // Inline rename state
+  const [renamingFolder, setRenamingFolder] = useState<string | null>(null);
+  const [renameValue, setRenameValue] = useState('');
+  const renameInputRef = useRef<HTMLInputElement>(null);
+
   useEffect(() => {
     const saved = localStorage.getItem('resologix-show-examples');
     if (saved !== null) {
@@ -56,6 +65,90 @@ export default function Sidebar() {
 
   const toggleFolder = (folder: string) => {
     setExpandedFolders(prev => ({ ...prev, [folder]: !prev[folder] }));
+  };
+
+  // Close context menu on outside click
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (contextMenuRef.current && !contextMenuRef.current.contains(e.target as Node)) {
+        setContextMenu(null);
+      }
+    };
+    if (contextMenu) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [contextMenu]);
+
+  // Auto-focus rename input
+  useEffect(() => {
+    if (renamingFolder && renameInputRef.current) {
+      renameInputRef.current.focus();
+      renameInputRef.current.select();
+    }
+  }, [renamingFolder]);
+
+  const handleFolderContextMenu = (e: React.MouseEvent, folder: string) => {
+    e.preventDefault();
+    if (!session) return; // Guests cannot rename
+    if (folder === 'Example Scenarios') return; // Protect example folder
+    setContextMenu({ x: e.clientX, y: e.clientY, folder });
+  };
+
+  const startRename = (folder: string) => {
+    setContextMenu(null);
+    setRenamingFolder(folder);
+    setRenameValue(folder);
+  };
+
+  const cancelRename = useCallback(() => {
+    setRenamingFolder(null);
+    setRenameValue('');
+  }, []);
+
+  const commitRename = useCallback(async () => {
+    if (!renamingFolder || !renameValue.trim() || renameValue.trim() === renamingFolder) {
+      cancelRename();
+      return;
+    }
+
+    try {
+      const res = await fetch('/api/evaluations/rename-folder', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ oldName: renamingFolder, newName: renameValue.trim() }),
+      });
+
+      if (res.ok) {
+        // Update expandedFolders state with new name
+        setExpandedFolders(prev => {
+          const updated = { ...prev };
+          if (renamingFolder in updated) {
+            updated[renameValue.trim()] = updated[renamingFolder];
+            delete updated[renamingFolder];
+          }
+          return updated;
+        });
+        await fetchEvaluations();
+      } else {
+        const err = await res.json();
+        alert(err.error || 'Failed to rename folder');
+      }
+    } catch (err) {
+      console.error('Failed to rename folder:', err);
+      alert('Failed to rename folder');
+    }
+
+    cancelRename();
+  }, [renamingFolder, renameValue, fetchEvaluations, cancelRename]);
+
+  const handleRenameKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      commitRename();
+    } else if (e.key === 'Escape') {
+      cancelRename();
+    }
   };
 
   const groupedEvaluations = evaluations.reduce((acc, ev) => {
@@ -188,15 +281,32 @@ export default function Sidebar() {
               folders.map((folder) => {
                 const isExpanded = expandedFolders[folder] !== false; // Default expanded
                 const folderEvals = groupedEvaluations[folder];
+                const isRenaming = renamingFolder === folder;
                 return (
                   <div key={folder} className="flex flex-col gap-1 mb-2">
                     <div 
                       className="flex items-center gap-2 cursor-pointer text-text-primary hover:text-cyan-400 font-bold text-xs p-1"
-                      onClick={() => toggleFolder(folder)}
+                      onClick={() => !isRenaming && toggleFolder(folder)}
+                      onContextMenu={(e) => handleFolderContextMenu(e, folder)}
                     >
                       {isExpanded ? <ChevronDown className="w-3 h-3" /> : <ChevronRight className="w-3 h-3" />}
-                      <span className="truncate">{folder}</span>
-                      <span className="text-text-muted font-normal">({folderEvals.length})</span>
+                      {isRenaming ? (
+                        <input
+                          ref={renameInputRef}
+                          type="text"
+                          value={renameValue}
+                          onChange={(e) => setRenameValue(e.target.value)}
+                          onKeyDown={handleRenameKeyDown}
+                          onBlur={commitRename}
+                          className="flex-1 min-w-0 bg-background border border-cyan-500 rounded px-1.5 py-0.5 text-xs text-text-primary font-bold focus:outline-none focus:ring-1 focus:ring-cyan-500/50"
+                          onClick={(e) => e.stopPropagation()}
+                        />
+                      ) : (
+                        <>
+                          <span className="truncate">{folder}</span>
+                          <span className="text-text-muted font-normal">({folderEvals.length})</span>
+                        </>
+                      )}
                     </div>
                     
                     {isExpanded && (
@@ -258,6 +368,23 @@ export default function Sidebar() {
           </div>
         </div>
       </aside>
+
+      {/* Right-click context menu for folders */}
+      {contextMenu && (
+        <div
+          ref={contextMenuRef}
+          className="fixed z-50 bg-card border border-card-border rounded-lg shadow-xl shadow-black/40 py-1 min-w-[140px] animate-in fade-in duration-150"
+          style={{ top: contextMenu.y, left: contextMenu.x }}
+        >
+          <button
+            onClick={() => startRename(contextMenu.folder)}
+            className="w-full flex items-center gap-2 px-3 py-2 text-xs text-text-secondary hover:text-cyan-400 hover:bg-cyan-950/20 transition-colors cursor-pointer"
+          >
+            <Pencil className="w-3.5 h-3.5" />
+            <span>Rename Folder</span>
+          </button>
+        </div>
+      )}
 
       {/* Sidebar Resizer Handle Line */}
       <div 

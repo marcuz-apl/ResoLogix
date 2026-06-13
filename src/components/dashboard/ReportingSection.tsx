@@ -16,7 +16,7 @@ export default function ReportingSection() {
   const [emailAddress, setEmailAddress] = useState('');
   const [cloudUrl, setCloudUrl] = useState('');
 
-  const [isExpanded, setIsExpanded] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(true);
 
   // Formats
   const [formats, setFormats] = useState({

@@ -191,6 +191,7 @@ interface DashboardContextType {
 
 
   // Scenario CRUD
+  fetchEvaluations: () => Promise<void>;
   loadScenario: (ev: Evaluation) => void;
   handleNewScenario: () => void;
   handleCopyScenario: () => void;
@@ -1093,6 +1094,7 @@ export const DashboardProvider = ({ children }: { children: ReactNode }) => {
 
 
     // Scenario CRUD
+    fetchEvaluations,
     loadScenario,
     handleNewScenario,
     handleCopyScenario,
