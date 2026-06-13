@@ -11,7 +11,8 @@ ResoLogix is a premium, full-range Resource Evaluation and Analytics Platform fo
 ## Core Features
 
 - **Monte Carlo Engine**: Advanced, localized probabilistic simulations for reserve estimations with customizable iterations (up to 50k).
-- **Decline Curve Analysis (DCA)**: Deep analytical tools for active production wells, featuring Levenberg-Marquardt auto-fitting for Arps decline equations.
+- **Decline Curve Analysis (DCA)**: Deep analytical tools for active production wells. Features auto-fitting for traditional Arps decline equations, and includes modern transient methodologies for unconventional reservoirs (Duong, SEPD, and PLE) backed by high-precision numerical integration solvers.
+- **Deterministic Economics**: Seamlessly integrates deterministic economic modeling directly into Monte Carlo and DCA evaluations, calculating NPV, IRR, and payout timelines on the fly.
 - **Reporting Suite**: Instantly generate highly-formatted PDF, Word (docx), PowerPoint (pptx), and Excel workbooks containing generated charts and volumetric tables, complete with browser previewing.
 - **Geological Risk Assessment**: Fully integrated risk matrices for trap, reservoir, charge, and seal.
 - **Example Scenarios**: Guest access enables viewing and interacting with real-world seeded production data (e.g. from GitHub/Kaggle datasets) and Monte Carlo examples on the fly.
