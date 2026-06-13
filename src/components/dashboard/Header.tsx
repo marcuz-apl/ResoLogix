@@ -141,7 +141,7 @@ export default function Header({ activeEngine = 'monte-carlo' }: { activeEngine?
 
               {/* Dropdown Menu */}
               {showProfileDropdown && (
-                <div className="absolute top-10 right-0 w-64 bg-card border border-card-border rounded-xl shadow-2xl py-2 z-50 animate-in fade-in zoom-in-95 duration-200">
+                <div className="absolute top-10 left-0 w-64 bg-card/95 backdrop-blur-md border border-card-border rounded-xl shadow-2xl py-2 z-50 animate-in fade-in zoom-in-95 duration-200">
                   <div className="px-4 py-2 border-b border-card-border/50">
                     <p className="text-sm font-bold text-text-primary truncate">
                       {(session.user as any)?.name}
