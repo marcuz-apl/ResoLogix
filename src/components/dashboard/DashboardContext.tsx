@@ -47,6 +47,7 @@ export interface Evaluation {
   folder?: string;
   parameters: SimulationParams;
   risk_factors: RiskFactors;
+  enable_economics?: boolean;
   emv_params?: EmvParams;
   econ_params?: EconParams;
   created_at?: string;
@@ -193,6 +194,8 @@ interface DashboardContextType {
   handleParamChange: (key: keyof SimulationParams, field: 'p90' | 'p10' | 'distribution', value: string | number) => void;
   riskFactors: RiskFactors;
   handleRiskChange: (key: keyof RiskFactors, value: number) => void;
+  enableEconomics: boolean;
+  setEnableEconomics: (val: boolean) => void;
   emvParams: EmvParams;
   handleEmvChange: (key: keyof EmvParams, value: number) => void;
   econParams: EconParams;
@@ -301,6 +304,7 @@ export const DashboardProvider = ({ children }: { children: ReactNode }) => {
 
   const [parameters, setParameters] = useState<SimulationParams>(JSON.parse(JSON.stringify(DEFAULT_PARAMS)));
   const [riskFactors, setRiskFactors] = useState<RiskFactors>({ ...DEFAULT_RISK });
+  const [enableEconomics, setEnableEconomics] = useState(false);
   const [emvParams, setEmvParams] = useState<EmvParams>({ ...DEFAULT_EMV });
   const [econParams, setEconParams] = useState<EconParams>({ ...DEFAULT_ECON });
 
@@ -472,6 +476,7 @@ export const DashboardProvider = ({ children }: { children: ReactNode }) => {
       containment: ev.risk_factors?.containment ?? DEFAULT_RISK.containment
     });
 
+    setEnableEconomics(ev.enable_economics ?? false);
     setEmvParams(ev.emv_params ? { ...ev.emv_params } : { ...DEFAULT_EMV });
     setEconParams(ev.econ_params ? { ...ev.econ_params } : { ...DEFAULT_ECON });
 
@@ -498,6 +503,7 @@ export const DashboardProvider = ({ children }: { children: ReactNode }) => {
     setLaheeClass('undefined');
     setTypeWell('None');
     setIsProfileExpanded(false);
+    setEnableEconomics(false);
     setParameters(JSON.parse(JSON.stringify(DEFAULT_PARAMS)));
     setRiskFactors({ ...DEFAULT_RISK });
     setEmvParams({ ...DEFAULT_EMV });
@@ -542,6 +548,7 @@ export const DashboardProvider = ({ children }: { children: ReactNode }) => {
       folder: activeFolder,
       parameters,
       risk_factors: riskFactors,
+      enable_economics: enableEconomics,
       emv_params: emvParams,
       econ_params: econParams
     };
@@ -1122,6 +1129,8 @@ export const DashboardProvider = ({ children }: { children: ReactNode }) => {
     handleParamChange,
     riskFactors,
     handleRiskChange,
+    enableEconomics,
+    setEnableEconomics,
     emvParams,
     handleEmvChange,
     econParams,

@@ -17,6 +17,8 @@ import {
 
 export default function ReserveProfile() {
   const {
+    enableEconomics,
+    setEnableEconomics,
     activeName,
     setActiveName,
     activeDescription,
@@ -55,7 +57,7 @@ export default function ReserveProfile() {
     <div className="glass-panel p-4 rounded-2xl flex flex-col gap-4 mb-6 border border-card-border/50">
       {/* Name, Description, and Reservoir Type Selector Row */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
-        <div className="flex flex-col gap-1.5 flex-[2] min-w-0">
+        <div className="flex flex-col gap-1.5 flex-[1] min-w-0">
           <label className="text-[10px] text-text-muted font-bold uppercase tracking-wider block">Folder</label>
           <input
             type="text"
@@ -126,6 +128,28 @@ export default function ReserveProfile() {
             >
               Gas Reservoir
             </button>
+          </div>
+        </div>
+
+        {/* Economics Toggle */}
+        <div className="flex flex-col gap-1.5 shrink-0 ml-2">
+          <label className="text-[10px] text-text-muted font-bold uppercase tracking-wider block">Economics & EMV</label>
+          <div className="flex items-center gap-2 h-8">
+            <button
+              onClick={() => setEnableEconomics(!enableEconomics)}
+              className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none ${
+                enableEconomics ? 'bg-emerald-500' : 'bg-card border border-card-border'
+              }`}
+            >
+              <span
+                className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                  enableEconomics ? 'translate-x-6' : 'translate-x-1'
+                }`}
+              />
+            </button>
+            <span className={`text-xs font-bold ${enableEconomics ? 'text-emerald-400' : 'text-text-muted'}`}>
+              {enableEconomics ? 'ON' : 'OFF'}
+            </span>
           </div>
         </div>
       </div>

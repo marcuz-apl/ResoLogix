@@ -28,16 +28,16 @@ ChartJS.register(
 );
 
 export default function EmvAnalysis() {
-  const { 
+  const {
+    enableEconomics, 
     emvParams, handleEmvChange, 
     econParams, handleEconChange, 
     calculatedPg, simResults, fluidType 
   } = useDashboard();
   
-  const [isExpanded, setIsExpanded] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(true);
   const [showChart, setShowChart] = useState(false);
   const [p50Profile, setP50Profile] = useState<{ labels: string[], production: number[], cashFlow: number[] } | null>(null);
-
   // Auto-calculate NPVs based on Simulation Results and Economics Params
   useEffect(() => {
     if (!simResults) return;
@@ -150,6 +150,8 @@ export default function EmvAnalysis() {
       maximumFractionDigits: 1,
     }).format(val);
   };
+
+  if (!enableEconomics) return null;
 
   return (
     <section className="glass-panel p-6 rounded-2xl flex flex-col gap-6 mt-6 border border-card-border/50">
