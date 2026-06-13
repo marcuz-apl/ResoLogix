@@ -13,7 +13,7 @@ export async function GET(request: Request) {
     let scenarios = [];
     if (!session || !session.user) {
       scenarios = db.prepare(`
-        SELECT id, scenario_name, folder, description, qi, di, b, q_limit, historical_data, created_at, updated_at, is_example, enable_economics, emv_params, econ_params
+        SELECT id, scenario_name, folder, description, qi, di, b, q_limit, d_min, method, method_params, historical_data, created_at, updated_at, is_example, enable_economics, emv_params, econ_params
         FROM "dca-scenarios" 
         WHERE is_example = 1 
         ORDER BY updated_at DESC
@@ -21,7 +21,7 @@ export async function GET(request: Request) {
     } else {
       const userId = (session.user as any).id;
       scenarios = db.prepare(`
-        SELECT id, scenario_name, folder, description, qi, di, b, q_limit, historical_data, created_at, updated_at, is_example, enable_economics, emv_params, econ_params
+        SELECT id, scenario_name, folder, description, qi, di, b, q_limit, d_min, method, method_params, historical_data, created_at, updated_at, is_example, enable_economics, emv_params, econ_params
         FROM "dca-scenarios" 
         WHERE user_id = ? OR is_example = 1
         ORDER BY is_example DESC, updated_at DESC
@@ -33,7 +33,9 @@ export async function GET(request: Request) {
       ...s,
       is_example: s.is_example === 1,
       historical_data: s.historical_data ? JSON.parse(s.historical_data) : [],
-      params: { qi: s.qi, di: s.di, b: s.b },
+      method: s.method || 'ARPS',
+      method_params: s.method_params ? JSON.parse(s.method_params) : undefined,
+      params: { qi: s.qi, di: s.di, b: s.b, d_min: s.d_min },
       enable_economics: s.enable_economics === 1,
       emv_params: s.emv_params ? JSON.parse(s.emv_params) : undefined,
       econ_params: s.econ_params ? JSON.parse(s.econ_params) : undefined
@@ -55,7 +57,7 @@ export async function POST(request: Request) {
     const userId = (session.user as any).id;
     const body = await request.json();
 
-    const { scenario_name, folder, description, params, q_limit, historical_data, enable_economics, emv_params, econ_params } = body;
+    const { scenario_name, folder, description, method, method_params, params, q_limit, historical_data, enable_economics, emv_params, econ_params } = body;
     let { id } = body;
 
     if (!id) {
@@ -72,9 +74,9 @@ export async function POST(request: Request) {
     db.prepare(`
       INSERT INTO "dca-scenarios" (
         id, user_id, scenario_name, folder, description, 
-        qi, di, b, q_limit, historical_data, updated_at,
+        qi, di, b, q_limit, d_min, method, method_params, historical_data, updated_at,
         enable_economics, emv_params, econ_params
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP, ?, ?, ?)
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP, ?, ?, ?)
       ON CONFLICT(id) DO UPDATE SET
         scenario_name = excluded.scenario_name,
         folder = excluded.folder,
@@ -83,6 +85,9 @@ export async function POST(request: Request) {
         di = excluded.di,
         b = excluded.b,
         q_limit = excluded.q_limit,
+        d_min = excluded.d_min,
+        method = excluded.method,
+        method_params = excluded.method_params,
         historical_data = excluded.historical_data,
         enable_economics = excluded.enable_economics,
         emv_params = excluded.emv_params,
@@ -90,7 +95,8 @@ export async function POST(request: Request) {
         updated_at = CURRENT_TIMESTAMP
     `).run(
       id, userId, scenario_name, folder || 'Uncategorized', description || '',
-      params.qi, params.di, params.b, q_limit, 
+      params?.qi, params?.di, params?.b, q_limit, params?.d_min || null, 
+      method || 'ARPS', method_params ? JSON.stringify(method_params) : null,
       JSON.stringify(historical_data),
       enable_economics ? 1 : 0,
       emv_params ? JSON.stringify(emv_params) : null,

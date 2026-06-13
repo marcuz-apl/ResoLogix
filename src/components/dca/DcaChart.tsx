@@ -11,7 +11,7 @@ import {
   LogarithmicScale
 } from 'chart.js';
 import { Chart } from 'react-chartjs-2';
-import { Point, ArpsParams, arpsRate } from '@/lib/dca-engine';
+import { Point, MethodParams, DcaMethod, calculateDcaRate } from '@/lib/dca-engine';
 
 ChartJS.register(
   CategoryScale,
@@ -26,11 +26,12 @@ ChartJS.register(
 
 interface DcaChartProps {
   data: Point[];
-  params: ArpsParams;
+  params: MethodParams;
+  method: DcaMethod;
   forecastMonths: number;
 }
 
-export default function DcaChart({ data, params, forecastMonths }: DcaChartProps) {
+export default function DcaChart({ data, params, method, forecastMonths }: DcaChartProps) {
   
   const chartData = useMemo(() => {
     // Generate Forecast Curve
@@ -40,7 +41,7 @@ export default function DcaChart({ data, params, forecastMonths }: DcaChartProps
     const curvePoints = [];
     const step = Math.max(1, forecastT / 100);
     for (let t = 0; t <= forecastT; t += step) {
-      const q = arpsRate(t, params);
+      const q = calculateDcaRate(t, method, params);
       // Don't plot tiny values to prevent log scale errors
       if (q > 0.1) {
         curvePoints.push({ x: t, y: q });
@@ -62,7 +63,7 @@ export default function DcaChart({ data, params, forecastMonths }: DcaChartProps
         },
         {
           type: 'line' as const,
-          label: 'Arps Forecast',
+          label: `${method} Forecast`,
           data: curvePoints,
           borderColor: 'rgba(249, 115, 22, 1)',
           backgroundColor: 'rgba(249, 115, 22, 0.1)',
@@ -73,7 +74,7 @@ export default function DcaChart({ data, params, forecastMonths }: DcaChartProps
         }
       ]
     };
-  }, [data, params, forecastMonths]);
+  }, [data, params, method, forecastMonths]);
 
   const options = {
     responsive: true,

@@ -247,9 +247,10 @@ function DocsPageContent() {
                 With the rise of unconventional shale and tight oil/gas, standard Arps models often fail because these wells exhibit multi-year transient flow. A standard hyperbolic curve with a high <em>b-factor</em> (&gt;1) can mathematically project infinite unrealistic reserves.
               </p>
               <ul className="list-disc pl-5 flex flex-col gap-2">
-                <li><strong className="text-text-primary">Modified Hyperbolic:</strong> Uses a hyperbolic curve initially, but mathematically forces the curve to switch to an exponential decline once a minimum terminal decline rate (e.g., 5-8% per year) is reached. This is the current industry standard for shale forecasting.</li>
-                <li><strong className="text-text-primary">Logistic Growth Models (LGM):</strong> Incorporates a "carrying capacity" concept, forcing the cumulative production to logically converge to a realistic maximum volume without requiring manual terminal decline inputs.</li>
-                <li><strong className="text-text-primary">Duong & SEPD:</strong> Specifically designed to model the ultra-long linear flow periods observed in fractured shale reservoirs.</li>
+                <li><strong className="text-text-primary">Modified Arps (Modified Hyperbolic):</strong> Uses a hyperbolic curve initially (often allowing b &gt; 1), but mathematically forces the curve to switch to an exponential decline once a minimum terminal decline rate (e.g., 5-8% per year) is reached. This is the most practical industry standard fix for shale forecasting and prevents predicting infinite EURs.</li>
+                <li><strong className="text-text-primary">Duong Method:</strong> Specifically designed to model the ultra-long linear flow periods observed in fractured shale reservoirs. It assumes fracture networks dominate flow for a very long time, offering an alternative to arbitrarily choosing a terminal decline.</li>
+                <li><strong className="text-text-primary">Stretched Exponential Production Decline (SEPD):</strong> Derived from physics modeling systems that degrade over time, providing a mathematically bounded EUR without ballooning to infinity. Very popular for rigid Wall Street reserve reporting.</li>
+                <li><strong className="text-text-primary">Power Law Exponential (PLE):</strong> Modifies exponential decline so that the decline rate changes over time as a power-law function. It smoothly handles the transition from transient early flow to boundary-dominated late flow naturally.</li>
               </ul>
 
               <h3 className="font-bold text-text-primary mt-4 text-xs uppercase tracking-wide">3. Physics-Informed Machine Learning (PIML)</h3>

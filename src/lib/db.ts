@@ -86,6 +86,9 @@ export function initDb() {
       di REAL,
       b REAL,
       q_limit REAL,
+      d_min REAL,
+      method TEXT DEFAULT 'ARPS',
+      method_params TEXT,
       
       -- Historical data stored as JSON string
       historical_data TEXT,
@@ -205,6 +208,21 @@ export function initDb() {
   try {
     db.exec(`ALTER TABLE "dca-scenarios" ADD COLUMN econ_params TEXT;`);
     console.log('Added econ_params column to "dca-scenarios"');
+  } catch (e) {}
+
+  try {
+    db.exec(`ALTER TABLE "dca-scenarios" ADD COLUMN d_min REAL;`);
+    console.log('Added d_min column to "dca-scenarios"');
+  } catch (e) {}
+
+  try {
+    db.exec(`ALTER TABLE "dca-scenarios" ADD COLUMN method TEXT DEFAULT 'ARPS';`);
+    console.log('Added method column to "dca-scenarios"');
+  } catch (e) {}
+
+  try {
+    db.exec(`ALTER TABLE "dca-scenarios" ADD COLUMN method_params TEXT;`);
+    console.log('Added method_params column to "dca-scenarios"');
   } catch (e) {}
 
   // Migration: add emv_params to evaluations
