@@ -762,7 +762,8 @@ export const DashboardProvider = ({ children }: { children: ReactNode }) => {
       labelRiskedRecoverable = fluidType === 'OIL' ? 'Risked Rec. Solution Gas' : 'Risked Rec. Condensate';
     }
 
-    const buildPoints = (runs: number[]) => {
+    const buildPoints = (runs: number[] | undefined) => {
+      if (!runs || runs.length === 0) return [];
       const sorted = [...runs].sort((a, b) => a - b);
       const N = sorted.length;
       return sorted.map((val, idx) => {
@@ -994,7 +995,7 @@ export const DashboardProvider = ({ children }: { children: ReactNode }) => {
 
     const isPrimary = target === 'primary';
     const targetRuns = isPrimary
-      ? simResults.inPlaceRuns
+      ? (simResults.inPlaceRuns || [])
       : (simResults.secInPlaceRuns || []);
 
     const inPlaceHist = generateHistogramData(targetRuns, 30);

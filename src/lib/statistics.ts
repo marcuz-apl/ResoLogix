@@ -407,8 +407,8 @@ export function runMonteCarlo(
 }
 
 // Prepare data for Histogram plotting
-export function generateHistogramData(runs: number[], binCount = 30) {
-  if (runs.length === 0) return { labels: [], data: [] };
+export function generateHistogramData(runs: number[] = [], binCount = 30) {
+  if (!runs || runs.length === 0) return { labels: [], percentages: [], data: [] };
   
   const min = Math.min(...runs);
   const max = Math.max(...runs);
