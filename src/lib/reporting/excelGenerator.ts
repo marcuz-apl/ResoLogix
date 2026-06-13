@@ -109,6 +109,36 @@ export const generateExcel = async (reportsDir: string, data: any, contents: any
     profileSheet.getRow(1).font = { bold: true };
   }
 
+  // Petroleum Economics & EMV
+  if (contents.economics && data.econParams && data.emvParams) {
+    const econSheet = workbook.addWorksheet('Economics & EMV', {
+      pageSetup: { paperSize: 9, orientation: 'portrait' }
+    });
+
+    econSheet.columns = [
+      { header: 'METRIC', key: 'metric', width: 30 },
+      { header: 'VALUE', key: 'value', width: 20 }
+    ];
+
+    const pvSuccess = (0.3 * data.emvParams.npv90) + (0.4 * data.emvParams.npv50) + (0.3 * data.emvParams.npv10);
+    const emv = (pvSuccess * data.calculatedPg) - (data.emvParams.dryHoleCost * (1 - data.calculatedPg));
+
+    econSheet.addRow({ metric: 'Oil Price ($/bbl)', value: data.econParams.oilPrice });
+    econSheet.addRow({ metric: 'Gas Price ($/Mcf)', value: data.econParams.gasPrice });
+    econSheet.addRow({ metric: 'OPEX ($/boe)', value: data.econParams.opex });
+    econSheet.addRow({ metric: 'Initial CapEx ($MM)', value: data.emvParams.dryHoleCost });
+    econSheet.addRow({ metric: 'Discount Rate (%)', value: data.econParams.discountRate });
+    econSheet.addRow({ metric: 'Project Life (Years)', value: data.econParams.projectLife });
+    econSheet.addRow({ metric: 'Annual Decline (%)', value: data.econParams.declineRate });
+    econSheet.addRow({ metric: 'P90 NPV ($MM)', value: data.emvParams.npv90 });
+    econSheet.addRow({ metric: 'P50 NPV ($MM)', value: data.emvParams.npv50 });
+    econSheet.addRow({ metric: 'P10 NPV ($MM)', value: data.emvParams.npv10 });
+    econSheet.addRow({ metric: 'Mean PV of Success ($MM)', value: pvSuccess });
+    econSheet.addRow({ metric: 'Expected Monetary Value ($MM)', value: emv });
+
+    econSheet.getRow(1).font = { bold: true };
+  }
+
   const outputPath = path.join(reportsDir, `${safeName}_Report.xlsx`);
   await workbook.xlsx.writeFile(outputPath);
 };

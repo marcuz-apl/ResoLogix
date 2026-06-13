@@ -162,6 +162,50 @@ export const generateWord = async (reportsDir: string, data: any, contents: any,
     );
   }
 
+  // Petroleum Economics & EMV
+  if (contents.economics && data.econParams && data.emvParams) {
+    children.push(
+      new Paragraph({
+        children: [new TextRun({ text: 'PETROLEUM ECONOMICS & EMV', bold: true, size: 32 })],
+        spacing: { after: 200 }
+      })
+    );
+
+    const pvSuccess = (0.3 * data.emvParams.npv90) + (0.4 * data.emvParams.npv50) + (0.3 * data.emvParams.npv10);
+    const emv = (pvSuccess * data.calculatedPg) - (data.emvParams.dryHoleCost * (1 - data.calculatedPg));
+
+    const econData = [
+      ['METRIC', 'VALUE'],
+      ['Oil Price ($/bbl)', `$${data.econParams.oilPrice}`],
+      ['Gas Price ($/Mcf)', `$${data.econParams.gasPrice}`],
+      ['OPEX ($/boe)', `$${data.econParams.opex}`],
+      ['Initial CapEx ($MM)', `$${data.emvParams.dryHoleCost}M`],
+      ['Discount Rate (%)', `${data.econParams.discountRate}%`],
+      ['Project Life (Years)', `${data.econParams.projectLife}`],
+      ['Annual Decline (%)', `${data.econParams.declineRate}%`],
+      ['P90 NPV ($MM)', `$${data.emvParams.npv90.toFixed(1)}M`],
+      ['P50 NPV ($MM)', `$${data.emvParams.npv50.toFixed(1)}M`],
+      ['P10 NPV ($MM)', `$${data.emvParams.npv10.toFixed(1)}M`],
+      ['Mean PV of Success ($MM)', `$${pvSuccess.toFixed(1)}M`],
+      ['Expected Monetary Value ($MM)', `$${emv.toFixed(1)}M`]
+    ];
+
+    const econRows = econData.map((row, i) => new TableRow({
+      children: row.map(cell => new TableCell({
+        children: [new Paragraph({ children: [new TextRun({ text: cell, bold: i === 0 })] })],
+        shading: i === 0 ? { fill: 'F7F7F7' } : undefined
+      }))
+    }));
+
+    children.push(
+      new Table({
+        rows: econRows,
+        width: { size: 100, type: WidthType.PERCENTAGE }
+      }),
+      new Paragraph({ spacing: { after: 600 } })
+    );
+  }
+
   // Images
   if (contents.plots && images) {
     children.push(

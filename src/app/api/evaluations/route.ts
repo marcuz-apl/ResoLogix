@@ -73,6 +73,8 @@ export async function GET() {
         created_at: ev.created_at,
         updated_at: ev.updated_at,
         is_example: ev.is_example === 1,
+        emv_params: ev.emv_params ? JSON.parse(ev.emv_params) : undefined,
+        econ_params: ev.econ_params ? JSON.parse(ev.econ_params) : undefined,
         parameters: formattedParams,
         risk_factors: risk,
       };
@@ -144,6 +146,8 @@ export async function POST(req: Request) {
       lahee_class,
       type_well,
       folder,
+      emv_params,
+      econ_params,
       parameters, 
       risk_factors 
     } = body;
@@ -171,9 +175,9 @@ export async function POST(req: Request) {
         INSERT INTO evaluations (
           id, user_id, name, description, fluid_type, include_secondary, 
           country, geol_basin, play_type, reservoir_age, lithology, 
-          depo_env, exp_stage, terrain, lahee_class, type_well, folder, updated_at
+          depo_env, exp_stage, terrain, lahee_class, type_well, folder, emv_params, econ_params, updated_at
         )
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
         ON CONFLICT(id) DO UPDATE SET
           name = excluded.name,
           description = excluded.description,
@@ -190,6 +194,8 @@ export async function POST(req: Request) {
           lahee_class = excluded.lahee_class,
           type_well = excluded.type_well,
           folder = excluded.folder,
+          emv_params = excluded.emv_params,
+          econ_params = excluded.econ_params,
           updated_at = CURRENT_TIMESTAMP
       `).run(
         id, 
@@ -208,7 +214,9 @@ export async function POST(req: Request) {
         terrain || 'undefined',
         lahee_class || 'undefined',
         type_well || 'None',
-        folder || 'Uncategorized'
+        folder || 'Uncategorized',
+        emv_params ? JSON.stringify(emv_params) : null,
+        econ_params ? JSON.stringify(econ_params) : null
       );
 
       // 2. Delete existing parameters

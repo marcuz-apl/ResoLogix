@@ -182,6 +182,22 @@ export function initDb() {
   } catch (e) {
     // Column likely already exists
   }
+
+  // Migration: add emv_params to evaluations
+  try {
+    db.exec(`ALTER TABLE evaluations ADD COLUMN emv_params TEXT;`);
+    console.log('Added emv_params column to evaluations');
+  } catch (e) {
+    // Column likely already exists
+  }
+
+  // Migration: add econ_params to evaluations
+  try {
+    db.exec(`ALTER TABLE evaluations ADD COLUMN econ_params TEXT;`);
+    console.log('Added econ_params column to evaluations');
+  } catch (e) {
+    // Column likely already exists
+  }
 }
 
 // Ensure database is initialized

@@ -2,7 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { ArrowLeft, BookOpen, Layers, Cpu, HelpCircle, FileText, Compass, Activity, Droplets, ShieldAlert, Database } from 'lucide-react';
+import { ArrowLeft, BookOpen, Layers, Cpu, HelpCircle, FileText, Compass, Activity, Droplets, ShieldAlert, Database, DollarSign } from 'lucide-react';
 import { useSession } from 'next-auth/react';
 import PageHeader from '../../components/layout/PageHeader';
 import Header from '@/components/dashboard/Header';
@@ -71,8 +71,15 @@ function DocsPageContent() {
               href="#chapter-4" 
               className="flex items-center gap-2 py-2 px-3 rounded-lg text-xs font-bold text-text-secondary hover:text-cyan-400 hover:bg-card-border/20 transition-all duration-200"
             >
+              <DollarSign className="w-3.5 h-3.5 text-cyan-400 shrink-0" />
+              <span className="leading-tight">4. Petroleum Economics & EMV</span>
+            </a>
+            <a 
+              href="#chapter-5" 
+              className="flex items-center gap-2 py-2 px-3 rounded-lg text-xs font-bold text-text-secondary hover:text-cyan-400 hover:bg-card-border/20 transition-all duration-200"
+            >
               <Droplets className="w-3.5 h-3.5 text-cyan-400 shrink-0" />
-              <span className="leading-tight">4. Analytical Tools & Theory</span>
+              <span className="leading-tight">5. Analytical Tools & Theory</span>
             </a>
             
             <div className="h-px bg-card-border my-2 mx-3"></div>
@@ -252,11 +259,48 @@ function DocsPageContent() {
 
             </section>
 
-            {/* Chapter 4: Analytical Tools & Theory */}
+            {/* Chapter 4: Petroleum Economics & EMV */}
             <section id="chapter-4" className="glass-panel p-8 rounded-2xl flex flex-col gap-4 border border-card-border/50 bg-card/45 relative scroll-mt-6">
               <h2 className="text-xl font-extrabold text-text-primary border-b border-card-border pb-3 mb-2 flex items-center gap-2">
+                <DollarSign className="w-6 h-6 text-cyan-400" />
+                <span>Chapter 4: Petroleum Economics & EMV</span>
+              </h2>
+
+              <p>
+                In the exploration phase, discovering technical volumes of hydrocarbons is only half the battle. The true decision metric for drilling a prospect is whether those volumes are <strong>commercially viable</strong> given the extreme capital costs and geological risks involved.
+              </p>
+
+              <h3 className="font-bold text-text-primary mt-2 text-xs uppercase tracking-wide">Net Present Value (NPV)</h3>
+              <p>
+                To value a project, engineers forecast the production profile over time (using DCA) and apply expected commodity prices, subtracting Operational Expenses (OPEX) and CapEx. Because cash received tomorrow is worth less than cash received today, future cash flows are discounted to the present using a <strong>Discount Rate</strong>. This yields the NPV for the P90, P50, and P10 cases.
+              </p>
+              
+              <h3 className="font-bold text-text-primary mt-4 text-xs uppercase tracking-wide">Expected Monetary Value (EMV)</h3>
+              <p>
+                EMV combines the financial value of success with the cost of failure, risk-adjusted by the Geological Chance of Success (P<sub>g</sub>).
+              </p>
+              <div className="bg-background/40 p-4 rounded-xl border border-card-border text-xs font-mono space-y-4 mt-2">
+                <div>
+                  <div className="text-cyan-400 mb-1 font-bold tracking-wide uppercase">1. Mean PV of Success</div>
+                  <div className="text-text-muted">PV_success = (0.3 &times; NPV_90) + (0.4 &times; NPV_50) + (0.3 &times; NPV_10)</div>
+                  <div className="text-[10px] text-text-muted mt-1 italic">Swanson's Rule is used to approximate the continuous mean from the three percentiles.</div>
+                </div>
+                <div>
+                  <div className="text-cyan-400 mb-1 font-bold tracking-wide uppercase">2. Expected Monetary Value</div>
+                  <div className="text-text-muted">EMV = (PV_success &times; P_g) - (CapEx &times; (1 - P_g))</div>
+                </div>
+              </div>
+
+              <p className="mt-2">
+                <strong>Decision Rule:</strong> If EMV &gt; 0, the project statistically justifies the capital risk. If EMV &lt; 0, the cost of a dry hole outweighs the risk-adjusted reward, and the prospect should not be drilled.
+              </p>
+            </section>
+
+            {/* Chapter 5: Analytical Tools & Theory */}
+            <section id="chapter-5" className="glass-panel p-8 rounded-2xl flex flex-col gap-4 border border-card-border/50 bg-card/45 relative scroll-mt-6">
+              <h2 className="text-xl font-extrabold text-text-primary border-b border-card-border pb-3 mb-2 flex items-center gap-2">
                 <Droplets className="w-6 h-6 text-cyan-400" />
-                <span>Chapter 4: Analytical Tools & Theory</span>
+                <span>Chapter 5: Analytical Tools & Theory</span>
               </h2>
 
               <img 

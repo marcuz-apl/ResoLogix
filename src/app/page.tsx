@@ -11,6 +11,7 @@ import GeologicalRisk from '@/components/dashboard/GeologicalRisk';
 import ChartsView from '@/components/dashboard/ChartsView';
 import SummaryStatsTable from '@/components/dashboard/SummaryStatsTable';
 import ParameterDataTable from '@/components/dashboard/ParameterDataTable';
+import EmvAnalysis from '@/components/dashboard/EmvAnalysis';
 import ReportingSection from '@/components/dashboard/ReportingSection';
 
 function DashboardContent() {
@@ -70,6 +71,7 @@ function DashboardContent() {
 
           {/* Percentile Parameters and Reserves Data tables */}
           <ParameterDataTable />
+          <EmvAnalysis />
           <ReportingSection />
 
 

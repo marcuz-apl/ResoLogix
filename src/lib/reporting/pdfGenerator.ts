@@ -123,6 +123,34 @@ export const generatePdf = (reportsDir: string, data: any, contents: any, images
         drawTable(profileHeaders, profileRows, 400);
       }
 
+      // Petroleum Economics & EMV
+      if (contents.economics && data.econParams && data.emvParams) {
+        doc.addPage();
+        doc.fontSize(14).font('Helvetica-Bold').fillColor('#000000').text('PETROLEUM ECONOMICS & EMV');
+        doc.moveDown(1);
+
+        const formatCurrency = (val: number) => `$${val.toFixed(1)}M`;
+        const pvSuccess = (0.3 * data.emvParams.npv90) + (0.4 * data.emvParams.npv50) + (0.3 * data.emvParams.npv10);
+        const emv = (pvSuccess * data.calculatedPg) - (data.emvParams.dryHoleCost * (1 - data.calculatedPg));
+
+        const econHeaders = ['METRIC', 'VALUE'];
+        const econRows = [
+          ['Oil Price ($/bbl)', `$${data.econParams.oilPrice}`],
+          ['Gas Price ($/Mcf)', `$${data.econParams.gasPrice}`],
+          ['OPEX ($/boe)', `$${data.econParams.opex}`],
+          ['Initial CapEx ($MM)', `$${data.emvParams.dryHoleCost}M`],
+          ['Discount Rate (%)', `${data.econParams.discountRate}%`],
+          ['Project Life (Years)', `${data.econParams.projectLife}`],
+          ['Annual Decline (%)', `${data.econParams.declineRate}%`],
+          ['P90 NPV ($MM)', formatCurrency(data.emvParams.npv90)],
+          ['P50 NPV ($MM)', formatCurrency(data.emvParams.npv50)],
+          ['P10 NPV ($MM)', formatCurrency(data.emvParams.npv10)],
+          ['Mean PV of Success', formatCurrency(pvSuccess)],
+          ['Expected Monetary Value (EMV)', formatCurrency(emv)]
+        ];
+        drawTable(econHeaders, econRows, 400);
+      }
+
       // Images
       if (contents.plots && images) {
         let imageCount = 0;

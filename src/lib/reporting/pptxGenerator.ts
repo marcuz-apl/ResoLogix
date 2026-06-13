@@ -118,6 +118,38 @@ export const generatePptx = async (reportsDir: string, data: any, contents: any,
     });
   }
 
+  // --- SLIDE: Petroleum Economics & EMV ---
+  if (contents.economics && data.econParams && data.emvParams) {
+    const econSlide = pptx.addSlide();
+    econSlide.addText('PETROLEUM ECONOMICS & EMV', { x: 0.5, y: 0.5, fontSize: 24, bold: true });
+
+    const pvSuccess = (0.3 * data.emvParams.npv90) + (0.4 * data.emvParams.npv50) + (0.3 * data.emvParams.npv10);
+    const emv = (pvSuccess * data.calculatedPg) - (data.emvParams.dryHoleCost * (1 - data.calculatedPg));
+
+    const econRows = [
+      ['METRIC', 'VALUE'],
+      ['Oil Price ($/bbl)', `$${data.econParams.oilPrice}`],
+      ['Gas Price ($/Mcf)', `$${data.econParams.gasPrice}`],
+      ['OPEX ($/boe)', `$${data.econParams.opex}`],
+      ['Initial CapEx ($MM)', `$${data.emvParams.dryHoleCost}M`],
+      ['Discount Rate (%)', `${data.econParams.discountRate}%`],
+      ['Project Life (Years)', `${data.econParams.projectLife}`],
+      ['Annual Decline (%)', `${data.econParams.declineRate}%`],
+      ['P90 NPV ($MM)', `$${data.emvParams.npv90.toFixed(1)}M`],
+      ['P50 NPV ($MM)', `$${data.emvParams.npv50.toFixed(1)}M`],
+      ['P10 NPV ($MM)', `$${data.emvParams.npv10.toFixed(1)}M`],
+      ['Mean PV of Success ($MM)', `$${pvSuccess.toFixed(1)}M`],
+      ['Expected Monetary Value ($MM)', `$${emv.toFixed(1)}M`]
+    ];
+
+    econSlide.addTable(econRows as any, {
+      x: 2.5, y: 1.5, w: 5,
+      border: { type: 'solid', pt: 1, color: 'CCCCCC' },
+      fill: { color: 'F7F7F7' },
+      fontSize: 12
+    });
+  }
+
   // --- SLIDES: Probability Distributions (Images) ---
   if (contents.plots && images) {
     if (images.primaryCdf) {

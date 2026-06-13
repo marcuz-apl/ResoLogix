@@ -12,6 +12,22 @@ import {
   type RiskFactors
 } from '@/lib/statistics';
 
+export interface EmvParams {
+  dryHoleCost: number;
+  npv90: number;
+  npv50: number;
+  npv10: number;
+}
+
+export interface EconParams {
+  oilPrice: number;
+  gasPrice: number;
+  opex: number;
+  discountRate: number;
+  projectLife: number;
+  declineRate: number;
+}
+
 export interface Evaluation {
   id: string;
   name: string;
@@ -31,9 +47,27 @@ export interface Evaluation {
   folder?: string;
   parameters: SimulationParams;
   risk_factors: RiskFactors;
+  emv_params?: EmvParams;
+  econ_params?: EconParams;
   created_at?: string;
   updated_at?: string;
 }
+
+export const DEFAULT_EMV: EmvParams = {
+  dryHoleCost: 15,
+  npv90: 20,
+  npv50: 80,
+  npv10: 300
+};
+
+export const DEFAULT_ECON: EconParams = {
+  oilPrice: 70,
+  gasPrice: 3,
+  opex: 15,
+  discountRate: 10,
+  projectLife: 20,
+  declineRate: 15
+};
 
 export const COUNTRIES_LIST = [
   "Afghanistan", "Albania", "Algeria", "Andorra", "Angola", "Antigua and Barbuda", "Argentina", "Armenia", "Australia", "Austria",
@@ -159,6 +193,10 @@ interface DashboardContextType {
   handleParamChange: (key: keyof SimulationParams, field: 'p90' | 'p10' | 'distribution', value: string | number) => void;
   riskFactors: RiskFactors;
   handleRiskChange: (key: keyof RiskFactors, value: number) => void;
+  emvParams: EmvParams;
+  handleEmvChange: (key: keyof EmvParams, value: number) => void;
+  econParams: EconParams;
+  handleEconChange: (key: keyof EconParams, value: number) => void;
 
   iterations: number;
   setIterations: (val: number) => void;
@@ -263,6 +301,16 @@ export const DashboardProvider = ({ children }: { children: ReactNode }) => {
 
   const [parameters, setParameters] = useState<SimulationParams>(JSON.parse(JSON.stringify(DEFAULT_PARAMS)));
   const [riskFactors, setRiskFactors] = useState<RiskFactors>({ ...DEFAULT_RISK });
+  const [emvParams, setEmvParams] = useState<EmvParams>({ ...DEFAULT_EMV });
+  const [econParams, setEconParams] = useState<EconParams>({ ...DEFAULT_ECON });
+
+  const handleEmvChange = useCallback((key: keyof EmvParams, value: number) => {
+    setEmvParams(prev => ({ ...prev, [key]: value }));
+  }, []);
+
+  const handleEconChange = useCallback((key: keyof EconParams, value: number) => {
+    setEconParams(prev => ({ ...prev, [key]: value }));
+  }, []);
 
   // Refs for capturing hidden off-screen charts
   const primaryExceedanceRef = useRef<any>(null);
@@ -424,6 +472,9 @@ export const DashboardProvider = ({ children }: { children: ReactNode }) => {
       containment: ev.risk_factors?.containment ?? DEFAULT_RISK.containment
     });
 
+    setEmvParams(ev.emv_params ? { ...ev.emv_params } : { ...DEFAULT_EMV });
+    setEconParams(ev.econ_params ? { ...ev.econ_params } : { ...DEFAULT_ECON });
+
     setSimResults(null); // Clear previous simulation
     setSaveStatus('idle');
   };
@@ -449,6 +500,8 @@ export const DashboardProvider = ({ children }: { children: ReactNode }) => {
     setIsProfileExpanded(false);
     setParameters(JSON.parse(JSON.stringify(DEFAULT_PARAMS)));
     setRiskFactors({ ...DEFAULT_RISK });
+    setEmvParams({ ...DEFAULT_EMV });
+    setEconParams({ ...DEFAULT_ECON });
     setSimResults(null);
     setSaveStatus('idle');
   };
@@ -488,7 +541,9 @@ export const DashboardProvider = ({ children }: { children: ReactNode }) => {
       type_well: typeWell,
       folder: activeFolder,
       parameters,
-      risk_factors: riskFactors
+      risk_factors: riskFactors,
+      emv_params: emvParams,
+      econ_params: econParams
     };
 
     try {
@@ -1067,6 +1122,10 @@ export const DashboardProvider = ({ children }: { children: ReactNode }) => {
     handleParamChange,
     riskFactors,
     handleRiskChange,
+    emvParams,
+    handleEmvChange,
+    econParams,
+    handleEconChange,
 
     iterations,
     setIterations,

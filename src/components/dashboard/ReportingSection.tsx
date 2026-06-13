@@ -9,7 +9,8 @@ export default function ReportingSection() {
   const { 
     activeName, fluidType, includeSecondary, tableData, riskFactors, calculatedPg, 
     primaryExceedanceRef, primaryPdfRef, secondaryExceedanceRef, secondaryPdfRef,
-    country, geolBasin, playType, reservoirAge, lithology, depoEnv, expStage, terrain, laheeClass, typeWell
+    country, geolBasin, playType, reservoirAge, lithology, depoEnv, expStage, terrain, laheeClass, typeWell,
+    econParams, emvParams
   } = dashboardCtx;
 
   const [destination, setDestination] = useState<'local' | 'cloud' | 'email'>('local');
@@ -33,6 +34,7 @@ export default function ReportingSection() {
     results: true,
     risk: true,
     plots: true,
+    economics: false,
   });
 
   const [isGenerating, setIsGenerating] = useState(false);
@@ -95,7 +97,9 @@ export default function ReportingSection() {
             calculatedPg,
             profileData: {
               country, geolBasin, playType, reservoirAge, lithology, depoEnv, expStage, terrain, laheeClass, typeWell
-            }
+            },
+            econParams,
+            emvParams
           },
           images
         })
@@ -315,6 +319,10 @@ export default function ReportingSection() {
           <label className="flex items-center gap-3 text-sm cursor-pointer hover:text-cyan-400 transition-colors">
             <input type="checkbox" checked={contents.plots} onChange={(e) => setContents({ ...contents, plots: e.target.checked })} className="accent-cyan-500 w-4 h-4 rounded" />
             Probability Distribution Plots
+          </label>
+          <label className="flex items-center gap-3 text-sm cursor-pointer hover:text-cyan-400 transition-colors">
+            <input type="checkbox" checked={contents.economics} onChange={(e) => setContents({ ...contents, economics: e.target.checked })} className="accent-cyan-500 w-4 h-4 rounded" />
+            Petroleum Economics & EMV
           </label>
         </div>
       </div>
