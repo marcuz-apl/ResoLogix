@@ -26,7 +26,7 @@ function DcaPageContent() {
     enableEconomics, setEnableEconomics,
     emvParams, setEmvParams,
     econParams, setEconParams,
-    setSimResults
+    setSimResults, fluidType
   } = useDashboard();
 
   const { data: session } = useSession();
@@ -395,7 +395,7 @@ function DcaPageContent() {
               <div className="flex flex-col">
                 <span className="text-xs font-bold uppercase tracking-wider text-cyan-600 mb-1">Estimated Ultimate Recovery</span>
                 <span className="text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-cyan-500 to-blue-500">
-                  {eur > 0 ? eur.toLocaleString(undefined, { maximumFractionDigits: 0 }) : '---'} <span className="text-lg text-text-muted font-bold">Units</span>
+                  {eur > 0 ? eur.toLocaleString(undefined, { maximumFractionDigits: 0 }) : '---'} <span className="text-lg text-text-muted font-bold">BOE</span>
                 </span>
               </div>
               <div className="flex flex-col items-end gap-1 text-right">
