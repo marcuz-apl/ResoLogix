@@ -1,15 +1,15 @@
 {
   "name": "ResoLogix",
-  "version": "4.1.8",
+  "version": "4.1.9",
   "private": true,
   "engines": {
     "node": ">=24"
   },
   "scripts": {
     "clean": "rm -rf .next",
-    "dev": "next dev",
+    "dev": "next dev -p 3010",
     "build": "next build",
-    "start": "next start",
+    "start": "next start -p 3010",
     "lint": "eslint"
   },
   "dependencies": {
@@ -45,5 +45,5 @@
     "tailwindcss": "^4",
     "typescript": "^5"
   },
-  "buildTime": "build 2026-06-15-2142"
+  "buildTime": "build 2026-06-15-2149"
 }
