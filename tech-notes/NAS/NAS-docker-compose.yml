@@ -1,0 +1,16 @@
+services:
+  resologix:
+    image: marcuszou/resologix:latest
+    container_name: resologix
+    ports:
+      - "3010:3010"
+    volumes:
+      - ./data:/app/data
+      - ./reports:/app/reports
+    environment:
+      - NEXTAUTH_SECRET=${NEXTAUTH_SECRET}
+      - NEXTAUTH_URL=${NEXTAUTH_URL}
+      - EMAIL_USER=${EMAIL_USER}
+      - EMAIL_PASS=${EMAIL_PASS}
+      - EMAIL_FROM=${EMAIL_FROM}
+    restart: unless-stopped
