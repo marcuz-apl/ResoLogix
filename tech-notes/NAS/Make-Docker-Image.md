@@ -73,3 +73,27 @@ Follow these instructions to run the container using the Docker Compose file:
    ```
 
 The application will now be running on your Synology NAS at `http://<YOUR_NAS_IP>:3010`.
+
+---
+
+## 4. Troubleshooting: EACCES Permission Denied Errors
+If you run into an error like `[Error] EACCES: permission denied, mkdir '/app/reports/...'` when trying to save scenarios or write reports:
+
+### Why it happens
+Inside the Docker container, the application runs under a non-root user named `nextjs` with **UID `1001`**. When Synology folders are mounted into the container (`./reports` and `./data`), they are owned by your DSM admin user by default, preventing the container from writing to them.
+
+### Solution A: Via Synology DSM GUI (File Station)
+1. Open **File Station** on DSM.
+2. Right-click the **`reports`** folder and select **Properties**.
+3. Under the **Permission** tab, create/edit permissions to grant **Everyone** full **Write** access.
+4. Check **"Apply to this folder, sub-folders and files"** and click **Save**.
+5. Repeat the steps for the **`data`** folder.
+
+### Solution B: Via SSH Command Line
+1. SSH into your NAS and navigate to `/volume1/docker/resologix`.
+2. Change the folder ownership to UID/GID `1001`:
+   ```bash
+   sudo chown -R 1001:1001 reports
+   sudo chown -R 1001:1001 data
+   ```
+
