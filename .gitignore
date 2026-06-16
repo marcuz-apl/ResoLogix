@@ -43,6 +43,7 @@ yarn-error.log*
 next-env.d.ts
 
 # SQLite temporary files
+/data/resologix.db
 *.db-journal
 *.db-shm
 *.db-wal
