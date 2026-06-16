@@ -38,15 +38,25 @@ Follow these instructions to run the container using the Docker Compose file:
 
 ### Step 3.2: Copy and Configure Environment Variables
 1. Copy the [NAS-docker-compose.yml](file:///root/projects/ResoLogix/tech-notes/NAS/NAS-docker-compose.yml) file into `/volume1/docker/resologix/docker-compose.yml`.
-2. Create a new file named **`.env`** in the same `/volume1/docker/resologix/` folder. Use the template from [NAS.env.example](file:///root/projects/ResoLogix/tech-notes/NAS/NAS.env.example) to configure it.
-3. Make sure to input your correct Google App Password in the `EMAIL_PASS` field so the app can send out emails:
+2. Create a new file named **`.env`** and place it in the **same directory** as the `docker-compose.yml` file. 
+
+The directory structure on your Synology NAS must look like this:
+```text
+/volume1/docker/resologix/
+├── docker-compose.yml
+├── .env
+├── data/
+└── reports/
+```
+
+3. Open the `.env` file and configure it using the template from [NAS.env.example](file:///root/projects/ResoLogix/tech-notes/NAS/NAS.env.example). Make sure to input your correct Google App Password in the `EMAIL_PASS` field (without double quotes) so the app can send out emails:
    ```env
-   # .env file template
+   # .env file configuration example
    NEXTAUTH_SECRET=vUCA9smlNX5qbTKaLlwebPBaycyrayKA79Zr8koiL3M=
    NEXTAUTH_URL=http://<YOUR_SYNOLOGY_IP>:3010
    EMAIL_USER=marcus.zou@gmail.com
-   EMAIL_PASS="hynh igvu umog fzlf"
-   EMAIL_FROM="ResoLogix <marcus.zou@gmail.com>"
+   EMAIL_PASS=hynh igvu umog fzlf
+   EMAIL_FROM=ResoLogix <marcus.zou@gmail.com>
    ```
 
 ### Step 3.3: Launch the Container
@@ -96,4 +106,28 @@ Inside the Docker container, the application runs under a non-root user named `n
    sudo chown -R 1001:1001 reports
    sudo chown -R 1001:1001 data
    ```
+
+---
+
+## 5. Troubleshooting: Password Reset / SMTP Failures
+If the password reset function does not work (you don't receive emails or get locked out):
+
+### Case A: Quotes in `.env` passwords (Most Common)
+* **Problem**: In local `.env.local` files, Next.js strips double quotes. However, Docker Compose passes double quotes literally. If you configured `EMAIL_PASS="hynh igvu umog fzlf"`, nodemailer will try to log in with the quotes included and fail.
+* **Solution**: Remove double quotes in the Synology `.env` file:
+  ```env
+  EMAIL_PASS=hynh igvu umog fzlf
+  ```
+
+### Case B: Synology Firewall/Network Outbound Blocks
+* **Problem**: Synology NAS may block outbound connections to ports `465` (SSL) or `587` (TLS) used by Gmail SMTP.
+* **Solution**: Ensure your Synology NAS firewall rules allow outbound traffic on these ports.
+
+### Case C: Restart Container to Apply Changes
+* **Problem**: Updating the `.env` file does not automatically refresh env vars in running containers.
+* **Solution**: Recreate the container:
+  ```bash
+  docker-compose down
+  docker-compose up -d
+  ```
 

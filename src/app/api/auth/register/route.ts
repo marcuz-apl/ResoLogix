@@ -10,7 +10,12 @@ function generateRandomPassword() {
 }
 
 async function sendEmail(to: string, subject: string, text: string) {
-  if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
+  const smtpUser = process.env.EMAIL_USER;
+  const smtpPass = process.env.EMAIL_PASS;
+  const smtpHost = process.env.SMTP_HOST || 'smtp.gmail.com';
+  const smtpPort = Number(process.env.SMTP_PORT) || 587;
+
+  if (!smtpUser || !smtpPass) {
     console.warn("SMTP credentials not set. Simulating email send:");
     console.warn(`To: ${to}\nSubject: ${subject}\nBody:\n${text}`);
     return true; // Simulate success
@@ -18,10 +23,12 @@ async function sendEmail(to: string, subject: string, text: string) {
 
   try {
     const transporter = nodemailer.createTransport({
-      service: 'gmail',
+      host: smtpHost,
+      port: smtpPort,
+      secure: smtpPort === 465,
       auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS,
+        user: smtpUser,
+        pass: smtpPass,
       },
     });
 
