@@ -1,6 +1,6 @@
 {
   "name": "ResoLogix",
-  "version": "4.2.8",
+  "version": "4.2.9",
   "private": true,
   "engines": {
     "node": ">=24"
@@ -45,5 +45,5 @@
     "tailwindcss": "^4",
     "typescript": "^5"
   },
-  "buildTime": "build 2026-07-01-1728"
+  "buildTime": "build 2026-07-01-1755"
 }
