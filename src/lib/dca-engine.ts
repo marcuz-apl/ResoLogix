@@ -1,4 +1,4 @@
-const LM = require('ml-levenberg-marquardt').default || require('ml-levenberg-marquardt');
+import { levenbergMarquardt } from 'ml-levenberg-marquardt';
 
 export type ArpsParams = {
   qi: number; // Initial rate
@@ -151,7 +151,7 @@ export function fitDeclineCurve(data: Point[]): ArpsParams {
   };
 
   try {
-    const result = LM({ x: tData, y: qData }, arpsFunction, options);
+    const result = levenbergMarquardt({ x: tData, y: qData }, arpsFunction, options);
     const [qi, di, b] = result.parameterValues;
     return { qi, di, b };
   } catch (error) {
