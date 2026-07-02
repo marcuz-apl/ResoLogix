@@ -74,25 +74,32 @@ function DcaPageContent() {
       const res = await fetch('/api/dca');
       if (!res.ok) throw new Error('Failed to load scenarios');
       const fetchedData = await res.json();
-      setScenarios(fetchedData);
+      
+      if (Array.isArray(fetchedData)) {
+        setScenarios(fetchedData);
 
-      if (isFirstLoad.current) {
-        isFirstLoad.current = false;
-        
-        const lastId = localStorage.getItem('resologix-last-dca-scenario');
-        let initialScenario = lastId ? fetchedData.find((s: any) => s.id === lastId) : null;
-        
-        if (!initialScenario) {
-          const latestUserScenario = fetchedData.find((s: any) => s.is_example === 0 || s.is_example === false);
-          initialScenario = latestUserScenario || fetchedData.find((s: any) => s.is_example);
-        }
+        if (isFirstLoad.current) {
+          isFirstLoad.current = false;
+          
+          const lastId = localStorage.getItem('resologix-last-dca-scenario');
+          let initialScenario = lastId ? fetchedData.find((s: any) => s.id === lastId) : null;
+          
+          if (!initialScenario) {
+            const latestUserScenario = fetchedData.find((s: any) => s.is_example === 0 || s.is_example === false);
+            initialScenario = latestUserScenario || fetchedData.find((s: any) => s.is_example);
+          }
 
-        if (initialScenario) {
-          handleLoadScenario(initialScenario);
+          if (initialScenario) {
+            handleLoadScenario(initialScenario);
+          }
         }
+      } else {
+        console.error('Fetched data is not an array:', fetchedData);
+        setScenarios([]);
       }
     } catch (err) {
       console.error(err);
+      setScenarios([]);
     } finally {
       setIsLoadingScenarios(false);
     }

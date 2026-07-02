@@ -11,21 +11,52 @@ export async function GET(request: Request) {
   try {
     const session = await getServerSession(authOptions);
     let scenarios = [];
-    if (!session || !session.user) {
-      scenarios = db.prepare(`
-        SELECT id, scenario_name, folder, description, qi, di, b, q_limit, d_min, method, method_params, historical_data, created_at, updated_at, is_example, enable_economics, emv_params, econ_params
-        FROM "dca-scenarios" 
-        WHERE is_example = 1 
-        ORDER BY updated_at DESC
-      `).all();
-    } else {
-      const userId = (session.user as any).id;
-      scenarios = db.prepare(`
-        SELECT id, scenario_name, folder, description, qi, di, b, q_limit, d_min, method, method_params, historical_data, created_at, updated_at, is_example, enable_economics, emv_params, econ_params
-        FROM "dca-scenarios" 
-        WHERE user_id = ? OR is_example = 1
-        ORDER BY is_example DESC, updated_at DESC
-      `).all(userId);
+    
+    const queryDatabase = (userId?: string) => {
+      if (!userId) {
+        return db.prepare(`
+          SELECT id, scenario_name, folder, description, qi, di, b, q_limit, d_min, method, method_params, historical_data, created_at, updated_at, is_example, enable_economics, emv_params, econ_params
+          FROM "dca-scenarios" 
+          WHERE is_example = 1 
+          ORDER BY updated_at DESC
+        `).all();
+      } else {
+        return db.prepare(`
+          SELECT id, scenario_name, folder, description, qi, di, b, q_limit, d_min, method, method_params, historical_data, created_at, updated_at, is_example, enable_economics, emv_params, econ_params
+          FROM "dca-scenarios" 
+          WHERE user_id = ? OR is_example = 1
+          ORDER BY is_example DESC, updated_at DESC
+        `).all(userId);
+      }
+    };
+
+    const userId = session?.user ? (session.user as any).id : undefined;
+
+    try {
+      scenarios = queryDatabase(userId);
+    } catch (dbError: any) {
+      console.warn("DCA SELECT failed. Attempting self-healing migrations...", dbError.message);
+      
+      const migrations = [
+        `ALTER TABLE "dca-scenarios" ADD COLUMN is_example INTEGER DEFAULT 0;`,
+        `ALTER TABLE "dca-scenarios" ADD COLUMN enable_economics INTEGER DEFAULT 0;`,
+        `ALTER TABLE "dca-scenarios" ADD COLUMN emv_params TEXT;`,
+        `ALTER TABLE "dca-scenarios" ADD COLUMN econ_params TEXT;`,
+        `ALTER TABLE "dca-scenarios" ADD COLUMN d_min REAL;`,
+        `ALTER TABLE "dca-scenarios" ADD COLUMN method TEXT DEFAULT 'ARPS';`,
+        `ALTER TABLE "dca-scenarios" ADD COLUMN method_params TEXT;`
+      ];
+
+      for (const m of migrations) {
+        try {
+          db.exec(m);
+        } catch (e: any) {
+          // Ignore duplicate column errors or locks
+        }
+      }
+
+      // Retry the query
+      scenarios = queryDatabase(userId);
     }
 
     // Parse historical_data JSON strings back to objects
