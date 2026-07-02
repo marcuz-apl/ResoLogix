@@ -8,7 +8,9 @@ import {
   Title,
   Tooltip,
   Legend,
-  LogarithmicScale
+  LogarithmicScale,
+  ScatterController,
+  LineController
 } from 'chart.js';
 import { Chart } from 'react-chartjs-2';
 import { Point, MethodParams, DcaMethod, calculateDcaRate } from '@/lib/dca-engine';
@@ -21,7 +23,9 @@ ChartJS.register(
   LineElement,
   Title,
   Tooltip,
-  Legend
+  Legend,
+  ScatterController,
+  LineController
 );
 
 interface DcaChartProps {

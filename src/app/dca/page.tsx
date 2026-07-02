@@ -6,7 +6,8 @@ import { ArrowLeft, Save, RefreshCw, Calculator } from 'lucide-react';
 import { useSession } from 'next-auth/react';
 
 import DataIngestion from '@/components/dca/DataIngestion';
-import DcaChart from '@/components/dca/DcaChart';
+import dynamic from 'next/dynamic';
+const DcaChart = dynamic(() => import('@/components/dca/DcaChart'), { ssr: false });
 import DcaSidebar from '@/components/dca/DcaSidebar';
 import { Point, MethodParams, DcaMethod, fitDeclineCurve, calculateDcaCumulative, findTimeLimit } from '@/lib/dca-engine';
 import { DashboardProvider, useDashboard, DEFAULT_EMV, DEFAULT_ECON } from '@/components/dashboard/DashboardContext';
