@@ -1,4 +1,4 @@
-import { levenbergMarquardt } from 'ml-levenberg-marquardt';
+// ml-levenberg-marquardt is imported dynamically inside fitDeclineCurve to avoid SSR/bundling issues.
 
 export type ArpsParams = {
   qi: number; // Initial rate
@@ -121,10 +121,12 @@ export function arpsCumulative(t: number, params: ArpsParams): number {
  * @param data Array of historical data points {t, q}
  * @returns Best-fit Arps parameters {qi, di, b}
  */
-export function fitDeclineCurve(data: Point[]): ArpsParams {
+export async function fitDeclineCurve(data: Point[]): Promise<ArpsParams> {
   if (data.length < 3) {
     throw new Error('Not enough data points to fit a decline curve.');
   }
+
+  const { levenbergMarquardt } = await import('ml-levenberg-marquardt');
 
   // Define the objective function for LM
   // p = [qi, di, b]

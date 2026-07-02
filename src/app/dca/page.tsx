@@ -51,13 +51,13 @@ function DcaPageContent() {
   const [eur, setEur] = useState<number>(0);
 
   // Auto-fit function
-  const handleAutoFit = () => {
+  const handleAutoFit = async () => {
     if (data.length < 3) {
       alert("Need at least 3 data points to fit the curve.");
       return;
     }
     try {
-      const bestFit = fitDeclineCurve(data);
+      const bestFit = await fitDeclineCurve(data);
       setParams(bestFit);
     } catch (err: any) {
       alert("Failed to auto-fit: " + err.message);
