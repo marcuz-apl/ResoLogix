@@ -712,11 +712,8 @@ function DcaPageContent() {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
           <div className="bg-card border border-card-border p-8 rounded-2xl shadow-2xl max-w-md w-full relative">
             <h2 className="text-xl font-bold text-cyan-400 mb-4">Guest Access Notice</h2>
-            <p className="text-text-primary mb-4 leading-relaxed">
+            <p className="text-text-primary mb-6 leading-relaxed">
               As an unregistered guest, you cannot save your scenarios, but you are welcome to create new scenarios on the fly to conduct analysis and export the results.
-            </p>
-            <p className="text-text-muted italic mb-8">
-              ResoLogix Resource Evaluation suite v3.1.0
             </p>
             <div className="flex justify-end gap-3">
               <button
