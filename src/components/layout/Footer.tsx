@@ -1,17 +1,9 @@
 import React from 'react';
 import { Globe, Mail } from 'lucide-react';
-import { execSync } from 'child_process';
 
 import Disclaimer from './Disclaimer';
 
 export default function Footer() {
-  let buildDate = '';
-  try {
-    buildDate = execSync('git log -1 --format="%cd" --date=format:"%d %B %Y"').toString().trim();
-  } catch (e) {
-    buildDate = new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
-  }
-
   return (
     <footer className="w-full text-xs text-text-muted bg-transparent py-4 px-6 mt-auto flex items-center justify-between">
       <div className="flex gap-3 items-center">
@@ -21,9 +13,7 @@ export default function Footer() {
       <div className="flex items-center gap-3 text-center text-text-secondary">
         <span>ResoLogix&trade; Resource Evaluation</span>
         <span className="text-text-muted/40">|</span>
-        <span>Copyright &copy; 2026 by Alfazen Inc.</span>
-        <span className="text-text-muted/40">|</span>
-        <span>Last Updated on {buildDate}</span>
+        <span>&copy; 2026 Alfazen Inc. All rights reserved</span>
       </div>
 
       <div className="flex gap-4 items-center">
