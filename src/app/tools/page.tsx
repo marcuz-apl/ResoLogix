@@ -125,88 +125,132 @@ function ToolsPageContent() {
     return calculateWaterFVF();
   };
 
-  const CONVERSIONS: Record<string, {id: string, label: string, convert: (v:number)=>number, unit: string}[]> = {
+  interface Unit {
+    name: string;
+    toBase: (v: number) => number;
+    fromBase: (v: number) => number;
+  }
+
+  const UNITS: Record<string, Unit[]> = {
     Length: [
-      { id: 'm_to_ft', label: 'Meters to Feet', convert: v => v * 3.28084, unit: 'ft' },
-      { id: 'ft_to_m', label: 'Feet to Meters', convert: v => v / 3.28084, unit: 'm' },
-      { id: 'ft_to_in', label: 'Feet to Inches', convert: v => v * 12, unit: 'in' },
-      { id: 'in_to_ft', label: 'Inches to Feet', convert: v => v / 12, unit: 'ft' },
-      { id: 'km_to_mi', label: 'Kilometers to Miles', convert: v => v * 0.621371, unit: 'mi' },
-      { id: 'mi_to_km', label: 'Miles to Kilometers', convert: v => v / 0.621371, unit: 'km' },
+      { name: 'Meters', toBase: v => v, fromBase: v => v },
+      { name: 'Feet', toBase: v => v * 0.3048, fromBase: v => v / 0.3048 },
+      { name: 'Inches', toBase: v => v * 0.0254, fromBase: v => v / 0.0254 },
+      { name: 'Kilometers', toBase: v => v * 1000, fromBase: v => v / 1000 },
+      { name: 'Miles', toBase: v => v * 1609.344, fromBase: v => v / 1609.344 },
     ],
     Temperature: [
-      { id: 'c_to_f', label: 'Celsius to Fahrenheit', convert: v => (v * 9/5) + 32, unit: '°F' },
-      { id: 'f_to_c', label: 'Fahrenheit to Celsius', convert: v => (v - 32) * 5/9, unit: '°C' },
-      { id: 'c_to_k', label: 'Celsius to Kelvin', convert: v => v + 273.15, unit: 'K' },
-      { id: 'f_to_r', label: 'Fahrenheit to Rankine', convert: v => v + 459.67, unit: '°R' },
+      { name: 'Celsius', toBase: v => v, fromBase: v => v },
+      { name: 'Fahrenheit', toBase: v => (v - 32) * 5/9, fromBase: v => (v * 9/5) + 32 },
+      { name: 'Kelvin', toBase: v => v - 273.15, fromBase: v => v + 273.15 },
+      { name: 'Rankine', toBase: v => (v - 491.67) * 5/9, fromBase: v => (v * 9/5) + 491.67 },
     ],
     Area: [
-      { id: 'sqm_to_sqft', label: 'Sq Meters to Sq Feet', convert: v => v * 10.7639, unit: 'sq ft' },
-      { id: 'sqft_to_sqm', label: 'Sq Feet to Sq Meters', convert: v => v / 10.7639, unit: 'sq m' },
-      { id: 'acres_to_sqft', label: 'Acres to Sq Feet', convert: v => v * 43560, unit: 'sq ft' },
-      { id: 'sqft_to_acres', label: 'Sq Feet to Acres', convert: v => v / 43560, unit: 'acres' },
+      { name: 'Sq Meters', toBase: v => v, fromBase: v => v },
+      { name: 'Sq Feet', toBase: v => v * 0.09290304, fromBase: v => v / 0.09290304 },
+      { name: 'Acres', toBase: v => v * 4046.85642, fromBase: v => v / 4046.85642 },
     ],
     Volume: [
-      { id: 'bbl_to_m3', label: 'Barrels to Cubic Meters', convert: v => v * 0.158987, unit: 'm³' },
-      { id: 'm3_to_bbl', label: 'Cubic Meters to Barrels', convert: v => v / 0.158987, unit: 'bbl' },
-      { id: 'gal_to_L', label: 'Gallons (US) to Liters', convert: v => v * 3.78541, unit: 'L' },
-      { id: 'L_to_gal', label: 'Liters to Gallons (US)', convert: v => v / 3.78541, unit: 'gal' },
-      { id: 'cuft_to_bbl', label: 'Cubic Feet to Barrels', convert: v => v / 5.61458, unit: 'bbl' },
-      { id: 'bbl_to_cuft', label: 'Barrels to Cubic Feet', convert: v => v * 5.61458, unit: 'cu ft' },
+      { name: 'Barrels', toBase: v => v, fromBase: v => v },
+      { name: 'Cubic Meters', toBase: v => v * 0.1589873, fromBase: v => v / 0.1589873 },
+      { name: 'Gallons (US)', toBase: v => v * 0.00378541, fromBase: v => v / 0.00378541 },
+      { name: 'Liters', toBase: v => v * 0.001, fromBase: v => v / 0.001 },
+      { name: 'Cubic Feet', toBase: v => v * 0.02831685, fromBase: v => v / 0.02831685 },
     ],
     Mass: [
-      { id: 'kg_to_lb', label: 'Kilograms to Pounds', convert: v => v * 2.20462, unit: 'lb' },
-      { id: 'lb_to_kg', label: 'Pounds to Kilograms', convert: v => v / 2.20462, unit: 'kg' },
-      { id: 'ton_to_kg', label: 'Metric Tons to Kilograms', convert: v => v * 1000, unit: 'kg' },
+      { name: 'Kilograms', toBase: v => v, fromBase: v => v },
+      { name: 'Pounds', toBase: v => v * 0.45359237, fromBase: v => v / 0.45359237 },
+      { name: 'Metric Tons', toBase: v => v * 1000, fromBase: v => v / 1000 },
     ],
     Pressure: [
-      { id: 'psi_to_kpa', label: 'PSI to kPa', convert: v => v * 6.89476, unit: 'kPa' },
-      { id: 'kpa_to_psi', label: 'kPa to PSI', convert: v => v / 6.89476, unit: 'psi' },
-      { id: 'psi_to_bar', label: 'PSI to Bar', convert: v => v * 0.0689476, unit: 'bar' },
-      { id: 'bar_to_psi', label: 'Bar to PSI', convert: v => v / 0.0689476, unit: 'psi' },
-      { id: 'atm_to_psi', label: 'Atmospheres to PSI', convert: v => v * 14.6959, unit: 'psi' },
+      { name: 'PSI', toBase: v => v, fromBase: v => v },
+      { name: 'kPa', toBase: v => v * 0.14503774, fromBase: v => v / 0.14503774 },
+      { name: 'Bar', toBase: v => v * 14.503774, fromBase: v => v / 14.503774 },
+      { name: 'Atmospheres', toBase: v => v * 14.695949, fromBase: v => v / 14.695949 },
     ],
     Density: [
-      { id: 'gcc_to_lbgal', label: 'g/cm³ to lb/gal (ppg)', convert: v => v * 8.3454, unit: 'ppg' },
-      { id: 'lbgal_to_gcc', label: 'lb/gal (ppg) to g/cm³', convert: v => v / 8.3454, unit: 'g/cm³' },
-      { id: 'gcc_to_lbcuft', label: 'g/cm³ to lb/ft³', convert: v => v * 62.42796, unit: 'lb/ft³' },
-      { id: 'lbcuft_to_gcc', label: 'lb/ft³ to g/cm³', convert: v => v / 62.42796, unit: 'g/cm³' },
+      { name: 'g/cm³', toBase: v => v, fromBase: v => v },
+      { name: 'lb/gal (ppg)', toBase: v => v * 0.11982643, fromBase: v => v / 0.11982643 },
+      { name: 'lb/ft³', toBase: v => v * 0.01601846, fromBase: v => v / 0.01601846 },
     ],
     Time: [
-      { id: 'hr_to_min', label: 'Hours to Minutes', convert: v => v * 60, unit: 'min' },
-      { id: 'min_to_hr', label: 'Minutes to Hours', convert: v => v / 60, unit: 'hr' },
-      { id: 'day_to_hr', label: 'Days to Hours', convert: v => v * 24, unit: 'hr' },
+      { name: 'Hours', toBase: v => v, fromBase: v => v },
+      { name: 'Minutes', toBase: v => v / 60, fromBase: v => v * 60 },
+      { name: 'Days', toBase: v => v * 24, fromBase: v => v / 24 },
     ],
     Speed: [
-      { id: 'ms_to_kmh', label: 'm/s to km/h', convert: v => v * 3.6, unit: 'km/h' },
-      { id: 'kmh_to_ms', label: 'km/h to m/s', convert: v => v / 3.6, unit: 'm/s' },
-      { id: 'mph_to_kmh', label: 'mph to km/h', convert: v => v * 1.60934, unit: 'km/h' },
-      { id: 'kmh_to_mph', label: 'km/h to mph', convert: v => v / 1.60934, unit: 'mph' },
-      { id: 'knots_to_mph', label: 'Knots to mph', convert: v => v * 1.15078, unit: 'mph' },
+      { name: 'm/s', toBase: v => v, fromBase: v => v },
+      { name: 'km/h', toBase: v => v / 3.6, fromBase: v => v * 3.6 },
+      { name: 'mph', toBase: v => v * 0.44704, fromBase: v => v / 0.44704 },
+      { name: 'Knots', toBase: v => v * 0.514444, fromBase: v => v / 0.514444 },
     ],
     Torque: [
-      { id: 'nm_to_lbft', label: 'N·m to lb·ft', convert: v => v * 0.737562, unit: 'lb·ft' },
-      { id: 'lbft_to_nm', label: 'lb·ft to N·m', convert: v => v / 0.737562, unit: 'N·m' },
+      { name: 'N·m', toBase: v => v, fromBase: v => v },
+      { name: 'lb·ft', toBase: v => v * 1.355818, fromBase: v => v / 1.355818 },
     ]
   };
 
   // Unit Converter State
-  const [ucValue, setUcValue] = useState<number | ''>(1);
   const [ucCategory, setUcCategory] = useState('Length');
-  const [ucType, setUcType] = useState(CONVERSIONS['Length'][0].id);
+  const [ucFromUnit, setUcFromUnit] = useState('Meters');
+  const [ucToUnit, setUcToUnit] = useState('Feet');
+  const [ucFromValue, setUcFromValue] = useState<number | ''>(1);
+  const [ucToValue, setUcToValue] = useState<number | ''>(3.28084);
+
+  const performConversion = (val: number | '', from: string, to: string, direction: 'from' | 'to', targetCategory = ucCategory) => {
+    if (val === '') {
+      if (direction === 'from') setUcToValue('');
+      else setUcFromValue('');
+      return;
+    }
+    
+    const catUnits = UNITS[targetCategory];
+    const fromUnit = catUnits.find(u => u.name === from);
+    const toUnit = catUnits.find(u => u.name === to);
+    if (!fromUnit || !toUnit) return;
+
+    if (direction === 'from') {
+      const baseVal = fromUnit.toBase(val);
+      const converted = toUnit.fromBase(baseVal);
+      setUcToValue(parseFloat(converted.toFixed(6)));
+    } else {
+      const baseVal = toUnit.toBase(val);
+      const converted = fromUnit.fromBase(baseVal);
+      setUcFromValue(parseFloat(converted.toFixed(6)));
+    }
+  };
 
   const handleCategoryChange = (cat: string) => {
     setUcCategory(cat);
-    setUcType(CONVERSIONS[cat][0].id);
+    const defaultFrom = UNITS[cat][0].name;
+    const defaultTo = UNITS[cat][1]?.name || UNITS[cat][0].name;
+    setUcFromUnit(defaultFrom);
+    setUcToUnit(defaultTo);
+    
+    setUcFromValue(1);
+    performConversion(1, defaultFrom, defaultTo, 'from', cat);
   };
 
-  const calculateConversion = () => {
-    if (ucValue === '') return '--';
-    const convList = CONVERSIONS[ucCategory];
-    if (!convList) return '--';
-    const conv = convList.find(c => c.id === ucType);
-    if (!conv) return '--';
-    return conv.convert(ucValue).toFixed(4) + ' ' + conv.unit;
+  const handleFromValueChange = (valStr: string) => {
+    const val = valStr === '' ? '' : parseFloat(valStr);
+    setUcFromValue(val);
+    performConversion(val, ucFromUnit, ucToUnit, 'from');
+  };
+
+  const handleToValueChange = (valStr: string) => {
+    const val = valStr === '' ? '' : parseFloat(valStr);
+    setUcToValue(val);
+    performConversion(val, ucFromUnit, ucToUnit, 'to');
+  };
+
+  const handleFromUnitChange = (newUnit: string) => {
+    setUcFromUnit(newUnit);
+    performConversion(ucFromValue, newUnit, ucToUnit, 'from');
+  };
+
+  const handleToUnitChange = (newUnit: string) => {
+    setUcToUnit(newUnit);
+    performConversion(ucFromValue, ucFromUnit, newUnit, 'from');
   };
 
   return (
@@ -296,40 +340,74 @@ function ToolsPageContent() {
           </div>
 
           {ucExpanded && (
-            <div className="px-6 pb-6 pt-2 border-t border-card-border/50 bg-background/30 grid grid-cols-1 md:grid-cols-2 gap-8">
-              <div className="flex flex-col gap-4">
-                <p className="text-xs text-text-secondary mb-2">Standard Oil & Gas unit conversions</p>
-                <div className="flex flex-col gap-4">
-                  {/* Category Tabs */}
-                  <div className="flex flex-wrap gap-1 p-1 bg-input-bg rounded-lg border border-input-border">
-                    {Object.keys(CONVERSIONS).map(cat => (
-                      <button 
-                        key={cat} 
-                        onClick={() => handleCategoryChange(cat)} 
-                        className={`px-3 py-1 text-xs font-bold rounded-md transition-all ${ucCategory === cat ? 'bg-cyan-950/50 text-white shadow-sm' : 'text-text-muted hover:text-text-primary hover:bg-card-border/30'}`}
-                      >
-                        {cat}
-                      </button>
+            <div className="px-6 pb-8 pt-4 border-t border-card-border/50 bg-background/30 flex flex-col gap-6">
+              
+              {/* Category Tabs */}
+              <div className="flex flex-wrap gap-1 p-1 bg-input-bg rounded-lg border border-input-border self-start">
+                {Object.keys(UNITS).map(cat => (
+                  <button 
+                    key={cat} 
+                    onClick={() => handleCategoryChange(cat)} 
+                    className={`px-3 py-1 text-xs font-bold rounded-md transition-all ${ucCategory === cat ? 'bg-cyan-950/50 text-white shadow-sm' : 'text-text-muted hover:text-text-primary hover:bg-card-border/30'}`}
+                  >
+                    {cat}
+                  </button>
+                ))}
+              </div>
+
+              {/* Conversion Sentence */}
+              <div className="flex flex-col items-center justify-center py-8 bg-card/30 rounded-xl border border-card-border/60 shadow-inner px-4">
+                <div className="flex flex-col md:flex-row items-center justify-center gap-4 text-base md:text-lg font-bold text-text-primary w-full max-w-3xl">
+                  
+                  {/* From Value Input */}
+                  <input 
+                    type="number" 
+                    value={ucFromValue} 
+                    onChange={e => handleFromValueChange(e.target.value)} 
+                    placeholder="0"
+                    className="w-full md:w-36 bg-input-bg text-text-primary border border-input-border rounded-xl px-4 py-3 text-center focus:border-cyan-500/50 focus:ring-1 focus:ring-cyan-500/50 outline-none font-mono text-xl shadow-sm transition-all"
+                  />
+
+                  {/* From Unit Selection */}
+                  <select 
+                    value={ucFromUnit} 
+                    onChange={e => handleFromUnitChange(e.target.value)} 
+                    className="w-full md:w-auto bg-input-bg hover:bg-input-bg/85 border border-input-border rounded-xl px-4 py-3 text-center text-cyan-400 focus:outline-none cursor-pointer text-lg font-bold transition-colors"
+                  >
+                    {UNITS[ucCategory].map(u => (
+                      <option key={u.name} value={u.name} className="bg-card text-text-primary text-left">
+                        {u.name.toLowerCase()}
+                      </option>
                     ))}
-                  </div>
-                  <label className="flex flex-col gap-1 text-xs font-semibold text-text-primary">
-                    Conversion:
-                    <select value={ucType} onChange={e => setUcType(e.target.value)} className="bg-input-bg text-text-primary border border-input-border rounded-md px-3 py-1.5 focus:border-cyan-500 outline-none">
-                      {CONVERSIONS[ucCategory].map(conv => (
-                        <option key={conv.id} value={conv.id} className="bg-card text-text-primary">{conv.label}</option>
-                      ))}
-                    </select>
-                  </label>
-                  <label className="flex flex-col gap-1 text-xs font-semibold text-text-primary">
-                    Value:
-                    <input type="number" value={ucValue} onChange={e => setUcValue(e.target.value === '' ? '' : parseFloat(e.target.value))} className="bg-input-bg text-text-primary border border-input-border rounded-md px-3 py-1.5 focus:border-cyan-500 outline-none" />
-                  </label>
+                  </select>
+
+                  <span className="text-text-muted font-medium text-xs md:text-sm uppercase tracking-wider px-2 py-1 select-none">equals to</span>
+
+                  {/* To Value Input */}
+                  <input 
+                    type="number" 
+                    value={ucToValue} 
+                    onChange={e => handleToValueChange(e.target.value)} 
+                    placeholder="0"
+                    className="w-full md:w-36 bg-input-bg text-text-primary border border-input-border rounded-xl px-4 py-3 text-center focus:border-cyan-500/50 focus:ring-1 focus:ring-cyan-500/50 outline-none font-mono text-xl shadow-sm transition-all"
+                  />
+
+                  {/* To Unit Selection */}
+                  <select 
+                    value={ucToUnit} 
+                    onChange={e => handleToUnitChange(e.target.value)} 
+                    className="w-full md:w-auto bg-input-bg hover:bg-input-bg/85 border border-input-border rounded-xl px-4 py-3 text-center text-cyan-400 focus:outline-none cursor-pointer text-lg font-bold transition-colors"
+                  >
+                    {UNITS[ucCategory].map(u => (
+                      <option key={u.name} value={u.name} className="bg-card text-text-primary text-left">
+                        {u.name.toLowerCase()}
+                      </option>
+                    ))}
+                  </select>
+
                 </div>
               </div>
-              <div className="flex flex-col items-center justify-center bg-card rounded-lg border border-card-border p-6 shadow-inner">
-                <span className="text-sm text-text-secondary font-semibold uppercase mb-2">Result</span>
-                <span className="text-3xl font-extrabold text-green-400 font-mono tracking-tight">{calculateConversion()}</span>
-              </div>
+
             </div>
           )}
         </div>
